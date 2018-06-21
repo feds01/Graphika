@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>graph-js</title>
+</head>
+<body>
+<canvas id="w" width="600" height="600"></canvas>
+<script src="graph.js"></script>
+<script>
+    let w = new BasicGraph('w',	{
+            x_label: 'nice',
+            y_label: 'nicer',
+            gridded: true
+        }, {'x':[0,1,2], 'y':[1,2,3,4]}
+    );
+</script>
+</body>
+</html>
