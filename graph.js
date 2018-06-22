@@ -1,5 +1,18 @@
-class BasicGraph {
+// attach key method to the json object
+if(typeof Object.keys !== 'function') {
+    Object.keys = function () {
+        let keys = [];
 
+        for(let name in this) {
+            if(Object.hasOwnProperty(name)) {
+                keys.push(name);
+            }
+        }
+        return keys;
+    }
+}
+
+class BasicGraph {
     /**
      * @property x_label -> The label which is present on the x-axis of the graph
      * @property y_label -> The label which is present on the y-axis of the graph
@@ -14,20 +27,9 @@ class BasicGraph {
      * @property gridded -> if true, the graph will be drawn with lines at the intervals on the graph.
      * */
     constructor(canvas, settings, data) {
-        let clazz = this;
+        this.settings = new Config(settings).config;
+        this.data = data === undefined || null ? {'x': [], 'y': []} : data;
 
-        this.settings = {
-            x_size : 500,
-            y_size : 500,
-            x_label   : 'x-axis',
-            y_label   : 'y-axis',
-            tittle    : 'Graph',
-            tittle_pos: 'top-center',
-            scale     : 1,
-            gridded   : false,
-            padding   : 15,
-            axis_colour: 'rgba(0,0,0, 0.6)'
-        };
 
         try {
             this.canvas = document.getElementById(canvas);
@@ -36,7 +38,7 @@ class BasicGraph {
             this.context.imageSmoothingEnabled = true;
             this.context.strokeStyle = this.settings.axis_colour;
 
-            this.context.font = '10px arial';
+            this.context.font = '20px "Roboto Mono", monospace';
 
             this.settings.x_size = this.canvas.width;
             this.settings.y_size = this.canvas.height;
@@ -46,81 +48,86 @@ class BasicGraph {
                 throw ('err: provided canvas does not exist!');
             }
         }
-
-        if((settings !== null) && (settings !== undefined)) {
-            for(let setting of Object.keys(settings)) {
-                this.setSetting(setting, settings[setting]);
-            }
-        }
-
-        // data settings
-        if(data === undefined || null) {
-           this.data = {'x': [], 'y': []}
-        } else {
-            this.data = data;
-        }
-        // attach key method to the json object
-
-
-        if(typeof Object.keys !== 'function') {
-            this.data.keys = function () {
-                let keys = [];
-
-                for(let name in this) {
-                    if(clazz.data.hasOwnProperty(name)) {
-                        keys.push(name);
-                    }
-                }
-                return keys;
-            }
-        } else {
-            this.data.keys = function () {
-                return Object.keys(this);
-            }
-        }
-
         // axis
         this.drawAxis();
-    }
 
-    setSetting(setting, val) {
-        if(this.settings.hasOwnProperty(setting)) {
-            this.settings[setting] = val;
-        }
     }
 
     drawAxis() {
-        let y_offset = 0;
+        let x_size = this.settings.x_size;
+
         let padding = this.settings.padding;
+        let y_offset = 0;
 
         if(this.settings.tittle != null &&
-           this.settings.tittle_pos.substr(0, 3) !== 'top')
+           this.settings.tittle_pos.substr(0, 3) === 'top')
         {
-           y_offset += 10;
+           y_offset += 30;
+
+            switch (this.settings.tittle_pos) {
+                case "top-left":
+                    this.context.fillText(this.settings.tittle, 0, 15);
+                    break;
+                case "top-center":
+                    this.context.fillText(this.settings.tittle, x_size * 0.5, 15);
+                    break;
+                case "top-right":
+                    this.context.fillText(this.settings.tittle, x_size * 0.75, 15);
+                    break;
+            }
         }
+
         // the y-limit is the y coordinate up to where everything should be drawn
-        let y_limit = this.settings.y_size - (padding + y_offset);
+        let y_limit = this.settings.y_size - (padding) + y_offset;
 
         this.context.strokeRect(padding, y_offset, 1, y_limit);
-        this.context.strokeRect(padding, y_limit, this.settings.x_size - 5, 1);
+        this.context.strokeRect(padding, y_limit, this.settings.x_size - padding, 1);
 
-        // now draw axis strokes
-        let counter = 0;
+        this.graph = {x_begin: padding, y_begin: y_offset, x_end : this.settings.x_size - padding, y_end: y_limit};
 
-        for(let offset = 0; offset < y_limit; offset += 20) {
-            this.context.strokeRect(padding + offset, y_limit, 1, 9);
-            this.context.strokeRect(padding, y_limit - offset, -9, 1);
-
-            this.context.fillText(counter.toString(), padding + offset + 2, y_limit + 12);
-            this.context.fillText(counter.toString(), padding - 9, y_limit - offset);
-            counter++;
+        // x-axis
+        for(let offset = this.graph.x_begin; offset < this.graph.x_end; offset += 20) {
+            this.context.strokeRect(offset, this.graph.y_end, 1, 9);
         }
 
-        this.render();
+     /*   for(let offset = this.graph.x_begin; offset < () ; offset -= 20) {
+            console.log(padding + offset);
+            // x-axis
+            this.context.strokeRect(padding + offset, y_limit, 1, 9);
+
+            // y-axis
+            //this.context.strokeRect(padding, y_limit - offset + y_offset, -9, 1);
+        }*/
+    }
+}
+
+class Config {
+    constructor(config) {
+        this.config = {
+            x_size : 500,
+            y_size : 500,
+            x_label   : 'x-axis',
+            y_label   : 'y-axis',
+            tittle    : 'Graph',
+            tittle_pos: 'top-center',
+            scale     : 1,
+            gridded   : false,
+            padding   : 40,
+            axis_colour: '#5e5e5e'
+        };
+
+        if((config !== null) && (config !== undefined)) {
+            for(let setting of Object.keys(config)) {
+                this.setConfig(setting, config[setting]);
+            }
+        }
+
+        // add config keys to the class properties
     }
 
-    render() {
-        this.context.drawImage(this.canvas, 0,0);
-        requestAnimationFrame(this.render);
+    setConfig(key, val) {
+        if(this.config.hasOwnProperty(key)) {
+            this.config[key] = val;
+        }
     }
 }
