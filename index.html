@@ -3,14 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <title>graph-js</title>
+
+    <link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet">
+    <style>
+        .graph {
+            font-family: "Roboto Mono", monospace;
+        }
+
+        .graph > .tittle {
+            font-size: 28px;
+            padding-bottom: 0.3em;
+            font-family: "Roboto Mono", monospace;
+        }
+    </style>
 </head>
 <body>
-<canvas id="w" width="600" height="600"></canvas>
+<div id="w" class="graph">
+    <div class="tittle"></div>
+    <canvas width="600" height="600"></canvas>
+</div>
 <script src="graph.js"></script>
 <script>
     let w = new BasicGraph('w',	{
             x_label: 'nice',
             y_label: 'nicer',
+            tittle_pos: 'top-center',
             gridded: true
         }, {'x':[0,1,2], 'y':[1,2,3,4]}
     );
