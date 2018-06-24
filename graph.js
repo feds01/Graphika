@@ -16,7 +16,6 @@ function hexToOpacityHex(hex, opacity) {
     return `#${opacity}${hex.substr(1)}`;
 }
 
-let err = "canvas element does not exist.";
 
 class BasicGraph {
     /**
@@ -32,120 +31,140 @@ class BasicGraph {
      *
      * @property gridded -> if true, the graph will be drawn with lines at the intervals on the graph.
      * */
-    constructor(canvas, settings, data) {
-        this.id = canvas;
-        this.settings = new Config(settings).config;
+    constructor(id, options, data) {
+        this.id = id;
+        this.options = new Config(options).config;
         // this.data = data === undefined || null ? {'x': [], 'y': []} : data;
 
+        this.findElements();
 
         try {
-            this.canvas = BasicGraph.findCanvas(this.id);
-            this.context = this.canvas.getContext('2d');
+            this.canvas = this.elementMap.canvas;
+            this.ctx = this.canvas.getContext('2d');
 
-            this.context.imageSmoothingEnabled = true;
-            this.context.strokeStyle = this.settings.axis_colour;
+            this.ctx.strokeStyle = this.options.axis_colour;
+            this.ctx.textAlign = 'center';
+            this.ctx.font = '16px "Roboto Mono", monospace';
 
-            //this.context.font = '20px "Roboto Mono", monospace';
-
-            this.settings.x_size = this.canvas.width;
-            this.settings.y_size = this.canvas.height;
+            this.c_width = this.canvas.width;
+            this.c_height = this.canvas.height;
 
         } catch (e) {
             if (this.canvas === null) {
                 throw ('err: provided canvas does not exist!\n' + e);
             }
-        }
-        // axis
-        this.setTittlePosition();
-        this.drawAxis();
-    }
-
-    static findCanvas(root) {
-        let element = document.getElementById(root);
-        let canvasElement = null;
-
-        if (element === null) {
-            throw err;
-        } else {
-            for (let child of element.childNodes) {
-                if (child.nodeName.toLowerCase() === 'canvas') {
-                    canvasElement = child;
-                }
+        } finally {
+            // if no labels provided, they are disabled as in no room is provided
+            // for them to be drawn.
+            if (this.options.y_label.toString() !== "" && this.options.x_label.toString() !== "") {
+                this.label_size = this.getFontSize();
+            } else {
+                this.label_size = 0;
             }
-        }
 
-        if (canvasElement !== null) {
-            element.style.width = (canvasElement.width).toString() + 'px';
-        }
-        return canvasElement;
-    }
+            let padding = this.options.padding,
+                y_limit = this.c_height,
+                y_end = y_limit - (padding + this.label_size),
+                x_size = this.c_width - (padding + this.label_size);
 
-    static findTittle(root) {
-        console.log(root);
-        let rootElement = document.getElementById(root);
-
-        if(rootElement === null) {
-            throw err;
-
-        } else {
-            for (let child of rootElement.childNodes) {
-                if (child.nodeName.toLowerCase() === 'div' &&
-                    child.classList.contains('tittle'))
-                {
-                    return child;
-                }
-            }
-        }
-    }
-
-    setTittlePosition() {
-        if(this.settings.tittle != null) {
-            let tittleElement = BasicGraph.findTittle(this.id);
-
-            switch (this.settings.tittle_pos) {
-                case 'top-left':
-                    tittleElement.style.textAlign = 'left';
-                    break;
-
-                case 'top-center':
-                    tittleElement.style.textAlign = 'center';
-                    break;
-
-                case 'top-right':
-                    tittleElement.style.textAlign = 'right';
-            }
-            tittleElement.innerHTML = this.settings.tittle;
-        }
-    }
-
-    drawAxis() {
-        // the y-limit is the y coordinate up to where everything should be drawn
-        let offset = 0,
-            padding = this.settings.padding,
-            y_limit = this.settings.y_size - padding,
-            graph = {
-                x_begin: padding,
-                y_begin: padding,
-                x_end: this.settings.x_size - padding,
-                y_end: y_limit,
-                x_size: this.settings.x_size - (2 * padding),
-                y_size: y_limit - padding
+            this.graph = {
+                x_begin: padding + this.label_size,
+                y_begin: 0,
+                x_end: this.c_width,
+                y_end: y_end,
+                x_length: x_size,
+                y_length: y_end,
+                x_center: padding + this.label_size + x_size / 2,
+                y_center: this.label_size + y_end / 2
             };
+        }
 
-        this.context.strokeRect(padding, padding, 1, graph.y_size);
-        this.context.strokeRect(padding, y_limit, graph.x_size, 1);
+        if (this.label_size !== 0) {
+            this.drawLabels(this.graph);
+        }
+        this.drawAxis(this.graph);
+    }
 
-        // change the stroke style to rgba(colour, 0.6), so apply 60% opacity to
-        // whataver colour is selected.
-        this.context.strokeStyle = hexToOpacityHex(this.settings.axis_colour, '99');
+    findElements() {
+        let element = document.getElementById(this.id);
+        this.elementMap = {
+            canvas: undefined,
+            tittle: undefined
+        };
 
-        while(offset < graph.x_size && offset < graph.y_size) {
-            let x_len = this.settings.gridded ? 9 + graph.y_size : 9,
-                y_len = this.settings.gridded ? 9 + graph.x_size : 9;
+        for (let childNode of element.childNodes) {
+            const tagName = childNode.nodeName.toLowerCase();
+            if (tagName === 'canvas') {
+                this.elementMap.canvas = childNode;
 
-            this.context.strokeRect(graph.x_begin + offset, graph.y_end + 9, 1, -x_len);
-            this.context.strokeRect(graph.x_begin - 9, graph.y_end - offset, y_len, 1);
+            } else if (tagName === 'div') {
+                if (childNode.classList.contains('tittle')) {
+                    this.elementMap.tittle = childNode;
+                }
+            }
+        }
 
+        // DOM modifications
+        if (this.elementMap.canvas !== null) {
+            element.style.width = this.elementMap.canvas.width.toString() + 'px';
+        } else {
+            // TODO: create the canvas element ?, same for tittle ?
+            throw 'canvas element does not exist'
+        }
+
+        if (this.elementMap.tittle !== null) {
+            switch (this.options.tittle_pos) {
+                case 'top-left':
+                    this.elementMap.tittle.style.textAlign = 'left';
+                    break;
+                case 'top-center':
+                    this.elementMap.tittle.style.textAlign = 'center';
+                    break;
+                case 'top-right':
+                    this.elementMap.tittle.style.textAlign = 'right';
+            }
+            this.elementMap.tittle.innerHTML = this.options.tittle;
+        }
+    }
+
+    getFontSize() {
+        return parseInt(this.ctx.font.substr(0, 2));
+    }
+
+    drawLabels(graph) {
+        // add x-axis label
+        this.ctx.fillText(this.options.x_label, graph.x_center, this.c_height);
+
+        // add y-axis label
+        this.ctx.save();
+        this.ctx.translate(parseInt(this.getFontSize()), graph.y_center);
+        this.ctx.rotate(-Math.PI / 2);
+        this.ctx.fillText(this.options.y_label, 0, 0);
+        this.ctx.restore();
+    }
+
+    drawAxis(graph) {
+        let offset = 0;
+
+        // the y-limit is the y coordinate up to where everything should be drawn
+        this.ctx.strokeRect(graph.x_begin, 0, 1, graph.y_length);
+        this.ctx.strokeRect(graph.x_begin, graph.y_end, graph.x_length, 1);
+
+        // change the stroke style to rgba(colour, 0.6), so apply 60% opacity.
+        this.ctx.strokeStyle = hexToOpacityHex(this.options.axis_colour, '99');
+
+        while ((offset <= graph.x_length) || (offset <= graph.y_length)) {
+            this.ctx.strokeStyle = hexToOpacityHex(this.options.axis_colour, '99');
+            let x_len = this.options.gridded ? 9 + graph.y_length : 9,
+                y_len = this.options.gridded ? 9 + graph.x_length : 9;
+
+            if (offset <= graph.x_length) {
+                this.ctx.strokeRect(graph.x_begin + offset, graph.y_end + 9, 1, -x_len);
+            }
+
+            if (offset <= graph.y_length) {
+                this.ctx.strokeRect(graph.x_begin - 9, graph.y_end - offset, y_len, 1);
+            }
             offset += 20;
         }
     }
@@ -154,15 +173,13 @@ class BasicGraph {
 class Config {
     constructor(config) {
         this.config = {
-            x_size: 500,
-            y_size: 500,
-            x_label: 'x-axis',
-            y_label: 'y-axis',
+            x_label: '',
+            y_label: '',
             tittle: 'Graph',
             tittle_pos: 'top-center',
             scale: 1,
             gridded: false,
-            padding: 10,
+            padding: 12,
             axis_colour: '#5e5e5e'
         };
 
@@ -171,8 +188,6 @@ class Config {
                 this.setConfig(setting, config[setting]);
             }
         }
-
-        // add config keys to the class properties
     }
 
     setConfig(key, val) {
