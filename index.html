@@ -10,6 +10,10 @@
             font-family: "Roboto Mono", monospace;
         }
 
+        /*.graph canvas {
+            border: 1px black solid;
+        }*/
+
         .graph > .tittle {
             font-size: 28px;
             padding-bottom: 0.3em;
@@ -20,17 +24,44 @@
 <body>
 <div id="w" class="graph">
     <div class="tittle"></div>
-    <canvas width="500" height="500"></canvas>
+    <canvas width="600" height="600"></canvas>
 </div>
 <script src="graph.js"></script>
 <script>
-    let w = new BasicGraph('w',	{
+    function getRandomInt(min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    function getRandomArray(length, min, max) {
+        let array = [];
+
+        for(let x = 0; x < length; x++) {
+            array.push(getRandomInt(min, max));
+        }
+        return array;
+    }
+
+    console.time('w');
+    let w = new BasicGraph('w', {
             x_label: 'Hours Revised',
             y_label: 'UCAS Points',
             tittle_pos: 'top-center',
             gridded: true
-        }, {'x':[0,1,2], 'y':[1,2,3,4]}
+        },
+        [
+            {
+                label: 'student_1',
+                data: getRandomArray(11, 0, 11),
+                colour: '#FF6782'
+            },
+            {
+                label: 'student_1',
+                data: getRandomArray(11, 0, 11),
+                colour: '#009FE5'
+            }
+        ]
     );
+    console.timeEnd('w');
 </script>
 </body>
 </html>
