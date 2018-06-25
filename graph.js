@@ -1,3 +1,5 @@
+const TWO_PI = 2 * Math.PI;
+
 // attach key method to the json object
 if (typeof Object.keys !== 'function') {
     Object.keys = function () {
@@ -12,8 +14,10 @@ if (typeof Object.keys !== 'function') {
     }
 }
 
-function hexToOpacityHex(hex, opacity) {
-    return `#${opacity}${hex.substr(1)}`;
+function rgba(hex, opacity) {
+    let alpha = Number(opacity / 100).toPrecision(2);
+
+    return hex.replace(')', `,${parseFloat(alpha).toFixed(2)})`);
 }
 
 
@@ -33,11 +37,33 @@ class BasicGraph {
      * */
     constructor(id, options, data) {
         this.id = id;
-        this.options = new Config(options).config;
-        // this.data = data === undefined || null ? {'x': [], 'y': []} : data;
+        //region convert options, id, data into workable objects
+        let defaultConfig = {
+            x_label: '',
+            y_label: '',
+            tittle: 'Graph',
+            tittle_pos: 'top-center',
+            scale: 1,
+            gridded: false,
+            padding: 12,
+            join_points: true,
+            axis_colour: 'rgb(94,94,94)',
+            data_colour: 'rgb(156,39,176)'
+        };
+
+        if ((options !== null) && (options !== undefined)) {
+
+            Object.keys(options).forEach((option) => {
+                if (defaultConfig.hasOwnProperty(option)) {
+                    defaultConfig[option] = options[option];
+                }
+            });
+        }
+        this.options = defaultConfig;
+        //endregion
 
         this.findElements();
-
+        //region setup canvas and tittle
         try {
             this.canvas = this.elementMap.canvas;
             this.ctx = this.canvas.getContext('2d');
@@ -78,11 +104,20 @@ class BasicGraph {
                 y_center: this.label_size + y_end / 2
             };
         }
+        //endregion
+
+        if(Array.isArray(data)) {
+            for(let idx in data) {
+                data[idx].data = this.convertDataToPositions(data[idx].data);
+            }
+        }
+        this.data = data;
 
         if (this.label_size !== 0) {
-            this.drawLabels(this.graph);
+            this.drawLabels();
         }
-        this.drawAxis(this.graph);
+        this.drawAxis();
+        this.drawData();
     }
 
     findElements() {
@@ -131,7 +166,8 @@ class BasicGraph {
         return parseInt(this.ctx.font.substr(0, 2));
     }
 
-    drawLabels(graph) {
+    drawLabels() {
+        let graph = this.graph;
         // add x-axis label
         this.ctx.fillText(this.options.x_label, graph.x_center, this.c_height);
 
@@ -143,18 +179,18 @@ class BasicGraph {
         this.ctx.restore();
     }
 
-    drawAxis(graph) {
-        let offset = 0;
+    drawAxis() {
+        let graph = this.graph,
+            offset = 0;
 
         // the y-limit is the y coordinate up to where everything should be drawn
         this.ctx.strokeRect(graph.x_begin, 0, 1, graph.y_length);
         this.ctx.strokeRect(graph.x_begin, graph.y_end, graph.x_length, 1);
 
         // change the stroke style to rgba(colour, 0.6), so apply 60% opacity.
-        this.ctx.strokeStyle = hexToOpacityHex(this.options.axis_colour, '99');
+        this.ctx.strokeStyle = rgba(this.options.axis_colour, 60);
 
         while ((offset <= graph.x_length) || (offset <= graph.y_length)) {
-            this.ctx.strokeStyle = hexToOpacityHex(this.options.axis_colour, '99');
             let x_len = this.options.gridded ? 9 + graph.y_length : 9,
                 y_len = this.options.gridded ? 9 + graph.x_length : 9;
 
@@ -165,34 +201,60 @@ class BasicGraph {
             if (offset <= graph.y_length) {
                 this.ctx.strokeRect(graph.x_begin - 9, graph.y_end - offset, y_len, 1);
             }
-            offset += 20;
+            offset += this.gridSquareSize;
         }
     }
-}
 
-class Config {
-    constructor(config) {
-        this.config = {
-            x_label: '',
-            y_label: '',
-            tittle: 'Graph',
-            tittle_pos: 'top-center',
-            scale: 1,
-            gridded: false,
-            padding: 12,
-            axis_colour: '#5e5e5e'
-        };
+    convertDataToPositions(data) {
+        this.gridSquareSize = 50;
 
-        if ((config !== null) && (config !== undefined)) {
-            for (let setting of Object.keys(config)) {
-                this.setConfig(setting, config[setting]);
+        let positions = [];
+        
+        console.log(data);
+        
+        for (let i in data) {
+            positions.push({
+                x: this.graph.x_begin + (i * this.gridSquareSize),
+                y: this.graph.y_end - (data[i]  * this.gridSquareSize)
+            });
+        }
+        return positions;
+    }
+
+    drawData() {
+        let graph = this.graph;
+
+        for (let line of this.data) {
+            console.log(line);
+            this.ctx.beginPath();
+
+            if(parseInt(line.data[0].x) === graph.x_begin) {
+                this.ctx.moveTo(line.data[0].x, line.data[0].y);
+            } else {
+                // move to fake origin if a point does not exist which is
+                // on the Y-Axis.
+                this.ctx.moveTo(graph.x_begin, graph.y_end);
             }
-        }
-    }
+            
+            // data line
+            for(let pos of line.data) {
+                // line to next point, then a circle to represent a dot at that point
+                this.ctx.strokeStyle = rgba(line.colour, 60);
+                this.ctx.lineWidth = 4;
+                this.ctx.lineTo(pos.x, pos.y);
+            }
+            this.ctx.stroke();
 
-    setConfig(key, val) {
-        if (this.config.hasOwnProperty(key)) {
-            this.config[key] = val;
+            // data point dots
+            this.ctx.fillStyle = rgba(line.colour, 80);
+            this.ctx.strokeStyle = rgba(line.colour, 60);
+
+            for (let pos of line.data) {
+                this.ctx.beginPath();
+                this.ctx.arc(pos.x, pos.y, 4, 0, TWO_PI);
+                this.ctx.fill();
+                this.ctx.stroke();
+            }
         }
     }
 }
