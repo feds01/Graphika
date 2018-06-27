@@ -7,6 +7,9 @@
     <link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet">
     <style>
         .graph {
+            padding: 1em;
+            display: block;
+            margin: 0 auto;
             font-family: "Roboto Mono", monospace;
         }
 
@@ -22,11 +25,19 @@
     </style>
 </head>
 <body>
-<div id="w" class="graph">
-    <div class="tittle"></div>
-    <canvas width="600" height="600"></canvas>
+
+<div style="width: 100%">
+    <div id="w" class="graph" style="float: left">
+        <div class="tittle"></div>
+        <canvas width="600" height="600"></canvas>
+    </div>
+
+    <div id="g" class="graph" style="float: right;">
+        <div class="tittle"></div>
+        <canvas width="600" height="600"></canvas>
+    </div>
 </div>
-<script src="graph.js"></script>
+<script type="text/javascript" src="dist/graph.min.js"></script>
 <script>
     function getRandomInt(min, max) {
         return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -42,9 +53,9 @@
     }
 
     console.time('w');
-    let w = new BasicGraph('w', {
-            x_label: 'Hours Revised',
-            y_label: 'UCAS Points',
+    let w = new Graph('w', {
+            x_label: '',
+            y_label: '',
             tittle_pos: 'top-center',
             gridded: true
         },
@@ -61,6 +72,30 @@
             }
         ]
     );
+
+    let g = new Graph('g', {
+            x_label: 'Hours Revised',
+            y_label: 'UCAS Points',
+            tittle_pos: 'top-center',
+            gridded: true
+        },
+        [
+            {
+                label: 'student_1',
+                data: getRandomArray(11, 17, 34),
+                colour: '#FF6782'
+            },
+            {
+                label: 'student_1',
+                data: getRandomArray(11, 0, 11),
+                colour: '#009FE5'
+            }
+        ]
+    );
+
+    w.draw();
+    g.draw();
+
     console.timeEnd('w');
 </script>
 </body>
