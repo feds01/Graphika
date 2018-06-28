@@ -178,32 +178,31 @@ BasicGraph.prototype.drawAxis = function () {
 
 BasicGraph.prototype.drawData = function () {
     // TODO: programmatically calculate this value
-    let lineWidth = 2.5;
+    let lineWidth = 3;
 
     for (let line of this.data) {
-        // begin the path and move to the first point of the y-intercept
-        this.ctx.beginPath();
-        this.ctx.moveTo(line.pos_data[0].x, line.pos_data[0].y);
-
         // setup for drawing
         this.ctx.lineJoin = 'round';
         this.ctx.strokeStyle = utils.rgba(line.colour, 40);
         this.ctx.fillStyle = utils.rgba(line.colour, 40);
+        this.ctx.setLineDash(line.style === 'dashed' ? [5,5] : []);
         this.ctx.lineWidth = lineWidth;
 
-        for (let pos of line.pos_data) {
-            this.ctx.setLineDash(line.style === 'dashed' ? [5,5] : [0]);
+        for (let k = 1; k < line.pos_data.length; k++) {
             // line to next point, then a circle to represent a dot at that point
-            this.ctx.lineTo(pos.x, pos.y);
+            // separating the circle drawing path and line path is crucial, otherwise,
+            // the two will interfere with each other
+            this.ctx.beginPath();
+
+            this.ctx.moveTo(line.pos_data[k - 1].x, line.pos_data[k - 1].y);
+            this.ctx.lineTo(line.pos_data[k].x, line.pos_data[k].y);
+
             this.ctx.stroke();
+            this.ctx.closePath();
 
             // draw the point, before reset line dash, messes with circle
-            this.ctx.setLineDash([]);
-            draw.circle(this.ctx, pos.x, pos.y, lineWidth);
+            draw.circle(this.ctx, line.pos_data[k].x, line.pos_data[k].y, lineWidth);
 
-            // reset the pen back to center of the circle
-            this.ctx.moveTo(pos.x, pos.y);
-            this.ctx.stroke();
         }
     }
 };
