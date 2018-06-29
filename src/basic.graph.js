@@ -1,7 +1,10 @@
-let utils = require('./utils');
-let Scale = require('./scale');
+const utils = require('./utils');
 const arrays = require("./utils/arrays");
 const draw = require("./core/drawing");
+
+let Scale = require('./core/scale');
+let Data = require('./core/data');
+
 
 /**
  * @property x_label -> The label which is present on the x-axis of the graph
@@ -18,13 +21,14 @@ const draw = require("./core/drawing");
  * */
 function BasicGraph(id, options, data) {
     this.id = id;
-    this.data = data;
     this.options = options;
     this.graph = Object;
+    this.data = new Data(data, this.graph);
     this.canvas = undefined;
     this.ctx = undefined;
 
-    //region convert options, id, data into workable objects
+    let clazz = this;
+
     this.defaultConfig = {
         x_label: '',
         y_label: '',
@@ -39,30 +43,6 @@ function BasicGraph(id, options, data) {
         data_colour: 'rgb(156,39,176)'
     };
 
-    this.data.lengths = function () {
-        return this.map(x => x.data.length);
-    };
-
-    this.data.maxLen = function () {
-        return Math.max(...this.map(x => x.data.length));
-    };
-
-    this.data.minLen = function () {
-        return Math.min(...this.map(x => x.data.length));
-    };
-
-    this.data.max = function () {
-        return Math.max(...[].concat.apply([], this.map(x => x.data)));
-    };
-
-    this.data.min = function () {
-        return Math.min(...[].concat.apply([], this.map(x => x.data)));
-    };
-
-    this.data.colourList = function () {
-        return this.map(x => x.colour);
-    };
-
     if ((this.options !== null) && (this.options !== undefined)) {
         Object.keys(this.options).forEach((option) => {
             if (this.defaultConfig.hasOwnProperty(option)) {
@@ -73,6 +53,25 @@ function BasicGraph(id, options, data) {
 
     this.options = this.defaultConfig;
     this.elementMap = utils.findObjectElements(this.id, this.options);
+
+    // find canvas element and tittle element.
+    try {
+        this.canvas = this.elementMap.canvas;
+        this.ctx = this.canvas.getContext('2d');
+        this.textMode(16);
+
+        this.c_width = this.canvas.width;
+        this.c_height = this.canvas.height;
+
+    } catch (e) {
+        if (this.canvas === null) {
+            throw ('err: provided canvas does not exist!\n' + e);
+        }
+    }
+
+    this.graph.prototype.fontSize = function () {
+        return parseInt(clazz.ctx.font.substr(0, 2));
+    };
 }
 
 /**
@@ -121,12 +120,12 @@ BasicGraph.prototype.drawAxis = function () {
     this.textMode(14);
 
     let scale_num = {
-        x : arrays.fillRange(this.data.maxLen() + 1).map(x => x.toString()),
-        y : this.graph.scale.getTickLabels
+        x: arrays.fillRange(this.data.maxLen() + 1).map(x => x.toString()),
+        y: this.graph.scale.getTickLabels
     };
 
 
-    while ((offset <= 10) || (offset <= this.data.maxLen())) {
+    while ((offset <= this.graph.scale.getMaxTicks) || (offset <= this.data.maxLen())) {
         this.ctx.strokeStyle = utils.rgba(this.options.axis_colour, 40);
 
         let x_len = this.options.gridded ? 9 + graph.y_length : 9,
@@ -135,8 +134,7 @@ BasicGraph.prototype.drawAxis = function () {
 
         // draw the centered zero and skip drawing zero's on neighbouring ticks.
         if (this.options.zero_scale && scale_num.x[offset] === '0'
-            && scale_num.y[offset] === '0')
-        {
+            && scale_num.y[offset] === '0') {
             this.ctx.fillText('0',
                 graph.x_begin - graph.padding.val,
                 graph.y_end + graph.padding.val
@@ -159,12 +157,12 @@ BasicGraph.prototype.drawAxis = function () {
             }
         }
         // The Y-Axis drawing
-        if (offset <= 10) {
+        if (offset <= this.graph.scale.getMaxTicks) {
             let y_offset = offset * this.graph.squareSize.y;
             scale_offset = Math.ceil(this.ctx.measureText(scale_num.y[offset]).width / 1.5);
 
             draw.horizontalLine(this.ctx, graph.x_begin - 9, graph.y_end - y_offset, y_len);
-            
+
             if (!skip_text) {
                 this.ctx.fillText(scale_num.y[offset],
                     graph.x_begin - 9 - scale_offset,
@@ -180,18 +178,18 @@ BasicGraph.prototype.drawData = function () {
     // TODO: programmatically calculate this value
     let lineWidth = 3;
 
-    for (let line of this.data) {
+    for (let line of this.data.get()) {
         // setup for drawing
         this.ctx.lineJoin = 'round';
         this.ctx.strokeStyle = utils.rgba(line.colour, 40);
         this.ctx.fillStyle = utils.rgba(line.colour, 40);
-        this.ctx.setLineDash(line.style === 'dashed' ? [5,5] : []);
+        this.ctx.setLineDash(line.style === 'dashed' ? [5, 5] : []);
         this.ctx.lineWidth = lineWidth;
 
+        // line to next point, then a circle to represent a dot at that point
+        // separating the circle drawing path and line path is crucial, otherwise,
+        // the two will interfere with each other
         for (let k = 1; k < line.pos_data.length; k++) {
-            // line to next point, then a circle to represent a dot at that point
-            // separating the circle drawing path and line path is crucial, otherwise,
-            // the two will interfere with each other
             this.ctx.beginPath();
 
             this.ctx.moveTo(line.pos_data[k - 1].x, line.pos_data[k - 1].y);
@@ -229,28 +227,6 @@ BasicGraph.prototype.calculateLabelPadding = function () {
     return this.graph.padding;
 };
 
-BasicGraph.prototype.convertDataToPositions = function (data) {
-    let positions = [],
-        actualSize = 0;
-
-    // check if scale has actually been calculated
-    if (this.graph.scale === undefined) {
-        this.calculateScale();
-    }
-
-    for (let i = 0; i < data.length; i++) {
-        if (data !== 0) {
-            actualSize = (data[i] / this.graph.scale.getTickSpacing).toFixed(2);
-        }
-
-        positions.push({
-            x: Math.round(this.graph.x_begin + (i * this.graph.squareSize.x)),
-            y: Math.round(this.graph.y_end - (actualSize * this.graph.squareSize.y))
-        });
-    }
-    return positions;
-};
-
 /**
  * Creates a @see Scale() object, retrieves data max and min, then uses this
  * to determine an aesthetic scale, then uses the calculation to determine the
@@ -259,62 +235,47 @@ BasicGraph.prototype.convertDataToPositions = function (data) {
  * @since v0.0.1
  * */
 BasicGraph.prototype.calculateScale = function () {
-    let min = this.options.zero_scale ? 0 : this.data.min();
+    // update data object with graph
 
-    this.graph.scale = new Scale(min, this.data.max());
+    let min = this.options.zero_scale ? 0 : this.data.min();
+    let max = this.data.max();
+
+    this.graph.scale = new Scale({
+        max: max,
+        min: min,
+        maxTicks: 10
+    });
 };
 
 BasicGraph.prototype.draw = function () {
-    let clazz = this;
+    const PADDING = this.options.padding;
 
-    //region setup canvas and tittle
-    try {
-        this.canvas = this.elementMap.canvas;
-        this.ctx = this.canvas.getContext('2d');
-        this.textMode(16);
+    this.graph.squareSize = {x: 0, y: 0};
+    this.graph.padding = {
+        top: PADDING,
+        left: undefined,
+        right: PADDING,
+        bottom: undefined,
+        val: PADDING
+    };
 
-        this.c_width = this.canvas.width;
-        this.c_height = this.canvas.height;
+    this.calculateScale();
+    // left and bottom need to be calculated & and temporarily use padding_map
+    // for cross-referencing
+    let padding_map = this.calculateLabelPadding();
 
-    } catch (e) {
-        if (this.canvas === null) {
-            throw ('err: provided canvas does not exist!\n' + e);
-        }
-    } finally {
-        const PADDING = this.options.padding;
+    let y_length = this.c_height - padding_map.top - padding_map.bottom - this.label_size,
+        x_length = this.c_width - padding_map.right - padding_map.left - this.label_size;
 
-        this.graph.squareSize = {x: 0, y: 0};
+    // calculate the each axis square size.
+    this.graph.squareSize.x = x_length / this.data.maxLen();
+    this.graph.squareSize.y = y_length / this.graph.scale.getMaxTicks;
 
-        this.graph.padding = {
-                top: PADDING,
-                left: undefined,
-                right: PADDING,
-                bottom: undefined,
-                val: PADDING
-        };
-
-        this.graph.prototype.fontSize = function () {
-            return parseInt(clazz.ctx.font.substr(0, 2));
-        };
-
-        this.calculateScale();
-        // left and bottom need to be calculated & and temporarily use padding_map
-        // for cross-referencing
-        let padding_map = this.calculateLabelPadding();
-
-        let y_length = this.c_height - padding_map.top - padding_map.bottom - this.label_size,
-            x_length = this.c_width - padding_map.right - padding_map.left - this.label_size;
-        //
-        // // square size normalisation
-        // this.normalise({val: x_length, which: 'x'}, this.data.maxLen());
-        // this.normalise({val: y_length, which: 'y'}, 10);
-        this.graph.squareSize.x = x_length / this.data.maxLen();
-        this.graph.squareSize.y = y_length / 10;
-
-        this.graph = Object.assign({},
-            {squareSize: this.graph.squareSize},
-            {padding: this.graph.padding},
-            {
+    // concatenate all previous calculations with current ones.
+    this.graph = Object.assign({},
+        {squareSize: this.graph.squareSize},
+        {padding: this.graph.padding},
+        {
             x_begin: padding_map.left + this.label_size,
             y_begin: padding_map.top,
 
@@ -326,17 +287,11 @@ BasicGraph.prototype.draw = function () {
 
             x_center: padding_map.left + this.label_size + x_length / 2,
             y_center: this.label_size + y_length / 2,
-         }
-         );
-    }
-    //endregion
-    this.data.toPos = function () {
-        for (let entry of this) {
-            entry.pos_data = clazz.convertDataToPositions(entry.data);
+            scale: this.graph.scale
         }
-    };
+    );
 
-    this.data.toPos();
+    this.data.toPos(this.graph);
     this.drawLabels();
     this.drawAxis();
     this.drawData();
