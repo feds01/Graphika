@@ -19,7 +19,9 @@ gulp.task('js', () => {
         .pipe(gulp.dest('./dist'));
 });
 
-
-gulp.task('default', () => {
+gulp.task('watch', () => {
     gulp.watch('src/**/*.js', gulp.series(['js']));
 });
+
+
+gulp.task('default', gulp.series(['js', 'watch']));
