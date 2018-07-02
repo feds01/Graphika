@@ -1,9 +1,10 @@
 const utils = require('./utils');
 const arrays = require("./utils/arrays");
 const draw = require("./core/drawing");
+const interpolation = require('./core/interpolation');
 
 let Scale = require('./core/scale');
-let Data = require('./core/data');
+let data = require('./core/data');
 
 
 /**
@@ -19,11 +20,11 @@ let Data = require('./core/data');
  *
  * @property gridded -> if true, the graph will be drawn with lines at the intervals on the graph.
  * */
-function BasicGraph(id, options, data) {
+function BasicGraph(id, options, _data) {
     this.id = id;
     this.options = options;
     this.graph = Object;
-    this.data = new Data(data, this.graph);
+    this.data = new data.Data(_data, this.graph);
     this.canvas = undefined;
     this.ctx = undefined;
 
@@ -186,21 +187,56 @@ BasicGraph.prototype.drawData = function () {
         this.ctx.setLineDash(line.style === 'dashed' ? [5, 5] : []);
         this.ctx.lineWidth = lineWidth;
 
+        // variables for cubic interpolation and fancy-pansy curves.
+        let previousPoint = {},
+            currentPoint = {},
+            nextPoint = {};
+
         // line to next point, then a circle to represent a dot at that point
         // separating the circle drawing path and line path is crucial, otherwise,
         // the two will interfere with each other
-        for (let k = 1; k < line.pos_data.length; k++) {
+
+        for (let k = 0; k < line.pos_data.length; k++) {
+            previousPoint = data.pointToPosition(data.previousEntry(k, line.pos_data), this.graph);
+            currentPoint = data.pointToPosition(line.pos_data[k], this.graph);
+            nextPoint = data.nextEntry(k, line.pos_data);
+
             this.ctx.beginPath();
+            this.ctx.moveTo(previousPoint.x_g, previousPoint.y_g);
 
-            this.ctx.moveTo(line.pos_data[k - 1].x, line.pos_data[k - 1].y);
-            this.ctx.lineTo(line.pos_data[k].x, line.pos_data[k].y);
+            if(line.pathType === 'cubic') {
 
+            } else {
+                this.ctx.lineTo(currentPoint.x_g, currentPoint.y_g);
+            }
+
+            // let controlPoints = interpolation.splineCurve(
+            //     this.getPreviousPoint(k, line.pos_data), line.pos_data[k],
+            //     this.getNextPoint(k, line.pos_data), 0.5
+            // );
+            //
+            // let prevControlPoint = interpolation.splineCurve(
+            //         this.getPreviousPoint(k - 1, line.pos_data),
+            //         this.getPreviousPoint(k, line.pos_data),
+            //         this.getNextPoint(k - 1, line.pos_data), 0.5
+            // );
+
+            // convert to usable points
+            // controlPoints.previous = Data.pointToPosition(controlPoints.previous, this.graph);
+            // controlPoints.next = Data.pointToPosition(controlPoints.next, this.graph);
+            // prevControlPoint.previous = Data.pointToPosition(prevControlPoint.previous, this.graph);
+            // prevControlPoint.next = Data.pointToPosition(prevControlPoint.next, this.graph);
+            //
+            // this.ctx.bezierCurveTo(
+            //     prevControlPoint.next.x, prevControlPoint.next.y,
+            //     controlPoints.next.x, controlPoints.next.y,
+            //     currentPoint.x, currentPoint.y
+            // );
             this.ctx.stroke();
             this.ctx.closePath();
 
             // draw the point, before reset line dash, messes with circle
-            draw.circle(this.ctx, line.pos_data[k].x, line.pos_data[k].y, lineWidth);
-
+            draw.circle(this.ctx, currentPoint.x_g, currentPoint.y_g, lineWidth);
         }
     }
 };
@@ -291,7 +327,7 @@ BasicGraph.prototype.draw = function () {
         }
     );
 
-    this.data.toPos(this.graph);
+    this.data.toPos();
     this.drawLabels();
     this.drawAxis();
     this.drawData();
