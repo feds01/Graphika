@@ -29,7 +29,7 @@
 <div style="width: 100%">
     <div id="w" class="graph" style="float: left">
         <div class="tittle"></div>
-        <canvas width="600" height="600"></canvas>
+        <canvas width="800" height="600"></canvas>
     </div>
 
     <div id="g" class="graph" style="float: right;">
@@ -37,6 +37,7 @@
         <canvas width="600" height="600"></canvas>
     </div>
 </div>
+
 <script type="text/javascript" src="dist/graph.min.js"></script>
 <script>
     function getRandomInt(min, max) {
@@ -52,6 +53,11 @@
         return array;
     }
 
+    let w_data = {
+        1: getRandomArray(16, 0, 120),
+        2: getRandomArray(16, 0, 450)
+    };
+
     console.time('w');
     let w = new Graph('w', {
             x_label: '',
@@ -61,17 +67,21 @@
         },
         [
             {
+                style: 'dashed',
                 label: 'student_1',
-                data: getRandomArray(11, 0, 11),
+                data: w_data['1'],
                 colour: '#FF6782'
             },
             {
                 label: 'student_1',
-                data: getRandomArray(11, 0, 11),
+                data: w_data['2'],
                 colour: '#009FE5'
             }
         ]
     );
+    w.draw();
+    console.timeEnd('w');
+
 
     let g = new Graph('g', {
             x_label: 'Hours Revised',
@@ -82,21 +92,19 @@
         [
             {
                 label: 'student_1',
-                data: getRandomArray(11, 17, 34),
+                data: getRandomArray(11, 17, 134),
                 colour: '#FF6782'
             },
             {
                 label: 'student_1',
-                data: getRandomArray(11, 0, 11),
+                data: getRandomArray(11, 0, 200),
                 colour: '#009FE5'
             }
         ]
     );
 
-    w.draw();
     g.draw();
 
-    console.timeEnd('w');
 </script>
 </body>
 </html>
