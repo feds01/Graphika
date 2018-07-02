@@ -1,5 +1,10 @@
-let utils = require('./utils');
-let Scale = require('./scale');
+const utils = require('./utils');
+const arrays = require("./utils/arrays");
+const draw = require("./core/drawing");
+
+let Scale = require('./core/scale');
+let Data = require('./core/data');
+
 
 /**
  * @property x_label -> The label which is present on the x-axis of the graph
@@ -16,14 +21,14 @@ let Scale = require('./scale');
  * */
 function BasicGraph(id, options, data) {
     this.id = id;
-    this.data = data;
     this.options = options;
     this.graph = Object;
-    this.gridSquareSize = null;
+    this.data = new Data(data, this.graph);
     this.canvas = undefined;
     this.ctx = undefined;
 
-    //region convert options, id, data into workable objects
+    let clazz = this;
+
     this.defaultConfig = {
         x_label: '',
         y_label: '',
@@ -37,51 +42,37 @@ function BasicGraph(id, options, data) {
         axis_colour: 'rgb(94,94,94)',
         data_colour: 'rgb(156,39,176)'
     };
-}
 
-BasicGraph.prototype.findElements = function () {
-    let element = document.getElementById(this.id);
-    let elementMap = {
-        canvas: undefined,
-        tittle: undefined
-    };
-
-    for (let childNode of element.childNodes) {
-        const tagName = childNode.nodeName.toLowerCase();
-        if (tagName === 'canvas') {
-            elementMap.canvas = childNode;
-
-        } else if (tagName === 'div') {
-            if (childNode.classList.contains('tittle')) {
-                elementMap.tittle = childNode;
+    if ((this.options !== null) && (this.options !== undefined)) {
+        Object.keys(this.options).forEach((option) => {
+            if (this.defaultConfig.hasOwnProperty(option)) {
+                this.defaultConfig[option] = this.options[option];
             }
+        });
+    }
+
+    this.options = this.defaultConfig;
+    this.elementMap = utils.findObjectElements(this.id, this.options);
+
+    // find canvas element and tittle element.
+    try {
+        this.canvas = this.elementMap.canvas;
+        this.ctx = this.canvas.getContext('2d');
+        this.textMode(16);
+
+        this.c_width = this.canvas.width;
+        this.c_height = this.canvas.height;
+
+    } catch (e) {
+        if (this.canvas === null) {
+            throw ('err: provided canvas does not exist!\n' + e);
         }
     }
 
-    // DOM modifications
-    if (elementMap.canvas !== null) {
-        element.style.width = elementMap.canvas.width.toString() + 'px';
-    } else {
-        // TODO: create the canvas element ?, same for tittle ?
-        throw 'canvas element does not exist'
-    }
-
-    if (elementMap.tittle !== null) {
-        switch (this.options.tittle_pos) {
-            case 'top-left':
-                elementMap.tittle.style.textAlign = 'left';
-                break;
-            case 'top-center':
-                elementMap.tittle.style.textAlign = 'center';
-                break;
-            case 'top-right':
-                elementMap.tittle.style.textAlign = 'right';
-        }
-        elementMap.tittle.innerHTML = this.options.tittle;
-    }
-    return elementMap;
-};
-
+    this.graph.prototype.fontSize = function () {
+        return parseInt(clazz.ctx.font.substr(0, 2));
+    };
+}
 
 /**
  * This simply switches the canvas context to be text mode ready,
@@ -90,7 +81,7 @@ BasicGraph.prototype.findElements = function () {
  *
  * @since v0.0.1
  * */
-BasicGraph.prototype.textMode = function(size) {
+BasicGraph.prototype.textMode = function (size) {
     this.ctx.strokeStyle = this.options.axis_colour;
     this.ctx.textAlign = 'center';
     this.ctx.font = `${size}px "Robot Mono", monospace`;
@@ -116,94 +107,124 @@ BasicGraph.prototype.drawLabels = function () {
 
 BasicGraph.prototype.drawAxis = function () {
     let graph = this.graph,
-        offset = 0;
+        offset = 0,
+        scale_offset = undefined;
 
+    this.ctx.strokeStyle = utils.rgba(this.options.axis_colour, 60);
     // the y-limit is the y coordinate up to where everything should be drawn
-    this.ctx.strokeRect(graph.x_begin, 0, 1, graph.y_length);
-    this.ctx.strokeRect(graph.x_begin, graph.y_end, graph.x_length, 1);
+    draw.verticalLine(this.ctx, graph.x_begin, graph.y_end, -graph.y_length);
+    draw.horizontalLine(this.ctx, graph.x_begin, graph.y_end, graph.x_length);
 
     // change the stroke style to rgba(colour, 0.6), so apply 60% opacity.
-    this.ctx.strokeStyle = utils.rgba(this.options.axis_colour, 60);
     this.ctx.textBaseline = 'middle';
     this.textMode(14);
 
-    while ((offset <= graph.x_length) || (offset <= graph.y_length)) {
+    let scale_num = {
+        x: arrays.fillRange(this.data.maxLen() + 1).map(x => x.toString()),
+        y: this.graph.scale.getTickLabels
+    };
+
+
+    while ((offset <= this.graph.scale.getMaxTicks) || (offset <= this.data.maxLen())) {
+        this.ctx.strokeStyle = utils.rgba(this.options.axis_colour, 40);
+
         let x_len = this.options.gridded ? 9 + graph.y_length : 9,
             y_len = this.options.gridded ? 9 + graph.x_length : 9,
-            tick_len = Math.round(offset / this.gridSquareSize);
+            skip_text = false;
 
-        if (offset <= graph.x_length) {
-            this.ctx.strokeRect(graph.x_begin + offset, graph.y_end + 9, 1, -x_len);
+        // draw the centered zero and skip drawing zero's on neighbouring ticks.
+        if (this.options.zero_scale && scale_num.x[offset] === '0'
+            && scale_num.y[offset] === '0') {
+            this.ctx.fillText('0',
+                graph.x_begin - graph.padding.val,
+                graph.y_end + graph.padding.val
+            );
+            skip_text = true;
         }
 
-        if (offset <= graph.y_length) {
-            let scale_num = (tick_len * graph.scale.tickSpacing).toString();
-            let scale_offset = Math.ceil(this.ctx.measureText(scale_num).width / 1.5);
+        // The X-Axis drawing
+        if (offset <= this.data.maxLen()) {
+            let x_offset = offset * this.graph.squareSize.x;
+            scale_offset = graph.fontSize() / 2;
 
-            this.ctx.strokeRect(graph.x_begin - 9, graph.y_end - offset, y_len, 1);
-            this.ctx.fillText(scale_num, graph.x_begin - 9 - scale_offset, graph.y_end - offset);
+            draw.verticalLine(this.ctx, graph.x_begin + x_offset, graph.y_end + 9, -x_len);
+
+            if (!skip_text) {
+                this.ctx.fillText(scale_num.x[offset],
+                    graph.x_begin + x_offset,
+                    graph.y_end + 9 + scale_offset
+                );
+            }
         }
-        offset += this.gridSquareSize;
+        // The Y-Axis drawing
+        if (offset <= this.graph.scale.getMaxTicks) {
+            let y_offset = offset * this.graph.squareSize.y;
+            scale_offset = Math.ceil(this.ctx.measureText(scale_num.y[offset]).width / 1.5);
+
+            draw.horizontalLine(this.ctx, graph.x_begin - 9, graph.y_end - y_offset, y_len);
+
+            if (!skip_text) {
+                this.ctx.fillText(scale_num.y[offset],
+                    graph.x_begin - 9 - scale_offset,
+                    graph.y_end - y_offset
+                );
+            }
+        }
+        offset++;
     }
 };
 
 BasicGraph.prototype.drawData = function () {
-    let graph = this.graph;
+    // TODO: programmatically calculate this value
+    let lineWidth = 3;
 
-    for (let line of this.data) {
-        this.ctx.beginPath();
+    for (let line of this.data.get()) {
+        // setup for drawing
+        this.ctx.lineJoin = 'round';
+        this.ctx.strokeStyle = utils.rgba(line.colour, 40);
+        this.ctx.fillStyle = utils.rgba(line.colour, 40);
+        this.ctx.setLineDash(line.style === 'dashed' ? [5, 5] : []);
+        this.ctx.lineWidth = lineWidth;
 
-        if (parseInt(line.pos_data[0].x) === graph.x_begin) {
-            this.ctx.moveTo(line.pos_data[0].x, line.pos_data[0].y);
-        } else {
-            // move to fake origin if a point does not exist which is
-            // on the Y-Axis.
-            this.ctx.moveTo(graph.x_begin, graph.y_end);
-        }
-
-        // data line
-        for (let pos of line.pos_data) {
-            // line to next point, then a circle to represent a dot at that point
-            this.ctx.strokeStyle = utils.rgba(line.colour, 60);
-            this.ctx.lineWidth = 4;
-            this.ctx.lineTo(pos.x, pos.y);
-        }
-        this.ctx.stroke();
-
-        // data point dots
-        this.ctx.fillStyle = utils.rgba(line.colour, 80);
-        this.ctx.strokeStyle = utils.rgba(line.colour, 60);
-
-        for (let pos of line.pos_data) {
+        // line to next point, then a circle to represent a dot at that point
+        // separating the circle drawing path and line path is crucial, otherwise,
+        // the two will interfere with each other
+        for (let k = 1; k < line.pos_data.length; k++) {
             this.ctx.beginPath();
-            this.ctx.arc(pos.x, pos.y, 4, 0, utils.TWO_PI);
-            this.ctx.fill();
+
+            this.ctx.moveTo(line.pos_data[k - 1].x, line.pos_data[k - 1].y);
+            this.ctx.lineTo(line.pos_data[k].x, line.pos_data[k].y);
+
             this.ctx.stroke();
+            this.ctx.closePath();
+
+            // draw the point, before reset line dash, messes with circle
+            draw.circle(this.ctx, line.pos_data[k].x, line.pos_data[k].y, lineWidth);
+
         }
     }
 };
 
-BasicGraph.prototype.convertDataToPositions = function (data) {
-    let positions = [],
-        actualSize = 0;
+BasicGraph.prototype.calculateLabelPadding = function () {
+    const PADDING = this.options.padding;
 
-    // check if scale has actually been calculated
-    if(this.graph.scale === undefined) {
-        this.calculateScale();
+    let longestItem = arrays.longest(this.graph.scale.getTickLabels);
+
+    // if no labels provided, they are disabled as in no room is provided
+    // for them to be drawn.
+    if (this.options.y_label.toString() !== "" &&
+        this.options.x_label.toString() !== "") {
+        this.label_size = this.graph.fontSize();
+
+    } else {
+        this.label_size = 0;
     }
 
-    for (let i = 0; i < data.length; i++) {
+    this.textMode(14);
+    this.graph.padding.left = PADDING + this.ctx.measureText(longestItem).width + this.label_size;
+    this.graph.padding.bottom = PADDING + this.label_size + 14;
 
-        if(data !== 0) {
-            actualSize = (data[i] / this.graph.scale.tickSpacing).toFixed(2);
-        }
-
-        positions.push({
-            x: Math.round(this.graph.x_begin + (i * this.gridSquareSize)),
-            y: Math.round(this.graph.y_end - (actualSize * this.gridSquareSize))
-        });
-    }
-    return positions;
+    return this.graph.padding;
 };
 
 /**
@@ -213,111 +234,64 @@ BasicGraph.prototype.convertDataToPositions = function (data) {
  *
  * @since v0.0.1
  * */
-BasicGraph.prototype.calculateScale = function() {
-    let min = this.options.zero_scale ? 0 : this.data.min();
+BasicGraph.prototype.calculateScale = function () {
+    // update data object with graph
 
-    this.graph.scale = new Scale(min, this.data.max());
+    let min = this.options.zero_scale ? 0 : this.data.min();
+    let max = this.data.max();
+
+    this.graph.scale = new Scale({
+        max: max,
+        min: min,
+        maxTicks: 10
+    });
 };
 
 BasicGraph.prototype.draw = function () {
-    let clazz = this;
+    const PADDING = this.options.padding;
 
-    if ((this.options !== null) && (this.options !== undefined)) {
+    this.graph.squareSize = {x: 0, y: 0};
+    this.graph.padding = {
+        top: PADDING,
+        left: undefined,
+        right: PADDING,
+        bottom: undefined,
+        val: PADDING
+    };
 
-        Object.keys(this.options).forEach((option) => {
-            if (this.defaultConfig.hasOwnProperty(option)) {
-                this.defaultConfig[option] = this.options[option];
-            }
-        });
-    }
+    this.calculateScale();
+    // left and bottom need to be calculated & and temporarily use padding_map
+    // for cross-referencing
+    let padding_map = this.calculateLabelPadding();
 
-    this.options = this.defaultConfig;
-    this.elementMap = this.findElements();
-    //endregion
-    //region setup canvas and tittle
-    try {
-        this.canvas = this.elementMap.canvas;
-        this.ctx = this.canvas.getContext('2d');
-        this.textMode(16);
+    let y_length = this.c_height - padding_map.top - padding_map.bottom - this.label_size,
+        x_length = this.c_width - padding_map.right - padding_map.left - this.label_size;
 
-        this.c_width = this.canvas.width;
-        this.c_height = this.canvas.height;
+    // calculate the each axis square size.
+    this.graph.squareSize.x = x_length / this.data.maxLen();
+    this.graph.squareSize.y = y_length / this.graph.scale.getMaxTicks;
 
-    } catch (e) {
-        if (this.canvas === null) {
-            throw ('err: provided canvas does not exist!\n' + e);
-        }
-    } finally {
-        this.graph.prototype.fontSize = function () {
-            return parseInt(clazz.ctx.font.substr(0, 2));
-        };
-
-        let x_padding;
-
-        // if no labels provided, they are disabled as in no room is provided
-        // for them to be drawn.
-        if (this.options.y_label.toString() !== "" &&
-            this.options.x_label.toString() !== "")
+    // concatenate all previous calculations with current ones.
+    this.graph = Object.assign({},
+        {squareSize: this.graph.squareSize},
+        {padding: this.graph.padding},
         {
-            this.label_size = this.graph.fontSize();
-            x_padding = Math.round(this.options.padding * 2.5);
+            x_begin: padding_map.left + this.label_size,
+            y_begin: padding_map.top,
 
-        } else {
-            this.label_size = 0;
-            x_padding = this.options.padding * 2;
+            x_end: this.c_width - padding_map.right,
+            y_end: this.c_height - padding_map.bottom,
+
+            x_length: x_length,
+            y_length: y_length,
+
+            x_center: padding_map.left + this.label_size + x_length / 2,
+            y_center: this.label_size + y_length / 2,
+            scale: this.graph.scale
         }
+    );
 
-        let padding = this.options.padding,
-            y_limit = this.c_height,
-            y_end = y_limit - (padding + this.label_size),
-            x_size = this.c_width - (x_padding + this.label_size);
-
-        this.graph = {
-            x_begin: x_padding + this.label_size,
-            y_begin: 0,
-            x_end: this.c_width,
-            y_end: y_end,
-            x_length: x_size,
-            y_length: y_end,
-            x_center: x_padding + this.label_size + x_size / 2,
-            y_center: this.label_size + y_end / 2,
-        };
-    }
-    //endregion
-
-    this.data.lengths = function () {
-        return this.map(x => x.data.length);
-    };
-
-    this.data.maxLen = function () {
-        return Math.max(...this.map(x => x.data.length));
-    };
-
-    this.data.minLen = function () {
-        return Math.min(...this.map(x => x.data.length));
-    };
-
-    this.data.max = function () {
-        return Math.max(...[].concat.apply([], this.map(x => x.data)));
-    };
-
-    this.data.min = function () {
-        return Math.min(...[].concat.apply([], this.map(x => x.data)));
-    };
-
-    this.data.colourList = function () {
-        return this.map(x => x.colour);
-    };
-
-    this.data.toPos = function () {
-        clazz.gridSquareSize = clazz.graph.x_length / this.maxLen();
-
-        for (let entry of this) {
-            entry.pos_data = clazz.convertDataToPositions(entry.data);
-        }
-    };
-    this.data.toPos(); // convert data to positions
-
+    this.data.toPos(this.graph);
     this.drawLabels();
     this.drawAxis();
     this.drawData();
