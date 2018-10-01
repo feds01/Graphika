@@ -54,8 +54,8 @@
     }
 
     let w_data = {
-        1: getRandomArray(16, 0, 120),
-        2: getRandomArray(16, 0, 450)
+        1: getRandomArray(200, 0, 20),
+        2: getRandomArray(200, 430, 103)
     };
 
     console.time('w');
@@ -67,10 +67,10 @@
         },
         [
             {
-                style: 'dashed',
+                // style: 'dashed',
                 label: 'student_1',
                 data: w_data['1'],
-                colour: '#FF6782'
+                colour: '#FF6782',
             },
             {
                 label: 'student_1',
@@ -91,6 +91,7 @@
         },
         [
             {
+                style: "dashed",
                 label: 'student_1',
                 data: getRandomArray(11, 17, 134),
                 colour: '#FF6782'
@@ -102,9 +103,7 @@
             }
         ]
     );
-
     g.draw();
-
 </script>
 </body>
 </html>

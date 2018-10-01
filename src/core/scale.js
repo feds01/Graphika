@@ -38,7 +38,7 @@ class Scale {
 
         // fill array with labels.
         this.tickLabels = arrays.fillRange(this.maxTicks + 1)
-            .map(x => (x * this.tickStep).toString());
+            .map(x => (x * this.tickStep));
     }
 
     // setMaxTicks(val) {

@@ -14,5 +14,21 @@ module.exports = {
         return arr.reduce((a, b) => {
            return a.length > b.length ? a : b;
         });
+    },
+
+    /*
+    * Get the previous element of an array, this method is created for safety, if the
+    * given index is zero or less than zero, the function will return the element at zero
+    * rather than undefined. * */
+    getPrevious: function(index, data) {
+        return index <= 0 ? data[0] : data[index - 1];
+    },
+
+    /*
+    * Get the next element of an array, this method is also a safety wrapper function, if the
+    * given index is equal to the length of the array - 1, or larger, return the last element
+     * of the array, rather than undefined. * */
+    getNext: function(index, data) {
+        return index >= data.length - 1 ? data[data.length - 1] : data[index + 1];
     }
 };
