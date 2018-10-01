@@ -13,5 +13,8 @@ module.exports = {
     lineWidth: 3,
 
     // this is the maximum amount of ticks which are available on the x-axis
-    xTicks: 20
+    xTicks: 20,
+
+    // this is the maximum amount of ticks which are available on the y-axos
+    yTicks: 10
 };

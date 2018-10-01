@@ -8,7 +8,6 @@ let Scale = require('./core/scale');
 let data = require('./core/data');
 
 
-
 /**
  * @property x_label -> The label which is present on the x-axis of the graph
  * @property y_label -> The label which is present on the y-axis of the graph
@@ -60,7 +59,7 @@ function BasicGraph(id, options, _data) {
     try {
         this.canvas = this.elementMap.canvas;
         this.ctx = this.canvas.getContext('2d');
-        this.textMode(16);
+        draw.toTextMode(this.ctx, 16, this.options.axis_colour);
 
         this.c_width = this.canvas.width;
         this.c_height = this.canvas.height;
@@ -75,19 +74,6 @@ function BasicGraph(id, options, _data) {
         return parseInt(clazz.ctx.font.substr(0, 2));
     };
 }
-
-/**
- * This simply switches the canvas context to be text mode ready,
- * set the font size and style, set text alignment to middle, and
- * change stroke colour to the axis' colour.
- *
- * @since v0.0.1
- * */
-BasicGraph.prototype.textMode = function (size) {
-    this.ctx.strokeStyle = this.options.axis_colour;
-    this.ctx.textAlign = 'center';
-    this.ctx.font = `${size}px "Robot Mono", monospace`;
-};
 
 BasicGraph.prototype.drawLabels = function () {
     // don't draw if no labels are given
@@ -108,39 +94,39 @@ BasicGraph.prototype.drawLabels = function () {
 };
 
 BasicGraph.prototype.drawAxis = function () {
-    let graph = this.graph,
-        offset = 0,
-        scale_offset = undefined;
+    let offset = 0;
 
     this.ctx.strokeStyle = utils.rgba(this.options.axis_colour, 60);
     // the y-limit is the y coordinate up to where everything should be drawn
-    draw.verticalLine(this.ctx, graph.x_begin, graph.y_end, -graph.y_length);
-    draw.horizontalLine(this.ctx, graph.x_begin, graph.y_end, graph.x_length);
+    draw.verticalLine(this.ctx, this.graph.x_begin, this.graph.y_end, -this.graph.y_length);
+    draw.horizontalLine(this.ctx, this.graph.x_begin, this.graph.y_end, this.graph.x_length);
 
     // change the stroke style to rgba(colour, 0.6), so apply 60% opacity.
     this.ctx.textBaseline = 'middle';
-    this.textMode(14);
+    draw.toTextMode(this.ctx, 14, this.options.axis_colour);
 
     this.scale_num = {
-        x: arrays.fillRange(this.max_xTicks + 1).map(x => Math.floor(this.data.maxLen() * (x / this.max_xTicks))),
+        x: arrays.fillRange(this.max_xTicks + 1).map
+        (
+            x => Math.floor(this.data.maxLen() * (x / this.max_xTicks))
+        ),
         y: this.graph.scale.getTickLabels
     };
-
-
 
     while ((offset <= this.graph.scale.getMaxTicks) || (offset <= this.data.maxLen())) {
         this.ctx.strokeStyle = utils.rgba(this.options.axis_colour, 40);
 
-        let x_len = this.options.gridded ? 9 + graph.y_length : 9,
-            y_len = this.options.gridded ? 9 + graph.x_length : 9,
-            skip_text = false;
+        let x_len = this.options.gridded ? 9 + this.graph.y_length : 9,
+            y_len = this.options.gridded ? 9 + this.graph.x_length : 9,
+            skip_text = false,
+            scale_offset = 0;
 
         // draw the centered zero and skip drawing zero's on neighbouring ticks.
         if (this.options.zero_scale && this.scale_num.x[offset] === '0'
             && this.scale_num.y[offset] === '0') {
             this.ctx.fillText('0',
-                graph.x_begin - graph.padding.val,
-                graph.y_end + graph.padding.val
+                this.graph.x_begin - this.graph.padding.val,
+                this.graph.y_end + this.graph.padding.val
             );
             skip_text = true;
         }
@@ -148,14 +134,14 @@ BasicGraph.prototype.drawAxis = function () {
         // The X-Axis drawing
         if (offset <= this.max_xTicks) {
             let x_offset = offset * this.graph.squareSize.x;
-            scale_offset = graph.fontSize() / 2;
+            scale_offset = this.graph.fontSize / 2;
 
-            draw.verticalLine(this.ctx, graph.x_begin + x_offset, graph.y_end + 9, -x_len);
+            draw.verticalLine(this.ctx, this.graph.x_begin + x_offset, this.graph.y_end + 9, -x_len);
 
             if (!skip_text) {
                 this.ctx.fillText(this.scale_num.x[offset].toString(),
-                    graph.x_begin + x_offset,
-                    graph.y_end + 9 + scale_offset
+                    this.graph.x_begin + x_offset,
+                    this.graph.y_end + 9 + scale_offset
                 );
             }
         }
@@ -164,12 +150,16 @@ BasicGraph.prototype.drawAxis = function () {
             let y_offset = offset * this.graph.squareSize.y;
             scale_offset = Math.ceil(this.ctx.measureText(this.scale_num.y[offset]).width / 1.5);
 
-            draw.horizontalLine(this.ctx, graph.x_begin - 9, graph.y_end - y_offset, y_len);
+            draw.horizontalLine(this.ctx,
+                this.graph.x_begin - 9,
+                this.graph.y_end - y_offset,
+                y_len
+            );
 
             if (!skip_text) {
                 this.ctx.fillText(this.scale_num.y[offset].toString(),
-                    graph.x_begin - 9 - scale_offset,
-                    graph.y_end - y_offset
+                    this.graph.x_begin - 9 - scale_offset,
+                    this.graph.y_end - y_offset
                 );
             }
         }
@@ -187,7 +177,10 @@ BasicGraph.prototype.drawData = function () {
 
     for (let line of this.data.get()) {
         // alter the line width if there are more data points than maximum ticks on graph.
-        if(this.data.maxLen() > config.xTicks)
+        // reduce it to one pixel.
+        if (this.data.maxLen() > config.xTicks) {
+            lineWidth = 2;
+        }
 
         // setup for drawing
         this.ctx.lineJoin = 'round';
@@ -258,7 +251,7 @@ BasicGraph.prototype.drawData = function () {
             this.ctx.closePath();
 
             // draw the point on square borders only, before reset line dash, messes with circle,;
-            if(this.scale_num.x.indexOf(k) > -1) {
+            if (this.scale_num.x.indexOf(k) > -1) {
                 draw.circle(this.ctx, currentPoint.graph.x, currentPoint.graph.y, lineWidth);
             }
         }
@@ -266,8 +259,6 @@ BasicGraph.prototype.drawData = function () {
 };
 
 BasicGraph.prototype.calculateLabelPadding = function () {
-    const PADDING = this.options.padding;
-
     let longestItem = arrays.longest(this.graph.scale.getTickLabels);
 
     // if no labels provided, they are disabled as in no room is provided
@@ -280,32 +271,13 @@ BasicGraph.prototype.calculateLabelPadding = function () {
         this.label_size = 0;
     }
 
-    this.textMode(14);
-    this.graph.padding.left = PADDING + this.ctx.measureText(longestItem).width + this.label_size;
-    this.graph.padding.bottom = PADDING + this.label_size + 14;
+    draw.toTextMode(this.ctx, 14, this.options.axis_colour);
+    this.graph.padding.left = this.options.padding + this.ctx.measureText(longestItem).width + this.label_size;
+    this.graph.padding.bottom = this.options.padding + this.label_size + 14;
 
     return this.graph.padding;
 };
 
-/**
- * Creates a @see Scale() object, retrieves data max and min, then uses this
- * to determine an aesthetic scale, then uses the calculation to determine the
- * value per grid y-stroke. Currently, the calculation is done for Y-Axis.
- *
- * @since v0.0.1
- * */
-BasicGraph.prototype.calculateScale = function () {
-    // update data object with graph
-
-    let min = this.options.zero_scale ? 0 : this.data.min();
-    let max = this.data.max();
-
-    this.graph.scale = new Scale({
-        max: max,
-        min: min,
-        maxTicks: 10
-    });
-};
 
 BasicGraph.prototype.draw = function () {
     const PADDING = this.options.padding;
@@ -319,7 +291,12 @@ BasicGraph.prototype.draw = function () {
         val: PADDING
     };
 
-    this.calculateScale();
+    this.graph.scale = new Scale({
+        max: this.data.max(),
+        min: this.options.zero_scale ? 0 : this.data.min(),
+        maxTicks: config.yTicks
+    });
+
     // left and bottom need to be calculated & and temporarily use padding_map
     // for cross-referencing
     let padding_map = this.calculateLabelPadding();
