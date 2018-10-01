@@ -33,37 +33,29 @@ class Data {
 
     toPos() {
         for (let entry = 0; entry < this.data.length; entry++) {
-            let positions = [];
+            this.data[entry].pos_data  = [];
 
-            for(let i = 0; i < this.data[entry].data.length; i++) {
-                positions.push({
-                    x: i, y: this.data[entry].data[i]
+            for(let idx = 0; idx < this.data[entry].data.length; idx++) {
+                this.data[entry].pos_data.push({
+                    x: idx,
+                    y: this.data[entry].data[idx]
                 });
             }
-            this.data[entry].pos_data = positions;
         }
     };
 }
 
 module.exports = {
-    Data: Data,
+    Data : Data,
 
-    previousEntry: function (index, data) {
-        return  index <= 0 ? data[0] : data[index - 1];
-    },
+    pointToPosition : function (point, graph) {
+        let actualSize = point.y  / graph.scale.getTickStep;
+        let actualSquareSize = graph.x_length / graph.data.maxLen() ;
 
-    nextEntry: function (index, data) {
-        return  index >= data.length - 1 ? data[data.length - 1] : data[index + 1];
-    },
-
-    /*
-    * Quick function to convert a @see Point() {x,y} to a graph location. * */
-    pointToPosition: function (point, graph) {
-        let actualSize = parseFloat((point.y / graph.scale.getTickStep).toFixed(2));
-
-        return Object.assign({}, point, {
-            x_g: Math.round(graph.x_begin + (point.x * graph.squareSize.x)),
-            y_g: Math.round(graph.y_end - (actualSize * graph.squareSize.y))
+        return Object.assign({}, point, { graph : {
+                x: Math.round(graph.x_begin + (point.x * actualSquareSize)),
+                y: Math.round(graph.y_end - (actualSize * graph.squareSize.y))
+            }
         });
     }
 };
