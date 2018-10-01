@@ -1,10 +1,12 @@
 const utils = require('./utils');
 const arrays = require("./utils/arrays");
 const draw = require("./core/drawing");
+const config = require("./core/config");
 const interpolation = require('./core/interpolation');
 
 let Scale = require('./core/scale');
 let data = require('./core/data');
+
 
 
 /**
@@ -27,13 +29,9 @@ function BasicGraph(id, options, _data) {
     this.data = new data.Data(_data);
     this.canvas = undefined;
     this.ctx = undefined;
-
-    let clazz = this;
-
     this.defaultConfig = {
         x_label: '',
         y_label: '',
-        xTicks: 20,
         tittle: 'Graph',
         tittle_pos: 'top-center',
         scale: 1,
@@ -44,6 +42,8 @@ function BasicGraph(id, options, _data) {
         axis_colour: 'rgb(94,94,94)',
         data_colour: 'rgb(156,39,176)'
     };
+
+    let clazz = this;
 
     if ((this.options !== null) && (this.options !== undefined)) {
         Object.keys(this.options).forEach((option) => {
@@ -108,8 +108,7 @@ BasicGraph.prototype.drawLabels = function () {
 };
 
 BasicGraph.prototype.drawAxis = function () {
-    let max_xTicks = Math.min(this.data.maxLen(), this.options.xTicks),
-        graph = this.graph,
+    let graph = this.graph,
         offset = 0,
         scale_offset = undefined;
 
@@ -123,7 +122,7 @@ BasicGraph.prototype.drawAxis = function () {
     this.textMode(14);
 
     this.scale_num = {
-        x: arrays.fillRange(max_xTicks + 1).map(x => Math.floor(this.data.maxLen() * (x / max_xTicks))),
+        x: arrays.fillRange(this.max_xTicks + 1).map(x => Math.floor(this.data.maxLen() * (x / this.max_xTicks))),
         y: this.graph.scale.getTickLabels
     };
 
@@ -147,7 +146,7 @@ BasicGraph.prototype.drawAxis = function () {
         }
 
         // The X-Axis drawing
-        if (offset <= max_xTicks) {
+        if (offset <= this.max_xTicks) {
             let x_offset = offset * this.graph.squareSize.x;
             scale_offset = graph.fontSize() / 2;
 
@@ -180,13 +179,16 @@ BasicGraph.prototype.drawAxis = function () {
 
 BasicGraph.prototype.drawData = function () {
     // TODO: programmatically calculate this value
-    let lineWidth = 3;
+    let lineWidth = config.lineWidth;
 
     let previousPoint = {},
         currentPoint = {},
         nextPoint = {};
 
     for (let line of this.data.get()) {
+        // alter the line width if there are more data points than maximum ticks on graph.
+        if(this.data.maxLen() > config.xTicks)
+
         // setup for drawing
         this.ctx.lineJoin = 'round';
         this.ctx.strokeStyle = utils.rgba(line.colour, 40);
@@ -203,6 +205,7 @@ BasicGraph.prototype.drawData = function () {
         // line to next point, then a circle to represent a dot at that point
         // separating the circle drawing path and line path is crucial, otherwise,
         // the two will interfere with each other
+        // fixme
         for (let k = 0; k < line.pos_data.length; k++) {
             previousPoint = data.pointToPosition(arrays.getPrevious(k, line.pos_data), this.graph);
             currentPoint = data.pointToPosition(line.pos_data[k], this.graph);
@@ -321,12 +324,13 @@ BasicGraph.prototype.draw = function () {
     // for cross-referencing
     let padding_map = this.calculateLabelPadding();
 
-    let max_xTicks = Math.min(this.data.maxLen(), this.options.xTicks),
-        y_length = this.c_height - padding_map.top - padding_map.bottom - this.label_size,
+    this.max_xTicks = Math.min(this.data.maxLen(), config.xTicks);
+
+    let y_length = this.c_height - padding_map.top - padding_map.bottom - this.label_size,
         x_length = this.c_width - padding_map.right - padding_map.left - this.label_size;
 
     // calculate the each axis square size.
-    this.graph.squareSize.x = x_length / max_xTicks;
+    this.graph.squareSize.x = x_length / this.max_xTicks;
     this.graph.squareSize.y = y_length / this.graph.scale.getMaxTicks;
 
     // concatenate all previous calculations with current ones.
