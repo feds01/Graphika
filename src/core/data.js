@@ -31,28 +31,31 @@ class Data {
         return this.data.map(x => x.colour);
     };
 
-    toPos(graph) {
-        for (let entry of this.data) {
-            entry.pos_data = Data.convertDataToPositions(entry.data, graph);
-        }
-    };
+    toPos() {
+        for (let entry = 0; entry < this.data.length; entry++) {
+            this.data[entry].pos_data  = [];
 
-    static convertDataToPositions (data, graph) {
-        let positions = [],
-            actualSize = 0;
-
-        for (let i = 0; i < data.length; i++) {
-            if (data !== 0) {
-                actualSize = (data[i] / graph.scale.getTickStep).toFixed(2);
+            for(let idx = 0; idx < this.data[entry].data.length; idx++) {
+                this.data[entry].pos_data.push({
+                    x: idx,
+                    y: this.data[entry].data[idx]
+                });
             }
-
-            positions.push({
-                x: Math.round(graph.x_begin + (i * graph.squareSize.x)),
-                y: Math.round(graph.y_end - (actualSize * graph.squareSize.y))
-            });
         }
-        return positions;
     };
 }
 
-module.exports = Data;
+module.exports = {
+    Data : Data,
+
+    pointToPosition : function (point, graph) {
+        let actualSize = point.y  / graph.scale.getTickStep;
+        let actualSquareSize = graph.x_length / graph.data.maxLen() ;
+
+        return Object.assign({}, point, { graph : {
+                x: Math.round(graph.x_begin + (point.x * actualSquareSize)),
+                y: Math.round(graph.y_end - (actualSize * graph.squareSize.y))
+            }
+        });
+    }
+};
