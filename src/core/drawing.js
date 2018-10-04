@@ -1,6 +1,5 @@
 const TWO_PI = Math.PI * 2;
 
-
 module.exports = {
     circle: function(ctx, x, y, rad) {
         // begin new path, draw circle and then close path.
