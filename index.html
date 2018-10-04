@@ -40,7 +40,7 @@
 
 <script type="text/javascript" src="dist/graph.min.js"></script>
 <script>
-    function getRandomInt(min, max) {
+   function getRandomInt(min, max) {
         return Math.floor(Math.random() * (max - min + 1)) + min;
     }
 
@@ -52,7 +52,6 @@
         }
         return array;
     }
-
     let w_data = {
         1: getRandomArray(200, 0, 20),
         2: getRandomArray(200, 430, 103)
@@ -67,7 +66,7 @@
         },
         [
             {
-                // style: 'dashed',
+                interpolation: "cubic",
                 label: 'student_1',
                 data: w_data['1'],
                 colour: '#FF6782',
@@ -82,7 +81,6 @@
     w.draw();
     console.timeEnd('w');
 
-
     let g = new Graph('g', {
             x_label: 'Hours Revised',
             y_label: 'UCAS Points',
@@ -93,6 +91,7 @@
             {
                 style: "dashed",
                 label: 'student_1',
+                interpolation: 'cubic',
                 data: getRandomArray(11, 17, 134),
                 colour: '#FF6782'
             },
