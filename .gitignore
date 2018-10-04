@@ -63,10 +63,5 @@ typings/
 # minified output of source files
 dist/
 
-.idea/graph-js.iml
-.idea/inspectionProfiles/
-.idea/misc.xml
-.idea/modules.xml
-.idea/vcs.xml
-.idea/workspace.xml
-package-lock.json
+# webstorm IDE working files
+.idea/

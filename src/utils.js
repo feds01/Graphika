@@ -44,5 +44,11 @@ module.exports = {
             elementMap.tittle.innerHTML = options.tittle;
         }
         return elementMap;
+    },
+
+
+    isUndefOrNaN: function (o) {
+        return isNaN(o) || typeof o === "undefined";
+
     }
 };
