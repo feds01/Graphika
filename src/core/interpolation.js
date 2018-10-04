@@ -1,27 +1,32 @@
+const point = require("./point");
+
 module.exports = {
-    splineCurve: function (previousPoint, currentPoint, afterPoint, tension) {
-        const dist01 = Math.sqrt(
-            Math.pow(currentPoint.x - previousPoint.x, 2) +
-            Math.pow(currentPoint.y - previousPoint.y, 2)
-        );
+    splineCurve: function (prev, current, next, t, graph) {
+        //  x0,y0,x1,y1 are the coordinates of the end (knot) pts of this segment
+        //  x2,y2 is the next knot -- not connected here but needed to calculate p2
+        //  p1 is the control point calculated here, from x1 back toward x0.
+        //  p2 is the next control point, calculated here and returned to become the
+        //  next segment's p1.
+        //  t is the 'tension' which controls how far the control points spread.
 
-        const dist12 = Math.sqrt(
-            Math.pow(afterPoint.x - currentPoint.x, 2) +
-            Math.pow(afterPoint.y - currentPoint.y, 2)
-        );
+        //  Scaling factors: distances from this knot to the previous and following knots.
+        let d01 = Math.sqrt(Math.pow(current.data.x - prev.data.x, 2) + Math.pow(current.data.y - prev.data.y, 2));
+        let d12 = Math.sqrt(Math.pow(next.data.x - current.data.x, 2) + Math.pow(next.data.y - current.data.y, 2));
 
-        let fa = tension * dist01 / (dist01 + dist12);
-        let fb = tension - fa;
+        let fa = t * d01 / (d01 + d12);
+        let fb = t - fa;
+
 
         return {
-            before: {
-                x: currentPoint.x + fa * (previousPoint.x - afterPoint.x),
-                y: currentPoint.y + fa * (previousPoint.y - afterPoint.y)
-            },
-            after: {
-                x: currentPoint.x - fb * (previousPoint.x - afterPoint.x),
-                y: currentPoint.y - fb * (previousPoint.x - afterPoint.y)
-            }
-        };
+            prev: new point.Point({
+                x: current.data.x + fa * (prev.data.x - next.data.x),
+                y: current.data.y + fa * (prev.data.y - next.data.y)
+            }, graph),
+
+            next: new point.Point({
+                x: current.data.x - fb * (prev.data.x - next.data.x),
+                y: current.data.y - fb * (prev.data.y - next.data.y)
+            }, graph)
+        }
     }
 };

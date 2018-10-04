@@ -6,6 +6,7 @@ const interpolation = require('./core/interpolation');
 
 let Scale = require('./core/scale');
 let data = require('./core/data');
+const point = require("./core/point");
 
 
 /**
@@ -83,7 +84,7 @@ BasicGraph.prototype.drawLabels = function () {
 
     let graph = this.graph;
     // add x-axis label
-    this.ctx.fillText(this.options.x_label, graph.x_center, this.c_height);
+    this.ctx.fillText(this.options.x_label, graph.x_center, this.c_height - (this.graph.fontSize() / 2));
 
     // add y-axis label
     this.ctx.save();
@@ -106,12 +107,12 @@ BasicGraph.prototype.drawAxis = function () {
     draw.toTextMode(this.ctx, 14, this.options.axis_colour);
 
     this.scale_num = {
-        x: arrays.fillRange(this.max_xTicks + 1).map
-        (
+        x: arrays.fillRange(this.max_xTicks + 1).map(
             x => Math.floor(this.data.maxLen() * (x / this.max_xTicks))
         ),
         y: this.graph.scale.getTickLabels
     };
+
 
     while ((offset <= this.graph.scale.getMaxTicks) || (offset <= this.data.maxLen())) {
         this.ctx.strokeStyle = utils.rgba(this.options.axis_colour, 40);
@@ -134,7 +135,7 @@ BasicGraph.prototype.drawAxis = function () {
         // The X-Axis drawing
         if (offset <= this.max_xTicks) {
             let x_offset = offset * this.graph.squareSize.x;
-            scale_offset = this.graph.fontSize / 2;
+            scale_offset = this.graph.fontSize() / 2;
 
             draw.verticalLine(this.ctx, this.graph.x_begin + x_offset, this.graph.y_end + 9, -x_len);
 
@@ -168,12 +169,9 @@ BasicGraph.prototype.drawAxis = function () {
 };
 
 BasicGraph.prototype.drawData = function () {
-    // TODO: programmatically calculate this value
     let lineWidth = config.lineWidth;
+    let clazz = this;
 
-    let previousPoint = {},
-        currentPoint = {},
-        nextPoint = {};
 
     for (let line of this.data.get()) {
         // alter the line width if there are more data points than maximum ticks on graph.
@@ -189,70 +187,84 @@ BasicGraph.prototype.drawData = function () {
         this.ctx.setLineDash(line.style === 'dashed' ? [5, 5] : []);
         this.ctx.lineWidth = lineWidth;
 
-        let previousControlPoints = {};
-        let controlPoints = {};
-
         // assign the graph object it's data
         this.graph.data = this.data;
+        let points = [];
 
-        // line to next point, then a circle to represent a dot at that point
-        // separating the circle drawing path and line path is crucial, otherwise,
-        // the two will interfere with each other
-        // fixme
-        for (let k = 0; k < line.pos_data.length; k++) {
-            previousPoint = data.pointToPosition(arrays.getPrevious(k, line.pos_data), this.graph);
-            currentPoint = data.pointToPosition(line.pos_data[k], this.graph);
-            nextPoint = data.pointToPosition(arrays.getNext(k, line.pos_data), this.graph);
+        line.pos_data.forEach((x) => {
+            points.push(new point.Point(x, clazz.graph));
+        });
 
-            this.ctx.beginPath();
 
-            if (line.interpolation === undefined) {
-                this.ctx.moveTo(previousPoint.graph.x, previousPoint.graph.y);
-                this.ctx.lineTo(currentPoint.graph.x, currentPoint.graph.y);
+        if(line["interpolation"] === "cubic") {
+            let controlPoints = [];
 
-            } else if (line.interpolation === 'cubic') {
-                controlPoints = interpolation.splineCurve(
-                    previousPoint, currentPoint,
-                    nextPoint, 0.5
-                );
-
-                controlPoints.before = data.pointToPosition(controlPoints.before, this.graph);
-                controlPoints.after = data.pointToPosition(controlPoints.after, this.graph);
-
-                // move to the current point
-                this.ctx.moveTo(currentPoint.graph.x, currentPoint.graph.y);
-
-                // the tail and head of the curve are simple quadratics rather than being
-                // cubic curves.
-                if (k === 0) {
-                    this.ctx.quadraticCurveTo(
-                        controlPoints.before.graph.x, controlPoints.before.graph.y,
-                        nextPoint.graph.x, nextPoint.graph.y
-                    );
-                } else if (k === line.pos_data.length - 1) {
-                    // first move to the current point, draw quadratic to the previous point using
-                    // the next control point values for the curve
-                    this.ctx.quadraticCurveTo(
-                        controlPoints.after.graph.x, controlPoints.after.graph.y,
-                        previousPoint.graph.x, previousPoint.graph.y
-                    );
-
-                } else {
-                    this.ctx.bezierCurveTo(
-                        previousControlPoints.after.graph.x, previousControlPoints.after.graph.y,
-                        controlPoints.before.graph.x, controlPoints.before.graph.y,
-                        nextPoint.graph.x, nextPoint.graph.y
-                    );
-                }
-                previousControlPoints = controlPoints;
+            // start from point 1 and not point 0, as point one and last point will
+            // be quadratic curves and not splines
+            for(let k = 1; k < points.length - 1; k++) {
+                controlPoints.push(interpolation.splineCurve(
+                    arrays.getPrevious(k, points),
+                    points[k], arrays.getNext(k, points),
+                    config.tension, this.graph
+                ));
             }
 
+            // draw the cubic spline curves
+            for(let i = 1; i < points.length - 2; i++) {
+                // begin current trajectory, by moving to starting point
+                this.ctx.beginPath();
+                this.ctx.moveTo(points[i].x, points[i].y);
+
+                // create bezier curve using the next control point of previous entry
+                // and previous control point of current entry and which leads to next
+                // point
+                this.ctx.bezierCurveTo(
+                    controlPoints[i - 1].next.x, controlPoints[i - 1].next.y,
+                    controlPoints[i].prev.x, controlPoints[i].prev.y,
+                    points[i + 1].x, points[i + 1].y
+                );
+                this.ctx.stroke();
+                this.ctx.closePath();
+            }
+
+            // now draw the starting quadratic between first and second curve
+            this.ctx.beginPath();
+            this.ctx.moveTo(points[0].x, points[0].y);
+            this.ctx.quadraticCurveTo(
+                controlPoints[0].prev.x, controlPoints[0].prev.y,
+                points[1].x, points[1].y
+            );
             this.ctx.stroke();
             this.ctx.closePath();
 
-            // draw the point on square borders only, before reset line dash, messes with circle,;
-            if (this.scale_num.x.indexOf(k) > -1) {
-                draw.circle(this.ctx, currentPoint.graph.x, currentPoint.graph.y, lineWidth);
+            // now draw final quadratic curve, between last and the point before the last.
+            this.ctx.beginPath();
+            this.ctx.moveTo(points[points.length - 1].x, points[points.length - 1].y);
+
+            this.ctx.quadraticCurveTo(
+                controlPoints[controlPoints.length - 1].next.x,
+                controlPoints[controlPoints.length - 1].next.y,
+                points[points.length - 2].x, points[points.length - 2].y
+            );
+            this.ctx.stroke();
+            this.ctx.closePath();
+
+        } else {
+            for(let p = 0; p < points.length - 1; p++) {
+                this.ctx.beginPath();
+                this.ctx.moveTo(points[p].x, points[p].y);
+                this.ctx.lineTo(points[p + 1].x, points[p + 1].y);
+                this.ctx.stroke();
+                this.ctx.closePath();
+            }
+        }
+
+
+        // draw the points
+        for (let p of points) {
+            if (this.scale_num.x.indexOf(p.data.x) > -1) {
+                // convert the data point into a graphical point
+                draw.circle(this.ctx, p.x, p.y, lineWidth);
             }
         }
     }
@@ -273,7 +285,7 @@ BasicGraph.prototype.calculateLabelPadding = function () {
 
     draw.toTextMode(this.ctx, 14, this.options.axis_colour);
     this.graph.padding.left = this.options.padding + this.ctx.measureText(longestItem).width + this.label_size;
-    this.graph.padding.bottom = this.options.padding + this.label_size + 14;
+    this.graph.padding.bottom = this.options.padding + this.label_size + this.graph.fontSize();
 
     return this.graph.padding;
 };

@@ -16,5 +16,7 @@ module.exports = {
     xTicks: 20,
 
     // this is the maximum amount of ticks which are available on the y-axos
-    yTicks: 10
+    yTicks: 10,
+
+    tension: 0.5
 };

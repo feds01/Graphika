@@ -46,16 +46,5 @@ class Data {
 }
 
 module.exports = {
-    Data : Data,
-
-    pointToPosition : function (point, graph) {
-        let actualSize = point.y  / graph.scale.getTickStep;
-        let actualSquareSize = graph.x_length / graph.data.maxLen() ;
-
-        return Object.assign({}, point, { graph : {
-                x: Math.round(graph.x_begin + (point.x * actualSquareSize)),
-                y: Math.round(graph.y_end - (actualSize * graph.squareSize.y))
-            }
-        });
-    }
+    Data : Data
 };
