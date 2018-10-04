@@ -21,6 +21,7 @@ module.exports = {
         s8: ['#8dd3c7', '#ffffb3', '#bebada']
     },
 
+    BLACK: "#000000"
 
 };
  

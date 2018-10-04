@@ -13,12 +13,15 @@ module.exports = {
     },
 
     horizontalLine: function (ctx, x, y, len) {
+        ctx.beginPath();
         ctx.strokeRect(x, y, len, 1);
-
+        ctx.closePath();
     },
 
     verticalLine: function (ctx, x, y, len) {
+        ctx.beginPath();
         ctx.strokeRect(x, y, 1, len);
+        ctx.closePath();
     },
 
     /**

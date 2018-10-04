@@ -7,6 +7,7 @@ const interpolation = require('./core/interpolation');
 let Scale = require('./core/scale');
 let data = require('./core/data');
 const point = require("./core/point");
+const colours = require("./utils/colours");
 
 
 /**
@@ -29,6 +30,7 @@ class BasicGraph {
         this.data = new data.Data(_data);
         this.canvas = undefined;
         this.ctx = undefined;
+
         this.defaultConfig = {
             x_label: '',
             y_label: '',
@@ -42,7 +44,7 @@ class BasicGraph {
             axis_colour: 'rgb(94,94,94)',
             data_colour: 'rgb(156,39,176)'
         };
-        this.graph = {};
+        this.lengths = {};
 
         let clazz = this;
 
@@ -82,11 +84,12 @@ class BasicGraph {
         if (this.label_size === 0) {return;}
 
         // add x-axis label
-        this.ctx.fillText(this.options.x_label, this.graph.x_center, this.c_height - (this.font_size / 2));
+        draw.toTextMode(this.ctx, this.options.font_size, this.options.axis_colour);
+        this.ctx.fillText(this.options.x_label, this.lengths.x_center, this.c_height - (this.font_size / 2));
 
         // add y-axis label
         this.ctx.save();
-        this.ctx.translate(parseInt(this.font_size), this.graph.y_center);
+        this.ctx.translate(parseInt(this.font_size), this.lengths.y_center);
         this.ctx.rotate(-Math.PI / 2);
         this.ctx.fillText(this.options.y_label, 0, 0);
         this.ctx.restore();
@@ -97,9 +100,10 @@ class BasicGraph {
         let offset = 0;
 
         this.ctx.strokeStyle = utils.rgba(this.options.axis_colour, 60);
+        this.ctx.lineWidth = 1;
         // the y-limit is the y coordinate up to where everything should be drawn
-        draw.verticalLine(this.ctx, this.graph.x_begin, this.graph.y_end, -this.graph.y_length);
-        draw.horizontalLine(this.ctx, this.graph.x_begin, this.graph.y_end, this.graph.x_length);
+        draw.verticalLine(this.ctx, this.lengths.x_begin, this.lengths.y_end, -this.y_length);
+        draw.horizontalLine(this.ctx, this.lengths.x_begin, this.lengths.y_end, this.x_length);
 
         // change the stroke style to rgba(colour, 0.6), so apply 60% opacity.
         this.ctx.textBaseline = 'middle';
@@ -109,57 +113,57 @@ class BasicGraph {
             x: arrays.fillRange(this.max_xTicks + 1).map(
                 x => Math.floor(this.data.maxLen() * (x / this.max_xTicks))
             ),
-            y: this.graph.scale.getTickLabels
+            y: this.scale.getTickLabels
         };
 
 
-        while ((offset <= this.graph.scale.getMaxTicks) || (offset <= this.data.maxLen())) {
+        while ((offset <= this.scale.getMaxTicks) || (offset <= this.data.maxLen())) {
             this.ctx.strokeStyle = utils.rgba(this.options.axis_colour, 40);
 
-            let x_len = this.options.gridded ? 9 + this.graph.y_length : 9,
-                y_len = this.options.gridded ? 9 + this.graph.x_length : 9,
+            let x_len = this.options.gridded ? 9 + this.y_length : 9,
+                y_len = this.options.gridded ? 9 + this.x_length : 9,
                 skip_text = false,
                 scale_offset = 0;
 
             // draw the centered zero and skip drawing zero's on neighbouring ticks.
-            if (this.options.zero_scale && this.scale_num.x[offset] === '0'
-                && this.scale_num.y[offset] === '0') {
+            if (this.options.zero_scale && this.scale_num.x[offset] === 0
+                && this.scale_num.y[offset] === 0) {
                 this.ctx.fillText('0',
-                    this.graph.x_begin - this.graph.padding.val,
-                    this.graph.y_end + this.graph.padding.val
+                    this.lengths.x_begin - this.padding.val,
+                    this.lengths.y_end + this.padding.val
                 );
                 skip_text = true;
             }
 
             // The X-Axis drawing
             if (offset <= this.max_xTicks) {
-                let x_offset = offset * this.graph.squareSize.x;
+                let x_offset = offset * this.squareSize.x;
                 scale_offset = this.font_size / 2;
 
-                draw.verticalLine(this.ctx, this.graph.x_begin + x_offset, this.graph.y_end + 9, -x_len);
+                draw.verticalLine(this.ctx, this.lengths.x_begin + x_offset, this.lengths.y_end + 9, -x_len);
 
                 if (!skip_text) {
                     this.ctx.fillText(this.scale_num.x[offset].toString(),
-                        this.graph.x_begin + x_offset,
-                        this.graph.y_end + 9 + scale_offset
+                        this.lengths.x_begin + x_offset,
+                        this.lengths.y_end + 9 + scale_offset
                     );
                 }
             }
             // The Y-Axis drawing
-            if (offset <= this.graph.scale.getMaxTicks) {
-                let y_offset = offset * this.graph.squareSize.y;
+            if (offset <= this.scale.getMaxTicks) {
+                let y_offset = offset * this.squareSize.y;
                 scale_offset = Math.ceil(this.ctx.measureText(this.scale_num.y[offset]).width / 1.5);
 
                 draw.horizontalLine(this.ctx,
-                    this.graph.x_begin - 9,
-                    this.graph.y_end - y_offset,
+                    this.lengths.x_begin - 9,
+                    this.lengths.y_end - y_offset,
                     y_len
                 );
 
                 if (!skip_text) {
                     this.ctx.fillText(this.scale_num.y[offset].toString(),
-                        this.graph.x_begin - 9 - scale_offset,
-                        this.graph.y_end - y_offset
+                        this.lengths.x_begin - 9 - scale_offset,
+                        this.lengths.y_end - y_offset
                     );
                 }
             }
@@ -183,15 +187,13 @@ class BasicGraph {
             this.ctx.lineJoin = 'round';
             this.ctx.strokeStyle = utils.rgba(line.colour, 40);
             this.ctx.fillStyle = utils.rgba(line.colour, 40);
-            this.ctx.setLineDash(line.style === 'dashed' ? [5, 5] : []);
+            this.ctx.setLineDash(line['style'] === 'dashed' ? [5, 5] : []);
             this.ctx.lineWidth = lineWidth;
 
-            // assign the graph object it's data
-            this.graph.data = this.data;
             let points = [];
 
             line.pos_data.forEach((x) => {
-                points.push(new point.Point(x, clazz.graph));
+                points.push(new point.Point(x, clazz));
             });
 
 
@@ -204,7 +206,7 @@ class BasicGraph {
                     controlPoints.push(interpolation.splineCurve(
                         arrays.getPrevious(k, points),
                         points[k], arrays.getNext(k, points),
-                        config.tension, this.graph
+                        config.tension, this
                     ));
                 }
 
@@ -248,6 +250,7 @@ class BasicGraph {
                 this.ctx.stroke();
                 this.ctx.closePath();
 
+
             } else {
                 for (let p = 0; p < points.length - 1; p++) {
                     this.ctx.beginPath();
@@ -257,7 +260,6 @@ class BasicGraph {
                     this.ctx.closePath();
                 }
             }
-
 
             // draw the points
             for (let p of points) {
@@ -270,8 +272,18 @@ class BasicGraph {
     };
 
 
-    calculateLabelPadding() {
-        let longestItem = arrays.longest(this.graph.scale.getTickLabels);
+    calculatePadding() {
+        const PADDING = this.options.padding;
+
+        this.padding = {
+            top: PADDING,
+            left: undefined,
+            right: PADDING,
+            bottom: undefined,
+            val: PADDING
+        };
+
+        let longestItem = arrays.longest(this.scale.getTickLabels);
 
         // if no labels provided, they are disabled as in no room is provided
         // for them to be drawn.
@@ -284,69 +296,60 @@ class BasicGraph {
         }
 
         draw.toTextMode(this.ctx, 14, this.options.axis_colour);
-        this.graph.padding.left = this.options.padding + this.ctx.measureText(longestItem).width + this.label_size;
-        this.graph.padding.bottom = this.options.padding + this.label_size + this.font_size;
+        this.padding.left = this.options.padding + this.ctx.measureText(longestItem).width + this.label_size;
+        this.padding.bottom = this.options.padding + this.label_size + this.font_size;
 
-        return this.graph.padding;
+        return this.padding;
     };
 
 
     draw() {
-        const PADDING = this.options.padding;
-
-        this.graph.squareSize = {x: 0, y: 0};
-        this.graph.padding = {
-            top: PADDING,
-            left: undefined,
-            right: PADDING,
-            bottom: undefined,
-            val: PADDING
-        };
-
-        this.graph.scale = new Scale({
+        this.scale = new Scale({
             max: this.data.max(),
             min: this.options.zero_scale ? 0 : this.data.min(),
             maxTicks: config.yTicks
         });
+        this.calculatePadding();
+
+        this.squareSize = {x: 0, y: 0};
 
         // left and bottom need to be calculated & and temporarily use padding_map
         // for cross-referencing
-        let padding_map = this.calculateLabelPadding();
-
         this.max_xTicks = Math.min(this.data.maxLen(), config.xTicks);
-
-        let y_length = this.c_height - padding_map.top - padding_map.bottom - this.label_size,
-            x_length = this.c_width - padding_map.right - padding_map.left - this.label_size;
+        this.y_length = this.c_height - this.padding.top - this.padding.bottom - this.label_size;
+        this.x_length = this.c_width - this.padding.right - this.padding.left - this.label_size;
 
         // calculate the each axis square size.
-        this.graph.squareSize.x = x_length / this.max_xTicks;
-        this.graph.squareSize.y = y_length / this.graph.scale.getMaxTicks;
+        this.squareSize.x = this.x_length / this.max_xTicks;
+        this.squareSize.y = this.y_length / this.scale.getMaxTicks;
 
-        // concatenate all previous calculations with current ones.
-        this.graph = Object.assign({},
-            {squareSize: this.graph.squareSize},
-            {padding: this.graph.padding},
-            {
-                x_begin: padding_map.left + this.label_size,
-                y_begin: padding_map.top,
 
-                x_end: this.c_width - padding_map.right,
-                y_end: this.c_height - padding_map.bottom,
+        this.lengths = {
+                x_begin: this.padding.left + this.label_size,
+                y_begin: this.padding.top,
+                x_end: this.c_width - this.padding.right,
+                y_end: this.c_height - this.padding.bottom,
+                x_length: this.x_length,
+                y_length: this.y_length,
+                x_center: this.padding.left + this.label_size + this.x_length / 2,
+                y_center: this.label_size + this.y_length / 2,
+        };
 
-                x_length: x_length,
-                y_length: y_length,
-
-                x_center: padding_map.left + this.label_size + x_length / 2,
-                y_center: this.label_size + y_length / 2,
-                scale: this.graph.scale
-            }
-        );
 
         this.data.toPos();
         this.drawLabels();
         this.drawAxis();
         this.drawData();
     };
+
+    redraw() {
+        // clear the rectangle and reset colour
+        this.ctx.clearRect(0, 0, this.c_width, this.c_height);
+        this.ctx.strokeStyle = this.options.axis_colour;
+        this.ctx.fillStyle = colours.BLACK;
+
+        this.draw();
+    }
 }
 
 module.exports = function () {
