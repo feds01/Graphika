@@ -4,8 +4,9 @@ const draw = require("./core/drawing");
 const config = require("./core/config");
 const interpolation = require('./core/interpolation');
 
-let Scale = require('./core/scale');
-let data = require('./core/data');
+const scale = require('./core/scale');
+const axis = require('./core/axis');
+const data = require('./core/data');
 const point = require("./core/point");
 const colours = require("./utils/colours");
 
@@ -304,11 +305,14 @@ class BasicGraph {
 
 
     draw() {
-        this.scale = new Scale({
+        this.scale = new scale({
             max: this.data.max(),
             min: this.options.zero_scale ? 0 : this.data.min(),
             maxTicks: config.yTicks
         });
+
+        this.xAxis = new axis(this.ctx, this.data, "y-axis", {});
+
         this.calculatePadding();
 
         this.squareSize = {x: 0, y: 0};
@@ -335,6 +339,7 @@ class BasicGraph {
                 y_center: this.label_size + this.y_length / 2,
         };
 
+        this.xAxis.draw(this.lengths);
 
         this.data.toPos();
         this.drawLabels();

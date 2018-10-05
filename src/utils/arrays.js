@@ -30,5 +30,23 @@ module.exports = {
      * of the array, rather than undefined. * */
     getNext: function(index, data) {
         return index >= data.length - 1 ? data[data.length - 1] : data[index + 1];
+    },
+
+    /*
+    * Get all only negative values from a given array.
+    * */
+    negativeValues: function (array) {
+        return array.filter(function(value) {
+            return value < 0;
+        });
+    },
+
+    /*
+   * Get all only positive values from a given array.
+   * */
+    positiveValues: function (array) {
+        return array.filter(function(value) {
+            return value > 0;
+        });
     }
 };
