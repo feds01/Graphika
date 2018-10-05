@@ -41,14 +41,19 @@ class Scale {
             .map(x => (x * this.tickStep));
     }
 
-    // setMaxTicks(val) {
-    //     if (isNaN(val) || val <= 0) {
-    //         console.error('cannot have negative max ticks or non numerical amount of ticks' + val);
-    //     } else {
-    //         this.maxTicks = val;
-    //     }
-    //     this.calculate();
-    // }
+    setMaxTicks(val) {
+        if (isNaN(val) || val <= 0) {
+            console.error('cannot have negative max ticks or non numerical amount of ticks' + val);
+        } else {
+            this.maxTicks = val;
+        }
+        this.calculate();
+    }
+
+    setTickStep(val) {
+        this.tickStep = val;
+        this.calculate();
+    }
 
     get getMaxTicks() {
         return this.maxTicks;
