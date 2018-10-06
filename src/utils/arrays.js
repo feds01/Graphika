@@ -48,5 +48,12 @@ module.exports = {
         return array.filter(function(value) {
             return value > 0;
         });
+    },
+
+    /*
+     check if a value is within the given array
+    * */
+    join(arrA, arrB) {
+        return arrA.concat(arrB)
     }
 };

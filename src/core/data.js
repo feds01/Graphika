@@ -7,6 +7,10 @@ class Data {
         return this.data;
     }
 
+    join() {
+        return [].concat.apply([], this.data.map(x => x.data))
+    }
+
     lengths() {
         return this.data.map(x => x.data.length);
     };
