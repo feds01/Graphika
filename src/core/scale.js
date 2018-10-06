@@ -62,7 +62,10 @@ class Scale {
 
     setTickStep(val) {
         this.tickStep = val;
-        this.calculate();
+        this.maxTicks = Math.round(this.range / val);
+
+        this.tickLabels = arrays.fillRange(this.maxTicks + 1)
+            .map(x => (x * this.tickStep));
     }
 
     get getMaxTicks() {
@@ -73,7 +76,7 @@ class Scale {
         return this.tickLabels;
     }
 
-    get getTickStep() {
+    getTickStep() {
         return this.tickStep;
     }
 

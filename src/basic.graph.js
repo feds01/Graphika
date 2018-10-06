@@ -29,9 +29,10 @@ class BasicGraph {
         this.id = id;
         this.options = options;
         this.data = new data.Data(_data);
+        this.lengths = {};
+        this.squareSize = {x: 0, y: 0};
         this.canvas = undefined;
         this.ctx = undefined;
-
         this.defaultConfig = {
             x_label: '',
             y_label: '',
@@ -45,7 +46,6 @@ class BasicGraph {
             axis_colour: 'rgb(94,94,94)',
             data_colour: 'rgb(156,39,176)'
         };
-        this.lengths = {};
 
         let clazz = this;
 
@@ -78,6 +78,25 @@ class BasicGraph {
         this.font_size = function () {
             return parseInt(clazz.ctx.font.substr(0, 2))
         }();
+
+
+        this.padding = {
+            top: this.options.padding,
+            left: undefined,
+            right: this.options.padding,
+            bottom: undefined,
+            val: this.options.padding
+        };
+
+        // if no labels provided, they are disabled as in no room is provided
+        // for them to be drawn.
+        if (this.options.y_label.toString() !== "" &&
+            this.options.x_label.toString() !== "") {
+            this.label_size = this.font_size;
+
+        } else {
+            this.label_size = 0;
+        }
     }
 
     drawLabels() {
@@ -103,29 +122,20 @@ class BasicGraph {
         this.ctx.strokeStyle = utils.rgba(this.options.axis_colour, 60);
         this.ctx.lineWidth = 1;
         // the y-limit is the y coordinate up to where everything should be drawn
-        draw.verticalLine(this.ctx, this.lengths.x_begin, this.lengths.y_end, -this.y_length);
-        draw.horizontalLine(this.ctx, this.lengths.x_begin, this.lengths.y_end, this.x_length);
+        //draw.verticalLine(this.ctx, this.lengths.x_begin, this.lengths.y_end, -this.y_length);
+        //draw.horizontalLine(this.ctx, this.lengths.x_begin, this.lengths.y_end, this.x_length);
 
         // change the stroke style to rgba(colour, 0.6), so apply 60% opacity.
-        this.ctx.textBaseline = 'middle';
         draw.toTextMode(this.ctx, 14, this.options.axis_colour);
 
-        this.scale_num = {
-            x: arrays.fillRange(this.max_xTicks + 1).map(
-                x => Math.floor(this.data.maxLen() * (x / this.max_xTicks))
-            ),
-            y: this.scale.getTickLabels
-        };
-
-        while ((offset <= this.scale.getMaxTicks) || (offset <= this.data.maxLen())) {
+        while ((offset <= this.yAxis.scaleNumbers.length) || (offset <= this.data.maxLen())) {
             this.ctx.strokeStyle = utils.rgba(this.options.axis_colour, 40);
 
+            // grid drawing
             let x_len = this.options.gridded ? 9 + this.y_length : 9,
-                y_len = this.options.gridded ? 9 + this.x_length : 9,
-                skip_text = false,
-                scale_offset = 0;
+                y_len = this.options.gridded ? 9 + this.x_length : 9;
 
-            // draw the centered zero and skip drawing zero's on neighbouring ticks.
+            /*// draw the centered zero and skip drawing zero's on neighbouring ticks.
             if (this.options.zero_scale && this.scale_num.x[offset] === 0
                 && this.scale_num.y[offset] === 0) {
                 this.ctx.fillText('0',
@@ -133,39 +143,27 @@ class BasicGraph {
                     this.lengths.y_end + this.padding.val
                 );
                 skip_text = true;
-            }
+            }*/
 
             // The X-Axis drawing
             if (offset <= this.max_xTicks) {
                 let x_offset = offset * this.squareSize.x;
-                scale_offset = this.font_size / 2;
 
-                draw.verticalLine(this.ctx, this.lengths.x_begin + x_offset, this.lengths.y_end + 9, -x_len);
-
-                if (!skip_text) {
-                    this.ctx.fillText(this.scale_num.x[offset].toString(),
-                        this.lengths.x_begin + x_offset,
-                        this.lengths.y_end + 9 + scale_offset
-                    );
-                }
+                draw.verticalLine(this.ctx,
+                    this.lengths.x_begin + x_offset,
+                    this.lengths.y_end + 9,
+                    -x_len
+                );
             }
             // The Y-Axis drawing
-            if (offset <= this.scale.getMaxTicks) {
+            if (offset <= this.yAxis.scaleNumbers.length) {
                 let y_offset = offset * this.squareSize.y;
-                scale_offset = Math.ceil(this.ctx.measureText(this.scale_num.y[offset]).width / 1.5);
 
                 draw.horizontalLine(this.ctx,
                     this.lengths.x_begin - 9,
                     this.lengths.y_end - y_offset,
                     y_len
                 );
-
-                if (!skip_text) {
-                    this.ctx.fillText(this.scale_num.y[offset].toString(),
-                        this.lengths.x_begin - 9 - scale_offset,
-                        this.lengths.y_end - y_offset
-                    );
-                }
             }
             offset++;
         }
@@ -263,7 +261,7 @@ class BasicGraph {
 
             // draw the points
             for (let p of points) {
-                if (this.scale_num.x.indexOf(p.data.x) > -1) {
+                if (this.xAxis.scaleNumbers.indexOf(p.data.x) > -1) {
                     // convert the data point into a graphical point
                     draw.circle(this.ctx, p.x, p.y, lineWidth);
                 }
@@ -273,73 +271,37 @@ class BasicGraph {
 
 
     calculatePadding() {
-        const PADDING = this.options.padding;
-
-        this.padding = {
-            top: PADDING,
-            left: undefined,
-            right: PADDING,
-            bottom: undefined,
-            val: PADDING
-        };
-
-        let longestItem = arrays.longest(this.scale.getTickLabels);
-
-        // if no labels provided, they are disabled as in no room is provided
-        // for them to be drawn.
-        if (this.options.y_label.toString() !== "" &&
-            this.options.x_label.toString() !== "") {
-            this.label_size = this.font_size;
-
-        } else {
-            this.label_size = 0;
-        }
+        let longestItem = arrays.longest(this.yAxis.scaleNumbers.map(x => x.toString()));
 
         draw.toTextMode(this.ctx, 14, this.options.axis_colour);
         this.padding.left = this.options.padding + this.ctx.measureText(longestItem).width + this.label_size;
         this.padding.bottom = this.options.padding + this.label_size + this.font_size;
-
-        return this.padding;
     };
 
-
     draw() {
-        this.scale = new scale.scale({
-            max: this.data.max(),
-            min: this.options.zero_scale ? 0 : this.data.min(),
-            maxTicks: config.yTicks,
-            name: "general scale"
-        });
-
-        this.yAxis = new axis(this.ctx, this.data, "y-axis", {});
+        // initialise the y-axis & x-axis
+        this.yAxis = new axis(this, "y-axis", {axis_colour: this.options.axis_colour});
+        console.log(this.squareSize);
+        this.xAxis = new axis(this, "x-axis", {axis_colour: this.options.axis_colour});
 
         this.calculatePadding();
 
-        this.squareSize = {x: 0, y: 0};
-
-        // left and bottom need to be calculated & and temporarily use padding_map
-        // for cross-referencing
         this.max_xTicks = Math.min(this.data.maxLen(), config.xTicks);
-        this.y_length = this.c_height - this.padding.top - this.padding.bottom - this.label_size;
         this.x_length = this.c_width - this.padding.right - this.padding.left - this.label_size;
-
-        // calculate the each axis square size.
-        this.squareSize.x = this.x_length / this.max_xTicks;
-        this.squareSize.y = this.y_length / this.scale.getMaxTicks;
-
+        this.y_length = this.c_height - this.padding.top - this.padding.bottom - this.label_size;
 
         this.lengths = {
                 x_begin: this.padding.left + this.label_size,
                 y_begin: this.padding.top,
                 x_end: this.c_width - this.padding.right,
                 y_end: this.c_height - this.padding.bottom,
-                x_length: this.x_length,
-                y_length: this.y_length,
                 x_center: this.padding.left + this.label_size + this.x_length / 2,
                 y_center: this.label_size + this.y_length / 2,
         };
 
-        this.yAxis.draw(this.lengths);
+        this.yAxis.draw();
+        this.xAxis.draw();
+
 
         this.data.toPos();
         this.drawLabels();

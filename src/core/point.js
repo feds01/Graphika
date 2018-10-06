@@ -42,7 +42,7 @@ class Point {
         // calculate actual graphical coordinates
 
         let actual_xSize = graph.x_length / graph.data.maxLen();
-        let actual_ySize = data.y  / graph.scale.getTickStep;
+        let actual_ySize = data.y  / graph.yAxis.sharedTickStep;
 
         this.x = Math.round(graph.lengths.x_begin + (data.x * actual_xSize));
         this.y = Math.round(graph.lengths.y_end -  (actual_ySize * graph.squareSize.y));
