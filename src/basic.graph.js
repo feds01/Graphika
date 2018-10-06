@@ -117,18 +117,10 @@ class BasicGraph {
 
 
     drawAxis() {
+        this.ctx.lineWidth = 1;
         let offset = 0;
 
-        this.ctx.strokeStyle = utils.rgba(this.options.axis_colour, 60);
-        this.ctx.lineWidth = 1;
-        // the y-limit is the y coordinate up to where everything should be drawn
-        //draw.verticalLine(this.ctx, this.lengths.x_begin, this.lengths.y_end, -this.y_length);
-        //draw.horizontalLine(this.ctx, this.lengths.x_begin, this.lengths.y_end, this.x_length);
-
-        // change the stroke style to rgba(colour, 0.6), so apply 60% opacity.
-        draw.toTextMode(this.ctx, 14, this.options.axis_colour);
-
-        while ((offset <= this.yAxis.scaleNumbers.length) || (offset <= this.data.maxLen())) {
+        while (offset <= Math.max(this.yAxis.scaleNumbers.length, this.data.maxLen() + 1)) {
             this.ctx.strokeStyle = utils.rgba(this.options.axis_colour, 40);
 
             // grid drawing
@@ -146,7 +138,7 @@ class BasicGraph {
             }*/
 
             // The X-Axis drawing
-            if (offset <= this.max_xTicks) {
+            if (offset <= this.max_xTicks + 1) {
                 let x_offset = offset * this.squareSize.x;
 
                 draw.verticalLine(this.ctx,
@@ -281,7 +273,6 @@ class BasicGraph {
     draw() {
         // initialise the y-axis & x-axis
         this.yAxis = new axis(this, "y-axis", {axis_colour: this.options.axis_colour});
-        console.log(this.squareSize);
         this.xAxis = new axis(this, "x-axis", {axis_colour: this.options.axis_colour});
 
         this.calculatePadding();

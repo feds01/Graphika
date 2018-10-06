@@ -87,7 +87,6 @@ class Axis {
         this.xStart = this.graph.lengths.x_begin;
 
         if(this.type === "y-axis") {
-            console.log("SQUARE SIZE Y");
             this.graph.squareSize.y = this.graph.y_length / this.scaleNumbers.length;
         } else {
             this.graph.squareSize.x = this.graph.x_length / this.scaleNumbers.length;
@@ -142,7 +141,7 @@ class Axis {
                 let y_offset = offset * this.graph.squareSize.y;
                 let scale_offset = Math.ceil(this.graph.ctx.measureText(number.toString()).width / 1.5);
 
-                draw.toTextMode(this.graph.ctx, 14, this.options.axis_colour);
+                this.graph.ctx.textBaseline = 'middle';
                 this.graph.ctx.fillText(number.toString(),
                     this.graph.lengths.x_begin - 9 - scale_offset,
                     this.graph.lengths.y_end - y_offset
@@ -156,10 +155,11 @@ class Axis {
                 let x_offset = offset * this.graph.squareSize.x;
                 let scale_offset = this.graph.font_size / 2;
 
-                this.graph.ctx.textBaseline = 'middle';
+                draw.toTextMode(this.graph.ctx, 14, this.options.axis_colour);
+
                 this.graph.ctx.fillText(number.toString(),
                     this.xStart + x_offset,
-                    this.yStart + 9 + scale_offset
+                    this.graph.lengths.y_end + 9 + scale_offset
                 );
                 offset++;
             }
