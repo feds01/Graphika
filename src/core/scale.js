@@ -1,4 +1,5 @@
-const arrays = require('../utils/arrays');
+const arrays = require('./../utils/arrays');
+const utils = require("./../utils");
 
 class Scale {
     constructor(options) {
@@ -9,9 +10,18 @@ class Scale {
          * @property Maximum data value within the data set.* */
         this.max = options.max;
 
+        /**
+        * @property Name of the scale
+        * */
+        this.name = options.name;
+
         /*
         * The range of the values, simply a max - min subtraction*/
         this.range = 0;
+
+        if(utils.isUndefOrNaN(this.min) || utils.isUndefOrNaN(this.max)) {
+            throw ("Min/Max value of scale cannot be NaN or undefined.");
+        }
 
         /*
         * Target number of ticks on the axis which will be displayed. * */
@@ -87,4 +97,6 @@ class Scale {
     }
 }
 
-module.exports = Scale;
+module.exports = {
+    scale: Scale
+};
