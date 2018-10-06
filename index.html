@@ -52,12 +52,12 @@
         }
         return array;
     }
-    let w_data = {
+/*    let w_data = {
         1: getRandomArray(200, 0, 20),
         2: getRandomArray(200, 430, 103)
-    };
+    };*/
 
-    console.time('w');
+/*    console.time('w');
     let w = new Graph('w', {
             x_label: 'Time spent working',
             y_label: 'Money earned',
@@ -66,6 +66,7 @@
         },
         [
             {
+
                 interpolation: "cubic",
                 label: 'student_1',
                 data: w_data['1'],
@@ -79,7 +80,7 @@
         ]
     );
     w.draw();
-    console.timeEnd('w');
+    console.timeEnd('w');*/
 
     let g = new Graph('g', {
             x_label: 'Hours Revised',
@@ -92,14 +93,14 @@
                 style: "dashed",
                 label: 'student_1',
                 interpolation: 'cubic',
-                data: getRandomArray(11, -60, 134),
+                data: getRandomArray(11, -10, 20),
                 colour: '#FF6782'
             },
-            {
+            /*{
                 label: 'student_1',
-                data: getRandomArray(11, -30, 200),
+                data: getRandomArray(11, 0, 200),
                 colour: '#009FE5'
-            }
+            }*/
         ]
     );
     g.draw();

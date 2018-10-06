@@ -117,7 +117,6 @@ class BasicGraph {
             y: this.scale.getTickLabels
         };
 
-
         while ((offset <= this.scale.getMaxTicks) || (offset <= this.data.maxLen())) {
             this.ctx.strokeStyle = utils.rgba(this.options.axis_colour, 40);
 
@@ -305,13 +304,14 @@ class BasicGraph {
 
 
     draw() {
-        this.scale = new scale({
+        this.scale = new scale.scale({
             max: this.data.max(),
             min: this.options.zero_scale ? 0 : this.data.min(),
-            maxTicks: config.yTicks
+            maxTicks: config.yTicks,
+            name: "general scale"
         });
 
-        this.xAxis = new axis(this.ctx, this.data, "y-axis", {});
+        this.yAxis = new axis(this.ctx, this.data, "y-axis", {});
 
         this.calculatePadding();
 
@@ -339,7 +339,7 @@ class BasicGraph {
                 y_center: this.label_size + this.y_length / 2,
         };
 
-        this.xAxis.draw(this.lengths);
+        this.yAxis.draw(this.lengths);
 
         this.data.toPos();
         this.drawLabels();
