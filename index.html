@@ -52,12 +52,13 @@
         }
         return array;
     }
-/*    let w_data = {
-        1: getRandomArray(200, 0, 20),
-        2: getRandomArray(200, 430, 103)
-    };*/
 
-/*    console.time('w');
+   let w_data = {
+       1: getRandomArray(20, 0, 20),
+        2: getRandomArray(200, 430, 103)
+   };
+
+   console.time('w');
     let w = new Graph('w', {
             x_label: 'Time spent working',
             y_label: 'Money earned',
@@ -72,38 +73,39 @@
                 data: w_data['1'],
                 colour: '#FF6782',
             },
-            {
-                label: 'student_1',
-                data: w_data['2'],
-                colour: '#009FE5'
-            }
+            /*            {
+                            label: 'student_1',
+                            data: w_data['2'],
+                            colour: '#009FE5'
+                        }*/
         ]
     );
     w.draw();
-    console.timeEnd('w');*/
+   console.timeEnd('w');
 
-    let g = new Graph('g', {
-            x_label: 'Hours Revised',
-            y_label: 'UCAS Points',
-            tittle_pos: 'top-center',
-            gridded: true
-        },
-        [
-            {
-                style: "dashed",
-                label: 'student_1',
-                interpolation: 'cubic',
-                data: getRandomArray(11, -10, 20),
-                colour: '#FF6782'
-            },
-            /*{
-                label: 'student_1',
-                data: getRandomArray(11, 0, 200),
-                colour: '#009FE5'
-            }*/
-        ]
-    );
-    g.draw();
+   /*    let g = new Graph('g', {
+               x_label: 'Hours Revised',
+               y_label: 'UCAS Points',
+               tittle_pos: 'top-center',
+               gridded: true
+           },
+           [
+               {
+                   style: "dashed",
+                   label: 'student_1',
+                   interpolation: 'cubic',
+                   data: getRandomArray(11, -10, 20),
+                   colour: '#FF6782'
+               },
+               {
+                   label: 'student_1',
+                   interpolation: 'cubic',
+                   data: getRandomArray(11, 0, 200),
+                   colour: '#009FE5'
+               }
+           ]
+       );
+       g.draw();*/
 </script>
 </body>
 </html>

@@ -72,6 +72,8 @@ class Axis {
             this.scales["positive"].setTickStep(this.sharedTickStep);
             this.scales["negative"].setTickStep(this.sharedTickStep);
 
+        } else {
+            this.sharedTickStep = this.scales["positive"].getTickStep();
         }
 
         this.generateScaleNumbers();
@@ -89,7 +91,7 @@ class Axis {
         if(this.type === "y-axis") {
             this.graph.squareSize.y = this.graph.y_length / this.scaleNumbers.length;
         } else {
-            this.graph.squareSize.x = this.graph.x_length / this.scaleNumbers.length;
+            this.graph.squareSize.x = this.graph.x_length / (this.scaleNumbers.length - 1);
         }
 
         if (this.type === 'x-axis') {
@@ -98,21 +100,23 @@ class Axis {
                 let yOffset = this.graph.squareSize.y * this.graph.yAxis.scaleNumbers.indexOf(0);
 
                 this.yStart = this.graph.lengths.y_end - yOffset;
-                this.xStart = this.graph.lengths.x_begin;
             }
         }
     }
 
     generateScaleNumbers() {
+        this.scaleNumbers = [];
+
         if (this.type === 'x-axis') {
-            this.scaleNumbers = arrays.fillRange(this.maxDataPoints + 1).map(
+            this.scaleNumbers = arrays.fillRange(this.options.maxTicks + 1).map(
                 x => Math.floor(this.maxDataPoints * (x / this.options.maxTicks))
-            )
+            );
+
         } else {
-            this.scaleNumbers = this.scales['negative'].getTickLabels.map(x => x === 0 ?  x : x * -1).slice().reverse();
             if (this.negativeScale) {
-                this.scaleNumbers = arrays.join(this.scaleNumbers, this.scales["positive"].getTickLabels);
+                this.scaleNumbers = this.scales['negative'].getTickLabels.map(x => x === 0 ? x : x * -1).slice().reverse();
             }
+            this.scaleNumbers = arrays.join(this.scaleNumbers, this.scales["positive"].getTickLabels);
 
             // check if 0 & -0 exist, if so remove the negative 0
             for (let i = 0; i < this.scaleNumbers.length - 1; i++) {

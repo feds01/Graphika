@@ -4,7 +4,6 @@ const draw = require("./core/drawing");
 const config = require("./core/config");
 const interpolation = require('./core/interpolation');
 
-const scale = require('./core/scale');
 const axis = require('./core/axis');
 const data = require('./core/data');
 const point = require("./core/point");
@@ -124,8 +123,8 @@ class BasicGraph {
             this.ctx.strokeStyle = utils.rgba(this.options.axis_colour, 40);
 
             // grid drawing
-            let x_len = this.options.gridded ? 9 + this.y_length : 9,
-                y_len = this.options.gridded ? 9 + this.x_length : 9;
+            let y_len = this.options.gridded ? 9 + this.yAxis.scaleNumbers.length * this.squareSize.y : 9,
+                x_len = this.options.gridded ? 9 + this.xAxis.scaleNumbers.length * this.squareSize.x : 9;
 
             /*// draw the centered zero and skip drawing zero's on neighbouring ticks.
             if (this.options.zero_scale && this.scale_num.x[offset] === 0
@@ -144,7 +143,7 @@ class BasicGraph {
                 draw.verticalLine(this.ctx,
                     this.lengths.x_begin + x_offset,
                     this.lengths.y_end + 9,
-                    -x_len
+                    -y_len
                 );
             }
             // The Y-Axis drawing
@@ -154,7 +153,7 @@ class BasicGraph {
                 draw.horizontalLine(this.ctx,
                     this.lengths.x_begin - 9,
                     this.lengths.y_end - y_offset,
-                    y_len
+                    x_len
                 );
             }
             offset++;
@@ -266,8 +265,8 @@ class BasicGraph {
         let longestItem = arrays.longest(this.yAxis.scaleNumbers.map(x => x.toString()));
 
         draw.toTextMode(this.ctx, 14, this.options.axis_colour);
-        this.padding.left = this.options.padding + this.ctx.measureText(longestItem).width + this.label_size;
-        this.padding.bottom = this.options.padding + this.label_size + this.font_size;
+        this.padding.left = Math.ceil(this.options.padding + this.ctx.measureText(longestItem).width + this.label_size);
+        this.padding.bottom = Math.ceil(this.options.padding + this.label_size + this.font_size);
     };
 
     draw() {
@@ -278,8 +277,8 @@ class BasicGraph {
         this.calculatePadding();
 
         this.max_xTicks = Math.min(this.data.maxLen(), config.xTicks);
-        this.x_length = this.c_width - this.padding.right - this.padding.left - this.label_size;
-        this.y_length = this.c_height - this.padding.top - this.padding.bottom - this.label_size;
+        this.x_length = this.c_width - (this.padding.right + this.padding.left + this.label_size);
+        this.y_length = this.c_height - (this.padding.top + this.padding.bottom + this.label_size);
 
         this.lengths = {
                 x_begin: this.padding.left + this.label_size,

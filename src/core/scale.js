@@ -46,6 +46,10 @@ class Scale {
         this.niceMin = Math.floor(this.min / this.tickStep) * this.tickStep;
         this.niceMax = Math.ceil(this.max / this.tickStep) * this.tickStep;
 
+        this.generateTickValues();
+    }
+
+    generateTickValues() {
         // fill array with labels.
         this.tickLabels = arrays.fillRange(this.maxTicks + 1)
             .map(x => (x * this.tickStep));
@@ -62,10 +66,9 @@ class Scale {
 
     setTickStep(val) {
         this.tickStep = val;
-        this.maxTicks = Math.round(this.range / val);
+        this.maxTicks = Math.ceil(this.max / val);
 
-        this.tickLabels = arrays.fillRange(this.maxTicks + 1)
-            .map(x => (x * this.tickStep));
+        this.generateTickValues();
     }
 
     get getMaxTicks() {
