@@ -40,12 +40,11 @@ class Point {
         }
 
         // calculate actual graphical coordinates
-
-        let actual_xSize = graph.x_length / graph.data.maxLen();
+        let actual_xSize = data.x / graph.data.maxLen();
         let actual_ySize = data.y  / graph.yAxis.sharedTickStep;
 
-        this.x = Math.round(graph.lengths.x_begin + (data.x * actual_xSize));
-        this.y = Math.round(graph.lengths.y_end -  (actual_ySize * graph.squareSize.y));
+        this.x = graph.lengths.x_begin + (actual_xSize * graph.x_length);
+        this.y = graph.xAxis.yStart - (actual_ySize * graph.squareSize.y);
     }
 }
 
