@@ -107,6 +107,23 @@ class BasicGraph {
         }
     }
 
+    setData(_data) {
+        // re-create the data object & call re-draw
+        this.data = new data.Data(_data);
+        this.redraw();
+    }
+
+    removeLineByLabel(label) {
+        console.log(this.data);
+
+        for (let k = 0; k < this.data.data.length - 1; k++) {
+            if (this.data.data[k].label === label) {
+                this.data.data.splice(k, 1);
+            }
+        }
+        this.redraw(); // re-draw the graph
+    }
+
     drawLabels() {
         // don't draw if no labels are given
         if (this.label_size === 0) {

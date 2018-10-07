@@ -114,9 +114,9 @@ class Axis {
 
         } else {
             if (this.negativeScale) {
-                this.scaleNumbers = this.scales['negative'].getTickLabels.map(x => x === 0 ? x : x * -1).slice().reverse();
+                this.scaleNumbers = this.scales['negative'].getTickLabels().map(x => x === 0 ? x : x * -1).slice().reverse();
             }
-            this.scaleNumbers = arrays.join(this.scaleNumbers, this.scales["positive"].getTickLabels);
+            this.scaleNumbers = arrays.join(this.scaleNumbers, this.scales["positive"].getTickLabels());
 
             // check if 0 & -0 exist, if so remove the negative 0
             for (let i = 0; i < this.scaleNumbers.length - 1; i++) {

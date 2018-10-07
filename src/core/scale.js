@@ -71,11 +71,11 @@ class Scale {
         this.generateTickValues();
     }
 
-    get getMaxTicks() {
+    getMaxTicks() {
         return this.maxTicks;
     }
 
-    get getTickLabels() {
+    getTickLabels() {
         return this.tickLabels;
     }
 
