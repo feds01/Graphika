@@ -52,7 +52,6 @@ class BasicGraph {
             gridded: false,
             padding: 14,
             zero_scale: true,
-            data_colour: 'rgb(156,39,176)'
         };
 
         let clazz = this;
@@ -154,15 +153,6 @@ class BasicGraph {
             let y_len = this.options.gridded ? 9 + this.yAxis.scaleNumbers.length * this.squareSize.y : 9,
                 x_len = this.options.gridded ? 9 + this.xAxis.scaleNumbers.length * this.squareSize.x : 9;
 
-            /*// draw the centered zero and skip drawing zero's on neighbouring ticks.
-            if (this.options.zero_scale && this.scale_num.x[offset] === 0
-                && this.scale_num.y[offset] === 0) {
-                this.ctx.fillText('0',
-                    this.lengths.x_begin - this.padding.val,
-                    this.lengths.y_end + this.padding.val
-                );
-                skip_text = true;
-            }*/
 
             // The X-Axis drawing
             if (offset <= this.max_xTicks + 1) {

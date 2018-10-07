@@ -132,6 +132,7 @@ class Axis {
     draw() {
         // determine the positions of the x-axis
         this.determineAxisPosition();
+        this.sharedZero = false;
         let offset = 0;
 
         // get the context ready to draw
@@ -139,7 +140,18 @@ class Axis {
         this.graph.ctx.lineWidth = 1;
 
         if(this.type === "y-axis") {
+
             draw.verticalLine(this.graph.ctx, this.xStart, this.graph.lengths.y_end, -this.graph.y_length);
+            // if the graph has a zero scale setting, and the y-scale first element is a 0
+            // (excluding negative scales), don't draw the 0 on the first tick and remove it from
+            // scaleNumbers for the time being.
+            if (this.graph.options.zero_scale && this.scaleNumbers.indexOf(0) === 0) {
+                this.scaleNumbers.shift();
+                this.sharedZero = true;
+
+                offset++;
+            }
+            console.log(this.scaleNumbers);
 
             for(let number of this.scaleNumbers) {
                 let y_offset = offset * this.graph.squareSize.y;
@@ -152,8 +164,28 @@ class Axis {
                 );
                 offset++;
             }
+
+            // add the '0' back if it was removed
+            if (this.sharedZero) {
+                this.scaleNumbers = [0].concat(this.scaleNumbers);
+            }
+
         } else {
             draw.horizontalLine(this.graph.ctx, this.xStart, this.yStart, this.graph.x_length);
+
+            // check if the sharedZero was detected in y-axis draw method, do the same thing
+            // as for the y-axis and then draw the centered 0.
+            if (this.graph.yAxis.sharedZero) {
+                this.scaleNumbers.shift();
+                this.sharedZero = true;
+
+                offset = 1;
+
+                this.graph.ctx.fillText('0',
+                    this.graph.lengths.x_begin - this.graph.padding.val,
+                    this.graph.lengths.y_end + this.graph.padding.val
+                );
+            }
 
             for (let number of this.scaleNumbers) {
                 let x_offset = offset * this.graph.squareSize.x;
@@ -166,6 +198,11 @@ class Axis {
                     this.graph.lengths.y_end + 9 + scale_offset
                 );
                 offset++;
+            }
+
+            // add the '0' back if it was removed
+            if (this.sharedZero) {
+                this.scaleNumbers = [0].concat(this.scaleNumbers);
             }
         }
 
