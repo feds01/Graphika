@@ -13,9 +13,9 @@
             font-family: "Roboto Mono", monospace;
         }
 
-        /*        .graph canvas {
-                    border: 1px black solid;
-                }*/
+        /*.graph canvas {
+            border: 1px black solid;
+        }*/
 
         .graph > .tittle {
             font-size: 28px;
@@ -54,8 +54,9 @@
     }
 
     let w_data = {
-        1: getRandomArray(20, 0, 20),
-        2: getRandomArray(200, 430, 103)
+        1: getRandomArray(80, 0, 50),
+        2: getRandomArray(80, 40, 80),
+        3: getRandomArray(80, 60, 100)
     };
 
     console.time('w');
@@ -71,12 +72,17 @@
                 interpolation: "cubic",
                 label: 'student_1',
                 data: w_data['1'],
-                colour: '#FF6782',
+                colour: Graph.Colours.FLAMINGO_PINK,
             },
             {
-                label: 'student_1',
+                label: 'student_2',
                 data: w_data['2'],
-                colour: '#009FE5'
+                colour: Graph.Colours.ELECTRIC_BLUE
+            },
+            {
+                label: 'student_3',
+                data: w_data['3'],
+                colour: Graph.Colours.EMERALD_GREEN
             }
         ]
     );
@@ -95,13 +101,13 @@
                 label: 'student_1',
                 interpolation: 'cubic',
                 data: getRandomArray(11, -10, 20),
-                colour: '#FF6782'
+                colour: Graph.Colours.FLAMINGO_PINK
             },
             {
                 label: 'student_1',
                 interpolation: 'cubic',
                 data: getRandomArray(11, 0, 200),
-                colour: '#009FE5'
+                colour: Graph.Colours.ELECTRIC_BLUE
             }
         ]
     );

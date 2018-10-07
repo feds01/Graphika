@@ -21,7 +21,9 @@ module.exports = {
         s8: ['#8dd3c7', '#ffffb3', '#bebada']
     },
 
+    FLAMINGO_PINK: "#FF6782",
+    EMERALD_GREEN: "#008816",
+    ELECTRIC_BLUE: "#009FE5",
     BLACK: "#000000"
-
 };
  
