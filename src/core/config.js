@@ -7,16 +7,25 @@
  */
 
 module.exports = {
-    // this value is the default line width size for a linear graph.
-    // It may change depending on if there are more data points than
-    // the default value of ticks on the x-axis.
+    /* this value is the default line width size for a linear graph.
+     * It may change depending on if there are more data points than
+     * the default value of ticks on the x-axis. */
     lineWidth: 3,
 
-    // this is the maximum amount of ticks which are available on the x-axis
+    /* this is the maximum amount of ticks which are available on the x-axis */
     xTicks: 20,
 
-    // this is the maximum amount of ticks which are available on the y-axos
+    /* this is the maximum amount of ticks which are available on the y-axis */
     yTicks: 10,
 
-    tension: 0.5
+    /* This value is used to determine the curvature of cubic interpolation, higher
+     * values result in more curved connections and lower values are closer to linear
+     * interpolation
+     * */
+    tension: 0.5,
+
+    /* Default value for the axis colour */
+    axis_colour: 'rgb(94,94,94)'
+
+
 };

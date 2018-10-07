@@ -18,31 +18,40 @@ const colours = require("./utils/colours");
  * @property tittle_pos -> The position of where the tittle text is shown, options include:
  *           top-left, top-center, top-right, bottom-left, bottom-center, bottom-right
  *
- * @property scale -> The scale/zoom level of the graph, if not passed as a setting, the scaling
- *                    will be automatically adjusted to fit entire data set.
  *
  * @property gridded -> if true, the graph will be drawn with lines at the intervals on the graph.
  * */
 class BasicGraph {
-    constructor(id, options, _data) {
-        this.id = id;
+    constructor(graphContainerId, options, _data) {
+        /**
+         * @since v0.0.1 The id of the html container that the graph should
+         * be drawn within * */
+        this.graphContainerId = graphContainerId;
+
+        /**
+         * @since v0.0.1 Graph options, this contain x-labels, y-label, tittle, legends, points
+         * style, gridded, etc. More on graph options can be read in the documentation * */
         this.options = options;
+
+        /**
+         * @since v0.0.1 Data() object which contains the data for the lines the graph should
+         * plot, the object also contains various utility functions to fetch stats on the data. * */
         this.data = new data.Data(_data);
+
         this.lengths = {};
         this.squareSize = {x: 0, y: 0};
-        this.canvas = undefined;
-        this.ctx = undefined;
+
+        /**
+         * @since v0.0.1 Default values for options within the object, however this will
+         * soon be phased out in favour of core/config * */
         this.defaultConfig = {
             x_label: '',
             y_label: '',
             tittle: 'Graph',
             tittle_pos: 'top-center',
-            scale: 1,
             gridded: false,
             padding: 14,
-            join_points: true,
             zero_scale: true,
-            axis_colour: 'rgb(94,94,94)',
             data_colour: 'rgb(156,39,176)'
         };
 
@@ -57,7 +66,7 @@ class BasicGraph {
         }
 
         this.options = this.defaultConfig;
-        this.elementMap = utils.findObjectElements(this.id, this.options);
+        this.elementMap = utils.findObjectElements(this.graphContainerId, this.options);
 
         // find canvas element and tittle element.
         try {
@@ -100,10 +109,12 @@ class BasicGraph {
 
     drawLabels() {
         // don't draw if no labels are given
-        if (this.label_size === 0) {return;}
+        if (this.label_size === 0) {
+            return;
+        }
 
         // add x-axis label
-        draw.toTextMode(this.ctx, this.options.font_size, this.options.axis_colour);
+        draw.toTextMode(this.ctx, this.options.font_size, config.axis_colour);
         this.ctx.fillText(this.options.x_label, this.lengths.x_center, this.c_height - (this.font_size / 2));
 
         // add y-axis label
@@ -120,7 +131,7 @@ class BasicGraph {
         let offset = 0;
 
         while (offset <= Math.max(this.yAxis.scaleNumbers.length, this.data.maxLen() + 1)) {
-            this.ctx.strokeStyle = utils.rgba(this.options.axis_colour, 40);
+            this.ctx.strokeStyle = utils.rgba(config.axis_colour, 40);
 
             // grid drawing
             let y_len = this.options.gridded ? 9 + this.yAxis.scaleNumbers.length * this.squareSize.y : 9,
@@ -165,6 +176,9 @@ class BasicGraph {
         let lineWidth = config.lineWidth;
         let clazz = this;
 
+        // convert the data into {x, y} format
+        this.data.toPos();
+
         for (let line of this.data.get()) {
             // alter the line width if there are more data points than maximum ticks on graph.
             // reduce it to one pixel.
@@ -184,7 +198,6 @@ class BasicGraph {
             line.pos_data.forEach((x) => {
                 points.push(new point.Point(x, clazz));
             });
-
 
             if (line["interpolation"] === "cubic") {
                 let controlPoints = [];
@@ -264,15 +277,15 @@ class BasicGraph {
     calculatePadding() {
         let longestItem = arrays.longest(this.yAxis.scaleNumbers.map(x => x.toString()));
 
-        draw.toTextMode(this.ctx, 14, this.options.axis_colour);
+        draw.toTextMode(this.ctx, 14, config.axis_colour);
         this.padding.left = Math.ceil(this.options.padding + this.ctx.measureText(longestItem).width + this.label_size);
         this.padding.bottom = Math.ceil(this.options.padding + this.label_size + this.font_size);
     };
 
     draw() {
         // initialise the y-axis & x-axis
-        this.yAxis = new axis(this, "y-axis", {axis_colour: this.options.axis_colour});
-        this.xAxis = new axis(this, "x-axis", {axis_colour: this.options.axis_colour});
+        this.yAxis = new axis(this, "y-axis", {axis_colour: config.axis_colour});
+        this.xAxis = new axis(this, "x-axis", {axis_colour: config.axis_colour});
 
         this.calculatePadding();
 
@@ -281,19 +294,17 @@ class BasicGraph {
         this.y_length = this.c_height - (this.padding.top + this.padding.bottom + this.label_size);
 
         this.lengths = {
-                x_begin: this.padding.left + this.label_size,
-                y_begin: this.padding.top,
-                x_end: this.c_width - this.padding.right,
-                y_end: this.c_height - this.padding.bottom,
-                x_center: this.padding.left + this.label_size + this.x_length / 2,
-                y_center: this.label_size + this.y_length / 2,
+            x_begin: this.padding.left + this.label_size,
+            y_begin: this.padding.top,
+            x_end: this.c_width - this.padding.right,
+            y_end: this.c_height - this.padding.bottom,
+            x_center: this.padding.left + this.label_size + this.x_length / 2,
+            y_center: this.label_size + this.y_length / 2,
         };
 
         this.yAxis.draw();
         this.xAxis.draw();
 
-
-        this.data.toPos();
         this.drawLabels();
         this.drawAxis();
         this.drawData();
@@ -302,7 +313,7 @@ class BasicGraph {
     redraw() {
         // clear the rectangle and reset colour
         this.ctx.clearRect(0, 0, this.c_width, this.c_height);
-        this.ctx.strokeStyle = this.options.axis_colour;
+        this.ctx.strokeStyle = config.axis_colour;
         this.ctx.fillStyle = colours.BLACK;
 
         this.draw();
