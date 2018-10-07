@@ -324,7 +324,10 @@ module.exports = function () {
     let Graph = function (id, config, data) {
         return new BasicGraph(id, config, data);
     };
+
     Graph.Graph = Graph;
+
+    Graph.Colours = require("./utils/colours");
 
     return Graph;
 };
