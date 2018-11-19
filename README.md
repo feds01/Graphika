@@ -14,12 +14,12 @@ Once you have done this, to create a new graph you must initialise a graph objec
 
 // where elementId is the given id of the div you wish for the graph to use
 
-let graphObject = new Graph("elementId", {
+let graph = new Graph("elementId", {
   tittle: "A new graph!",
   x_label: "X-Axis",
   y_label: "Y-Axis"
 });
 
 // let's draw the graph
-graphObject.draw();
+graph.draw();
 ```
