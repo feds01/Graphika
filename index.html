@@ -54,9 +54,9 @@
     }
 
     let w_data = {
-        1: getRandomArray(80, 0, 50),
-        2: getRandomArray(80, 40, 80),
-        3: getRandomArray(80, 60, 100)
+        1: getRandomArray(78, 0, 50),
+        2: getRandomArray(78, 40, 80),
+        3: getRandomArray(78, 60, 100)
     };
 
     console.time('w');
@@ -69,7 +69,6 @@
         },
         [
             {
-
                 interpolation: "cubic",
                 label: 'student_1',
                 data: w_data['1'],
@@ -90,9 +89,9 @@
     w.draw();
     console.timeEnd('w');
 
-    let g = new Graph('g', {
-            x_label: 'Hours Revised',
-            y_label: 'UCAS Points',
+    let graph = new Graph('g', {
+            x_label: 'X-Label',
+            y_label: 'Y-Label',
             tittle_pos: 'top-center',
             gridded: true
         },
@@ -101,18 +100,18 @@
                 style: "dashed",
                 label: 'student_1',
                 interpolation: 'cubic',
-                data: getRandomArray(11, -10, 20),
+                data: getRandomArray(11, 0, 20),
                 colour: Graph.Colours.FLAMINGO_PINK
             },
             {
                 label: 'student_1',
                 interpolation: 'cubic',
-                data: getRandomArray(11, 0, 200),
+                data: getRandomArray(11, 0, 100),
                 colour: Graph.Colours.ELECTRIC_BLUE
             }
         ]
     );
-    g.draw();
+    graph.draw();
 </script>
 </body>
 </html>

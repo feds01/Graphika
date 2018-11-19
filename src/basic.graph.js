@@ -113,8 +113,6 @@ class BasicGraph {
     }
 
     removeLineByLabel(label) {
-        console.log(this.data);
-
         for (let k = 0; k < this.data.data.length - 1; k++) {
             if (this.data.data[k].label === label) {
                 this.data.data.splice(k, 1);
