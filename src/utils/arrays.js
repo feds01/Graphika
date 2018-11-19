@@ -42,11 +42,11 @@ module.exports = {
     },
 
     /*
-   * Get all only positive values from a given array.
+   * Get all only positive () values from a given array.
    * */
-    positiveValues: function (array) {
+    positiveAndZeroValues: function (array) {
         return array.filter(function(value) {
-            return value > 0;
+            return value >= 0;
         });
     },
 
