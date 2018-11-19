@@ -23,3 +23,35 @@ let graph = new Graph("elementId", {
 // let's draw the graph
 graph.draw();
 ```
+
+Creating a simple graph with some datasets:
+
+```javascript
+ let graph = new Graph('g', {
+            x_label: 'X-Label',
+            y_label: 'Y-Label',
+            tittle_pos: 'top-center',
+            gridded: true
+        },
+        [
+            {
+                style: "dashed",
+                label: 'student_1',
+                interpolation: 'cubic',
+                data: getRandomArray(11, 0, 20),
+                colour: Graph.Colours.FLAMINGO_PINK
+            },
+            {
+                label: 'student_1',
+                interpolation: 'cubic',
+                data: getRandomArray(11, 0, 100),
+                colour: Graph.Colours.ELECTRIC_BLUE
+            }
+        ]
+    );
+    graph.draw();
+```
+
+Result:
+
+![simple_graph](https://github.com/feds01/graph-js/blob/master/docs/simple_graph.PNG)
