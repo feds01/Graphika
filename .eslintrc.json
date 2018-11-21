@@ -1,0 +1,33 @@
+{
+  "extends": "eslint:recommended",
+  "parserOptions": {
+    "ecmaVersion": 8,
+    "sourceType": "module",
+    "ecmaFeatures": {
+      "jsx": true
+    }
+  },
+  "rules": {
+    "no-var": "error",
+    "no-const-assign": "error",
+    "no-unreachable": "error",
+    "no-invalid-regexp": "error",
+    "no-console": "off",
+    "no-unused-vars": "off",
+    "no-trailing-spaces": "warn",
+    "spaced-comment": "warn",
+    "use-isnan": "error",
+    "eqeqeq": "error",
+    "radix": "warn",
+    "quotes": [
+      "error",
+      "double"
+    ],
+    "semi": 2
+  },
+  "env": {
+    "browser": true,
+    "node": true
+  },
+  "root": true
+}

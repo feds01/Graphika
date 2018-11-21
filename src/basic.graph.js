@@ -1,11 +1,11 @@
-const utils = require('./utils');
+const utils = require("./utils");
 const arrays = require("./utils/arrays");
 const draw = require("./core/drawing");
 const config = require("./core/config");
-const interpolation = require('./core/interpolation');
+const interpolation = require("./core/interpolation");
 
-const axis = require('./core/axis');
-const data = require('./core/data');
+const axis = require("./core/axis");
+const data = require("./core/data");
 const point = require("./core/point");
 const colours = require("./utils/colours");
 
@@ -45,10 +45,10 @@ class BasicGraph {
          * @since v0.0.1 Default values for options within the object, however this will
          * soon be phased out in favour of core/config * */
         this.defaultConfig = {
-            x_label: '',
-            y_label: '',
-            tittle: 'Graph',
-            tittle_pos: 'top-center',
+            x_label: "",
+            y_label: "",
+            tittle: "Graph",
+            tittle_pos: "top-center",
             gridded: false,
             padding: 14,
             zero_scale: true,
@@ -70,7 +70,7 @@ class BasicGraph {
         // find canvas element and tittle element.
         try {
             this.canvas = this.elementMap.canvas;
-            this.ctx = this.canvas.getContext('2d');
+            this.ctx = this.canvas.getContext("2d");
             draw.toTextMode(this.ctx, 16, this.options.axis_colour);
 
             this.c_width = this.canvas.width;
@@ -78,12 +78,12 @@ class BasicGraph {
 
         } catch (e) {
             if (this.canvas === null) {
-                throw ('Provided canvas does not exist!\n' + e);
+                throw ("Provided canvas does not exist!\n" + e);
             }
         }
 
         this.font_size = function () {
-            return parseInt(clazz.ctx.font.substr(0, 2))
+            return parseInt(clazz.ctx.font.substr(0, 2));
         }();
 
 
@@ -137,7 +137,7 @@ class BasicGraph {
         this.ctx.rotate(-Math.PI / 2);
         this.ctx.fillText(this.options.y_label, 0, 0);
         this.ctx.restore();
-    };
+    }
 
 
     drawAxis() {
@@ -174,7 +174,7 @@ class BasicGraph {
             }
             offset++;
         }
-    };
+    }
 
 
     drawData() {
@@ -192,10 +192,10 @@ class BasicGraph {
             }
 
             // setup for drawing
-            this.ctx.lineJoin = 'round';
+            this.ctx.lineJoin = "round";
             this.ctx.strokeStyle = utils.rgba(line.colour, 40);
             this.ctx.fillStyle = utils.rgba(line.colour, 40);
-            this.ctx.setLineDash(line['style'] === 'dashed' ? [5, 5] : []);
+            this.ctx.setLineDash(line["style"] === "dashed" ? [5, 5] : []);
             this.ctx.lineWidth = lineWidth;
 
             let points = [];
@@ -276,7 +276,7 @@ class BasicGraph {
                 }
             }
         }
-    };
+    }
 
 
     calculatePadding() {
@@ -285,7 +285,7 @@ class BasicGraph {
         draw.toTextMode(this.ctx, 14, config.axis_colour);
         this.padding.left = Math.ceil(this.options.padding + this.ctx.measureText(longestItem).width + this.label_size);
         this.padding.bottom = Math.ceil(this.options.padding + this.label_size + this.font_size);
-    };
+    }
 
     draw() {
         // initialise the y-axis & x-axis
@@ -313,7 +313,7 @@ class BasicGraph {
         this.drawLabels();
         this.drawAxis();
         this.drawData();
-    };
+    }
 
     redraw() {
         // clear the rectangle and reset colour
@@ -331,7 +331,6 @@ module.exports = function () {
     };
 
     Graph.Graph = Graph;
-
     Graph.Colours = require("./utils/colours");
 
     return Graph;
