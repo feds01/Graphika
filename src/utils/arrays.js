@@ -54,6 +54,6 @@ module.exports = {
      check if a value is within the given array
     * */
     join(arrA, arrB) {
-        return arrA.concat(arrB)
+        return arrA.concat(arrB);
     }
 };

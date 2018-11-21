@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/feds01/graph-js#readme",
   "devDependencies": {
+    "browserify": "^16.2.3",
     "eslint": "^5.9.0",
     "gulp": "^4.0.0",
     "gulp-size": "^3.0.0",
