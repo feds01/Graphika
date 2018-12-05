@@ -30,7 +30,7 @@ let graph = new Graph("elementId", {
 graph.draw();
 ```
 
-Creating a simple graph with some datasets:
+Creating a simple graph with some data sets:
 
 ```javascript
  let graph = new Graph('g', {
@@ -60,12 +60,12 @@ Creating a simple graph with some datasets:
 
 Result:
 
-![simple_graph](https://github.com/feds01/graph-js/blob/master/docs/simple_graph.PNG)
+![simple_graph](docs/simple_graph.PNG)
 
 
-The library also supports datasets which include negative numbers:
+The library also supports data sets which include negative numbers:
 
-```
+```javascript
 let graph = new Graph('graph', {
             x_label: 'X-Label',
             y_label: 'Y-Label',
@@ -77,13 +77,13 @@ let graph = new Graph('graph', {
                 style: "dashed",
                 label: 'student_1',
                 interpolation: 'cubic',
-                data: getRandomArray(20, -20, 20),
+                data: getRandomArray(11, -20, 20),
                 colour: Graph.Colours.FLAMINGO_PINK
             },
             {
                 label: 'student_1',
                 interpolation: 'cubic',
-                data: getRandomArray(20, -20, 10),
+                data: getRandomArray(11, -20, 20),
                 colour: Graph.Colours.ELECTRIC_BLUE
             }
         ]
@@ -93,4 +93,4 @@ let graph = new Graph('graph', {
 
 Result:
 
-![negative_scale_graph](https://github.com/feds01/graph-js/blob/master/docs/negative_scale_graph.PNG)
+![negative_scale_graph](docs/negative_scale_graph.PNG)
