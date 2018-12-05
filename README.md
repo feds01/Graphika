@@ -9,6 +9,13 @@ To create a new graph you must import the minified or combined version into the 
 <script src="js/graph-js/dist/graph.min.js">
 ```
 Once you have done this, to create a new graph you must initialise a graph object by providing it a ``<div>`` element id, where the graph object should insert the given tittle and canvas (if no canvas exists within the element). To this, simply create a new variable and associate a 'new' graph object like so:
+```html
+ <div id="graph">
+        <div class="tittle"></div>
+        <canvas width="800" height="600"></canvas>
+    </div>
+```
+
 ```javascript
 
 // where elementId is the given id of the div you wish for the graph to use
@@ -54,3 +61,36 @@ Creating a simple graph with some datasets:
 Result:
 
 ![simple_graph](https://github.com/feds01/graph-js/blob/master/docs/simple_graph.PNG)
+
+
+The library also supports datasets which include negative numbers:
+
+```
+let graph = new Graph('graph', {
+            x_label: 'X-Label',
+            y_label: 'Y-Label',
+            tittle_pos: 'top-center',
+            gridded: true
+        },
+        [
+            {
+                style: "dashed",
+                label: 'student_1',
+                interpolation: 'cubic',
+                data: getRandomArray(20, -20, 20),
+                colour: Graph.Colours.FLAMINGO_PINK
+            },
+            {
+                label: 'student_1',
+                interpolation: 'cubic',
+                data: getRandomArray(20, -20, 10),
+                colour: Graph.Colours.ELECTRIC_BLUE
+            }
+        ]
+    );
+    graph.draw();
+```
+
+Result:
+
+![negative_scale_graph](https://github.com/feds01/graph-js/blob/master/docs/negative_scale_graph.PNG)
