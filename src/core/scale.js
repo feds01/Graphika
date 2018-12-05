@@ -104,5 +104,5 @@ class Scale {
 }
 
 module.exports = {
-    scale: Scale
+    Scale: Scale
 };

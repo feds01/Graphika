@@ -1,4 +1,4 @@
-const point = require("./point");
+const { Point } = require("./point");
 
 module.exports = {
     splineCurve: function (prev, current, next, t, graph) {
@@ -18,12 +18,12 @@ module.exports = {
 
 
         return {
-            prev: new point.Point({
+            prev: new Point({
                 x: current.data.x + fa * (prev.data.x - next.data.x),
                 y: current.data.y + fa * (prev.data.y - next.data.y)
             }, graph),
 
-            next: new point.Point({
+            next: new Point({
                 x: current.data.x - fb * (prev.data.x - next.data.x),
                 y: current.data.y - fb * (prev.data.y - next.data.y)
             }, graph)
