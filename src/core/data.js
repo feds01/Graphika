@@ -1,6 +1,14 @@
 class Data {
     constructor(data) {
         this.data = data;
+
+        // Ensure that the provided data can be accessed and is not empty data, this
+        // is simple sanitization
+        for(let entry of this.data) {
+            if (!Array.isArray(entry.data) || entry.data.length === 0) {
+                throw Error("Graph.js (graph) data must be a non-empty array");
+            }
+        }
     }
 
     get() {
@@ -37,9 +45,9 @@ class Data {
 
     toPos() {
         for (let entry = 0; entry < this.data.length; entry++) {
-            this.data[entry].pos_data  = [];
+            this.data[entry].pos_data = [];
 
-            for(let idx = 0; idx < this.data[entry].data.length; idx++) {
+            for (let idx = 0; idx < this.data[entry].data.length; idx++) {
                 this.data[entry].pos_data.push({
                     x: idx,
                     y: this.data[entry].data[idx]
@@ -50,5 +58,5 @@ class Data {
 }
 
 module.exports = {
-    Data : Data
+    Data: Data
 };
