@@ -5,7 +5,7 @@ const config = require("./core/config");
 const interpolation = require("./core/interpolation");
 
 const axis = require("./core/axis");
-const data = require("./core/data");
+const { Data } = require("./core/data");
 const point = require("./core/point");
 const colours = require("./utils/colours");
 
@@ -36,7 +36,7 @@ class BasicGraph {
         /**
          * @since v0.0.1 Data() object which contains the data for the lines the graph should
          * plot, the object also contains various utility functions to fetch stats on the data. * */
-        this.data = new data.Data(_data);
+        this.data = new Data(_data);
 
         this.lengths = {};
         this.squareSize = {x: 0, y: 0};
@@ -56,6 +56,7 @@ class BasicGraph {
 
         let clazz = this;
 
+        // Sanitise the configuration
         if ((this.options !== null) && (this.options !== undefined)) {
             Object.keys(this.options).forEach((option) => {
                 if (this.defaultConfig.hasOwnProperty(option)) {
@@ -78,7 +79,7 @@ class BasicGraph {
 
         } catch (e) {
             if (this.canvas === null) {
-                throw ("Provided canvas does not exist!\n" + e);
+                throw Error("Provided canvas does not exist!\n" + e);
             }
         }
 
@@ -108,7 +109,7 @@ class BasicGraph {
 
     setData(_data) {
         // re-create the data object & call re-draw
-        this.data = new data.Data(_data);
+        this.data = new Data(_data);
         this.redraw();
     }
 
