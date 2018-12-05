@@ -1,7 +1,4 @@
-# graph.js :chart_with_upwards_trend: :bar_chart:
-
-[![Greenkeeper badge](https://badges.greenkeeper.io/feds01/graph-js.svg)](https://greenkeeper.io/)
-
+<h1 align='center'>graph.js :chart_with_upwards_trend: :bar_chart: </h1>
 A fast and robust library to draw graphs and charts in the browser. The current version supports drawing graphs with positive and negative scales. It also enables the user to add custom labels and tittles to the graphs.
 
 ## Getiting started 
