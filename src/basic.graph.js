@@ -4,9 +4,9 @@ const draw = require("./core/drawing");
 const config = require("./core/config");
 const interpolation = require("./core/interpolation");
 
-const axis = require("./core/axis");
-const { Data } = require("./core/data");
-const point = require("./core/point");
+const {Axis} = require("./core/axis");
+const {Data} = require("./core/data");
+const {Point} = require("./core/point");
 const colours = require("./utils/colours");
 
 
@@ -202,7 +202,7 @@ class BasicGraph {
             let points = [];
 
             line.pos_data.forEach((x) => {
-                points.push(new point.Point(x, clazz));
+                points.push(new Point(x, clazz));
             });
 
             if (line["interpolation"] === "cubic") {
@@ -290,8 +290,13 @@ class BasicGraph {
 
     draw() {
         // initialise the y-axis & x-axis
-        this.yAxis = new axis(this, "y-axis", {axis_colour: config.axis_colour});
-        this.xAxis = new axis(this, "x-axis", {axis_colour: config.axis_colour});
+        this.yAxis = new Axis(this, "y-axis", {axis_colour: config.axis_colour});
+        this.xAxis = new Axis(this, "x-axis", {axis_colour: config.axis_colour});
+
+        // If the Y-Axis object has detected present negative values, we should update
+        // the X-Axis to correspond to this change. This should be done in a better way
+        // TODO: GraphScales object to better manage our scales
+        this.xAxis.negativeScale = this.yAxis.negativeScale;
 
         this.calculatePadding();
 

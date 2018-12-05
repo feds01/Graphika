@@ -1,4 +1,4 @@
-const scale = require("./scale");
+const {Scale} = require("./scale");
 const arrays = require("../utils/arrays");
 const config = require("./config");
 const draw = require("./drawing");
@@ -31,43 +31,46 @@ class Axis {
         }
 
         if (this.options.maxTicks <= 0 || this.options.minTicks <= 0) {
-            throw ("Max/Min ticks cannot be 0 or negative");
+            throw Error("Max/Min ticks cannot be 0 or negative");
         }
 
         if (this.type === 'x-axis') {
             this.options['maxTicks'] = Math.min(graph.data.maxLen(), config.xTicks);
 
-            this.scales.positive = new scale.scale({
+            this.scales.positive = new Scale({
                 min: 0,
                 max: this.maxDataPoints - 1,
                 maxTicks: this.options.maxTicks,
                 name: 'positive scale'
             });
+
         } else {
             if (arrays.negativeValues(this.data).length > 0) {
                 let negativeDataSet = arrays.negativeValues(this.data).map(x => Math.abs(x));
 
+
                 // divide the max ticks by two since negative and positive are sharing the scale.
-                this.scales.negative = new scale.scale({
+                this.scales.negative = new Scale({
                     min: Math.min(...negativeDataSet),
                     max: Math.max(...negativeDataSet),
                     maxTicks: this.options.maxTicks / 2,
                     name: "negative scale"
                 });
-
                 this.negativeScale = true;
+
             } else {
                 this.negativeScale = false;
             }
 
             let positiveValues = arrays.positiveAndZeroValues(this.data);
 
-            this.scales.positive = new scale.scale({
+            this.scales.positive = new Scale({
                 min: Math.min(...positiveValues),
                 max: Math.max(...positiveValues),
                 maxTicks: this.negativeScale ? this.options.maxTicks / 2 : this.options.maxTicks,
                 name: 'positive scale'
             });
+
 
             // Get the largest tick step of the two and set the other scale
             // tick step to the same one. This is because the tick steps must be
@@ -94,14 +97,16 @@ class Axis {
         this.yStart = this.graph.lengths.y_end;
         this.xStart = this.graph.lengths.x_begin;
 
-        if(this.type === "y-axis") {
+        if (this.type === "y-axis") {
             this.graph.squareSize.y = this.graph.y_length / this.scaleNumbers.length;
         } else {
             this.graph.squareSize.x = this.graph.x_length / (this.scaleNumbers.length - 1);
         }
 
+        // position the x-axis then in the center of the y-axis, calculate this offset by indexing
+        // where the zero '0' value is and multiplying this by the amount of squares there are between
+        // the zero and the last axis value.
         if (this.type === 'x-axis') {
-            // position the x-axis then in the center of the y-axis
             if (this.negativeScale) {
                 let yOffset = this.graph.squareSize.y * this.graph.yAxis.scaleNumbers.indexOf(0);
 
@@ -114,8 +119,6 @@ class Axis {
         this.scaleNumbers = [];
 
         if (this.type === 'x-axis') {
-            console.log(this.scales.positive);
-
             this.scaleNumbers = arrays.fillRange(this.options.maxTicks + 1).map(
                 x => this.scales["positive"].tickStep * x
             );
@@ -129,8 +132,7 @@ class Axis {
             // check if 0 & -0 exist, if so remove the negative 0
             for (let i = 0; i < this.scaleNumbers.length - 1; i++) {
                 if (this.scaleNumbers[i] === this.scaleNumbers[i + 1] &&
-                    this.scaleNumbers[i] === 0)
-                {
+                    this.scaleNumbers[i] === 0) {
                     this.scaleNumbers.splice(i + 1, 1);
                 }
             }
@@ -147,8 +149,7 @@ class Axis {
         this.graph.ctx.strokeStyle = utils.rgba(this.options.axis_colour, 60);
         this.graph.ctx.lineWidth = 1;
 
-        if(this.type === "y-axis") {
-
+        if (this.type === "y-axis") {
             draw.verticalLine(this.graph.ctx, this.xStart, this.graph.lengths.y_end, -this.graph.y_length);
             // if the graph has a zero scale setting, and the y-scale first element is a 0
             // (excluding negative scales), don't draw the 0 on the first tick and remove it from
@@ -160,7 +161,7 @@ class Axis {
                 offset++;
             }
 
-            for(let number of this.scaleNumbers) {
+            for (let number of this.scaleNumbers) {
                 let y_offset = offset * this.graph.squareSize.y;
                 let scale_offset = Math.ceil(this.graph.ctx.measureText(number.toString()).width / 1.5);
 
@@ -216,4 +217,6 @@ class Axis {
     }
 }
 
-module.exports = Axis;
+module.exports = {
+    Axis: Axis
+};
