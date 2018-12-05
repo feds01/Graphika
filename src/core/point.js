@@ -1,5 +1,5 @@
 /**
- * core/point.js Module description:
+ * Module description: src/core/point.js
  *
  * This module contains a simple constructor for a point, which can be assigned with
  * x, y and value. The purpose of the constructor is to also provide 'real' x and y
