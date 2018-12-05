@@ -1,8 +1,21 @@
+/**
+ * Module description: src/core/axis.js
+ *
+ * This module holds the general object for a graph/chart axis scale.
+ * It determine if the axis should be negative, and also includes methods
+ * to draw the scale, provided the graph object.
+ *
+ * Created on 29/06/2018
+ * @author Alexander. E. Fedotov
+ * @email <alexander.fedotov.uk@gmail.com>
+ */
+
 const {Scale} = require("./scale");
 const arrays = require("../utils/arrays");
 const config = require("./config");
 const draw = require("./drawing");
 const utils = require("./../utils");
+
 const defaultOptions = {
     minTicks: 10,
     maxTicks: 20,

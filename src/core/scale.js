@@ -1,3 +1,15 @@
+/**
+ * Module description: src/core/scale.js
+ *
+ * This module holds the Scale class and it's methods, the scale class is used
+ * to calculate the tick steps, tick number and other operations realted with
+ * graph/chart scales.
+ *
+ * Created on 29/06/2018
+ * @author Alexander. E. Fedotov
+ * @email <alexander.fedotov.uk@gmail.com>
+ */
+
 const arrays = require('./../utils/arrays');
 const utils = require("./../utils");
 

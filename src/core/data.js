@@ -1,3 +1,16 @@
+/**
+ * Module description: src/core/data.js
+ *
+ * This module holds the utility and CRUD methods for a graph
+ * data object. Sorting data, joining and getting basic statistical
+ * analysis on the data.
+ *
+ * Created on 01/10/2018
+ * @author Alexander. E. Fedotov
+ * @email <alexander.fedotov.uk@gmail.com>
+ */
+
+
 class Data {
     constructor(data) {
         this.data = data;

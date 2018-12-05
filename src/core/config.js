@@ -1,5 +1,8 @@
 /**
- * core/config.js Module description:
+ * Module description: src/core/config.js
+ *
+ * This module holds the default configuration values and parameters for
+ * graph objects.
  *
  * Created on 01/10/2018
  * @author Alexander. E. Fedotov
