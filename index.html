@@ -17,7 +17,7 @@
             border: 1px black solid;
         }*/
 
-        .graph > .tittle {
+        .graph > .title {
             font-size: 28px;
             padding-bottom: 0.3em;
             font-family: "Roboto Mono", monospace;
@@ -27,13 +27,8 @@
 <body>
 
 <div style="width: 100%">
-    <div id="w" class="graph" style="float: left">
-        <div class="tittle"></div>
-        <canvas width="800" height="600"></canvas>
-    </div>
-
-    <div id="g" class="graph" style="float: right;">
-        <div class="tittle"></div>
+    <div id="g" class="graph">
+        <div class="title"></div>
         <canvas width="600" height="600"></canvas>
     </div>
 </div>
@@ -53,46 +48,10 @@
         return array;
     }
 
-    let w_data = {
-        1: getRandomArray(78, 0, 50),
-        2: getRandomArray(78, 40, 80),
-        3: getRandomArray(78, 60, 100)
-    };
-
-    console.time('w');
-    let w = new Graph('w', {
-            x_label: 'Time spent working',
-            y_label: 'Money earned',
-            zero_scale: true,
-            tittle_pos: 'top-center',
-            gridded: true
-        },
-        [
-            {
-                interpolation: "cubic",
-                label: 'student_1',
-                data: w_data['1'],
-                colour: Graph.Colours.FLAMINGO_PINK,
-            },
-            {
-                label: 'student_2',
-                data: w_data['2'],
-                colour: Graph.Colours.ELECTRIC_BLUE
-            },
-            {
-                label: 'student_3',
-                data: w_data['3'],
-                colour: Graph.Colours.EMERALD_GREEN
-            }
-        ]
-    );
-    w.draw();
-    console.timeEnd('w');
-
     let graph = new Graph('g', {
             x_label: 'X-Label',
             y_label: 'Y-Label',
-            tittle_pos: 'top-center',
+            title_pos: 'top-center',
             gridded: true
         },
         [
@@ -100,13 +59,13 @@
                 style: "dashed",
                 label: 'student_1',
                 interpolation: 'cubic',
-                data: getRandomArray(11, 0, 20),
+                data: getRandomArray(20, -20, 20),
                 colour: Graph.Colours.FLAMINGO_PINK
             },
             {
                 label: 'student_1',
                 interpolation: 'cubic',
-                data: getRandomArray(11, 0, 100),
+                data: getRandomArray(11, -20, 100),
                 colour: Graph.Colours.ELECTRIC_BLUE
             }
         ]

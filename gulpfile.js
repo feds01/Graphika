@@ -1,4 +1,4 @@
-let gulp = require("gulp"),
+const gulp = require("gulp"),
     browserify = require("browserify"),
     buffer = require("vinyl-buffer"),
     uglifyjs = require("uglify-es"),
@@ -11,13 +11,16 @@ let minify = composer(uglifyjs, console);
 gulp.task("js", () => {
     return browserify("src/graph.js", {standalone: "Graph"})
         .bundle()
-        .on("error", function (err) { console.log("Error : " + err.message); })
+        .on("error", function (err) {
+            console.log("Error : " + err.message);
+        })
         .pipe(source("graph.min.js"))
         .pipe(buffer())
         .pipe(minify())
-        .pipe(size())
+        .pipe(size({'gzip': true}))
         .pipe(gulp.dest("./dist"));
 });
+
 
 gulp.task("watch", () => {
     gulp.watch("src/**/*.js", gulp.series(["js"]));
