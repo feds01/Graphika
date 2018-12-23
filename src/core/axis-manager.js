@@ -9,5 +9,7 @@
 class AxisManager {
     constructor(graph) {
         this.graph = graph;
+
+
     }
 }

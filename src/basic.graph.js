@@ -4,7 +4,7 @@ const draw = require("./core/drawing");
 const config = require("./core/config");
 const interpolation = require("./core/interpolation");
 
-const {Axis} = require("./core/axis");
+const {Axis, AxisType} = require("./core/axis");
 const {Data} = require("./core/data");
 const {Point} = require("./core/point");
 const colours = require("./utils/colours");
@@ -290,8 +290,8 @@ class BasicGraph {
 
     draw() {
         // initialise the y-axis & x-axis
-        this.yAxis = new Axis(this, "y-axis", {axis_colour: config.axis_colour});
-        this.xAxis = new Axis(this, "x-axis", {axis_colour: config.axis_colour});
+        this.yAxis = new Axis(this, AxisType.Y_AXIS, {axis_colour: config.axis_colour});
+        this.xAxis = new Axis(this, AxisType.X_AXIS, {axis_colour: config.axis_colour});
 
         // If the Y-Axis object has detected present negative values, we should update
         // the X-Axis to correspond to this change. This should be done in a better way
