@@ -24,6 +24,11 @@ const defaultOptions = {
     startAtZero: true
 };
 
+const AxisType = {
+    X_AXIS: 'x-axis',
+    Y_AXIS: 'y-axis'
+}
+
 class Axis {
     constructor(graph, type, options) {
         this.maxDataPoints = graph.data.maxLen();
@@ -47,56 +52,56 @@ class Axis {
             throw Error("Max/Min ticks cannot be 0 or negative");
         }
 
-        if (this.type === 'x-axis') {
-            this.options['maxTicks'] = Math.min(graph.data.maxLen(), config.xTicks);
+        switch (this.type) {
+            case AxisType.X_AXIS:
+                this.options['maxTicks'] = Math.min(graph.data.maxLen(), config.xTicks);
 
-            this.scales.positive = new Scale({
-                min: 0,
-                max: this.maxDataPoints - 1,
-                maxTicks: this.options.maxTicks,
-                name: 'positive scale'
-            });
-
-        } else {
-            if (arrays.negativeValues(this.data).length > 0) {
-                let negativeDataSet = arrays.negativeValues(this.data).map(x => Math.abs(x));
-
-
-                // divide the max ticks by two since negative and positive are sharing the scale.
-                this.scales.negative = new Scale({
-                    min: Math.min(...negativeDataSet),
-                    max: Math.max(...negativeDataSet),
-                    maxTicks: this.options.maxTicks / 2,
-                    name: "negative scale"
+                this.scales.positive = new Scale({
+                    min: 0,
+                    max: this.maxDataPoints - 1,
+                    maxTicks: this.options.maxTicks,
+                    name: 'positive scale'
                 });
-                this.negativeScale = true;
+                break;
+            case AxisType.Y_AXIS:
+                if (arrays.negativeValues(this.data).length > 0) {
+                    let negativeDataSet = arrays.negativeValues(this.data).map(x => Math.abs(x));
+                    // divide the max ticks by two since negative and positive are sharing the scale.
+                    this.scales.negative = new Scale({
+                        min: Math.min(...negativeDataSet),
+                        max: Math.max(...negativeDataSet),
+                        maxTicks: this.options.maxTicks / 2,
+                        name: "negative scale"
+                    });
+                    this.negativeScale = true;
+                } else {
+                    this.negativeScale = false;
+                }
 
-            } else {
-                this.negativeScale = false;
-            }
+                let positiveValues = arrays.positiveAndZeroValues(this.data);
 
-            let positiveValues = arrays.positiveAndZeroValues(this.data);
+                this.scales.positive = new Scale({
+                    min: Math.min(...positiveValues),
+                    max: Math.max(...positiveValues),
+                    maxTicks: this.negativeScale ? this.options.maxTicks / 2 : this.options.maxTicks,
+                    name: 'positive scale'
+                });
 
-            this.scales.positive = new Scale({
-                min: Math.min(...positiveValues),
-                max: Math.max(...positiveValues),
-                maxTicks: this.negativeScale ? this.options.maxTicks / 2 : this.options.maxTicks,
-                name: 'positive scale'
-            });
+                // Get the largest tick step of the two and set the other scale
+                // tick step to the same one. This is because the tick steps must be
+                // consistent for both negative and positive scales.
+                if (this.negativeScale) {
+                    this.sharedTickStep = Math.max(this.scales["positive"].getTickStep(), this.scales["negative"].getTickStep());
 
+                    this.scales["positive"].setTickStep(this.sharedTickStep);
+                    this.scales["negative"].setTickStep(this.sharedTickStep);
 
-            // Get the largest tick step of the two and set the other scale
-            // tick step to the same one. This is because the tick steps must be
-            // consistent for both negative and positive scales.
-            if (this.negativeScale) {
-                this.sharedTickStep = Math.max(this.scales["positive"].getTickStep(), this.scales["negative"].getTickStep());
-
-                this.scales["positive"].setTickStep(this.sharedTickStep);
-                this.scales["negative"].setTickStep(this.sharedTickStep);
-
-            } else {
-                this.sharedTickStep = this.scales["positive"].getTickStep();
-            }
+                } else {
+                    this.sharedTickStep = this.scales["positive"].getTickStep();
+                }
+                break;
+            default:
+                throw Error(`graph.js: Unrecognised Axis type '${this.type}'`);
         }
         this.generateScaleNumbers();
     };
@@ -231,5 +236,6 @@ class Axis {
 }
 
 module.exports = {
-    Axis: Axis
+    Axis: Axis,
+    AxisType: AxisType
 };
