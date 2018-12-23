@@ -19,7 +19,7 @@ class Data {
         // is simple sanitization
         for(let entry of this.data) {
             if (!Array.isArray(entry.data) || entry.data.length === 0) {
-                throw Error("Graph.js (graph) data must be a non-empty array");
+                throw Error("graph.js (graph) data must be a non-empty array.");
             }
         }
     }

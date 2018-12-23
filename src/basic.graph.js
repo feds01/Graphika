@@ -47,8 +47,8 @@ class BasicGraph {
         this.defaultConfig = {
             x_label: "",
             y_label: "",
-            tittle: "Graph",
-            tittle_pos: "top-center",
+            title: "Graph",
+            title_pos: "top-center",
             gridded: false,
             padding: 14,
             zero_scale: true,

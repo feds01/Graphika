@@ -7,7 +7,7 @@ module.exports = {
         let element = document.getElementById(id);
         let elementMap = {
             canvas: undefined,
-            tittle: undefined
+            title: undefined
         };
 
         for (let childNode of element.childNodes) {
@@ -16,8 +16,8 @@ module.exports = {
                 elementMap.canvas = childNode;
 
             } else if (tagName === "div") {
-                if (childNode.classList.contains("tittle")) {
-                    elementMap.tittle = childNode;
+                if (childNode.classList.contains("title")) {
+                    elementMap.title = childNode;
                 }
             }
         }
@@ -30,18 +30,18 @@ module.exports = {
             throw "canvas element does not exist";
         }
 
-        if (elementMap.tittle !== null) {
-            switch (options.tittle_pos) {
+        if (elementMap.title !== null) {
+            switch (options.title_pos) {
                 case "top-left":
-                    elementMap.tittle.style.textAlign = "left";
+                    elementMap.title.style.textAlign = "left";
                     break;
                 case "top-center":
-                    elementMap.tittle.style.textAlign = "center";
+                    elementMap.title.style.textAlign = "center";
                     break;
                 case "top-right":
-                    elementMap.tittle.style.textAlign = "right";
+                    elementMap.title.style.textAlign = "right";
             }
-            elementMap.tittle.innerHTML = options.tittle;
+            elementMap.title.innerHTML = options.title;
         }
         return elementMap;
     },
