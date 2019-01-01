@@ -228,7 +228,7 @@ class Axis {
 
             for (let number of this.scaleNumbers) {
                 let x_offset = offset * this.graph.squareSize.x;
-                let scale_offset = this.graph.font_size / 2;
+                let scale_offset = this.graph.fontSize() / 2;
 
                 draw.toTextMode(this.graph.ctx, 14, this.options.axis_colour);
 
