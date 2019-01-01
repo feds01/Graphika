@@ -21,11 +21,11 @@ const {AxisManager} = require("./core/axis-manager");
  * @property gridded -> if true, the graph will be drawn with lines at the intervals on the graph.
  * */
 class BasicGraph {
-    constructor(HtmlElementId, options, _data) {
+    constructor(HtmlElementId, options, data) {
         /**
          * @since v0.0.1 The id of the html container that the graph should
          * be drawn within * */
-        this.graphContainerId = HtmlElementId;
+        this.HtmlElementId = HtmlElementId;
 
         /**
          * @since v0.0.1 Graph options, this contain x-labels, y-label, tittle, legends, points
@@ -33,9 +33,9 @@ class BasicGraph {
         this.options = options;
 
         /**
-         * @since v0.0.1 Data() object which contains the data for the lines the graph should
+         * @since v0.0.1 DataManager() object which contains the data for the lines the graph should
          * plot, the object also contains various utility functions to fetch stats on the data. * */
-        this.data = new DataManager(_data);
+        this.dataManager = new DataManager(data);
 
         /**
          * @since v0.0.1 Default values for options within the object, however this will
@@ -50,8 +50,14 @@ class BasicGraph {
             zero_scale: true,
         };
 
+        /**
+         *  @since v0.0.1 This is the font size of the labels, initially it is set to 0, later on it is set if
+         * the labels are not null
+         * */
+        this.labelFontSize = 0;
+
         // Sanitise the configuration
-        if ((this.options !== null) && (this.options !== undefined)) {
+        if (!utils.isUndefOrNull(this.options)) {
             Object.keys(this.options).forEach((option) => {
                 if (this.defaultConfig.hasOwnProperty(option)) {
                     this.defaultConfig[option] = this.options[option];
@@ -60,7 +66,7 @@ class BasicGraph {
         }
 
         this.options = this.defaultConfig;
-        this.elementMap = utils.findObjectElements(this.graphContainerId, this.options);
+        this.elementMap = utils.findObjectElements(this.HtmlElementId, this.options);
 
         // find canvas element and tittle element.
         try {
@@ -72,19 +78,15 @@ class BasicGraph {
             this.c_height = this.canvas.height;
 
         } catch (e) {
-            if (this.canvas === null) {
-                throw Error("Provided canvas does not exist!\n" + e);
+            if (utils.isUndefOrNull(this.canvas)) {
+                throw Error("Provided canvas ID/Element does not exist!\n" + e);
             }
         }
 
         // if no labels provided, they are disabled as in no room is provided
         // for them to be drawn.
-        if (this.options.y_label.toString() !== "" &&
-            this.options.x_label.toString() !== "") {
-            this.label_size = this.fontSize();
-
-        } else {
-            this.label_size = 0;
+        if (this.options.y_label !== "" && this.options.x_label !== "") {
+            this.labelFontSize = this.fontSize();
         }
 
         /**
@@ -104,9 +106,9 @@ class BasicGraph {
 
         this.calculatePadding();
 
-        this.max_xTicks = Math.min(this.data.maxLen(), config.xTicks);
-        this.x_length = this.c_width - (this.padding.right + this.padding.left + this.label_size);
-        this.y_length = this.c_height - (this.padding.top + this.padding.bottom + this.label_size);
+        this.max_xTicks = Math.min(this.dataManager.maxLen(), config.xTicks);
+        this.x_length = this.c_width - (this.padding.right + this.padding.left + this.labelFontSize);
+        this.y_length = this.c_height - (this.padding.top + this.padding.bottom + this.labelFontSize);
 
 
         this.squareSize = {
@@ -116,18 +118,18 @@ class BasicGraph {
 
 
         this.lengths = {
-            x_begin: this.padding.left + this.label_size,
+            x_begin: this.padding.left + this.labelFontSize,
             y_begin: this.padding.top,
             x_end: this.c_width - this.padding.right,
             y_end: this.c_height - this.padding.bottom,
-            x_center: this.padding.left + this.label_size + this.x_length / 2,
-            y_center: this.label_size + this.y_length / 2,
+            x_center: this.padding.left + this.labelFontSize + this.x_length / 2,
+            y_center: this.labelFontSize + this.y_length / 2,
         };
     }
 
     setData(_data) {
         // re-create the data object & call re-draw
-        this.data = new DataManager(_data);
+        this.dataManager = new DataManager(_data);
         this.redraw();
     }
 
@@ -136,37 +138,34 @@ class BasicGraph {
     }
 
     removeLineByLabel(label) {
-        for (let k = 0; k < this.data.data.length - 1; k++) {
-            if (this.data.data[k].label === label) {
-                this.data.data.splice(k, 1);
+        for (let k = 0; k < this.dataManager.data.length - 1; k++) {
+            if (this.dataManager.data[k].label === label) {
+                this.dataManager.data.splice(k, 1);
             }
         }
         this.redraw(); // re-draw the graph
     }
 
-    drawLabels() {
-        // don't draw if no labels are given
-        if (this.label_size === 0) {
-            return;
+    _drawLabels() {
+        if (this.labelFontSize !== 0) {
+            // add x-axis label
+            draw.toTextMode(this.ctx, this.fontSize(), config.axis_colour);
+            this.ctx.fillText(this.options.x_label, this.lengths.x_center, this.c_height - (this.fontSize() / 2));
+
+            // add y-axis label
+            this.ctx.save();
+            this.ctx.translate(parseInt(this.fontSize(), 10), this.lengths.y_center);
+            this.ctx.rotate(-Math.PI / 2);
+            this.ctx.fillText(this.options.y_label, 0, 0);
+            this.ctx.restore();
         }
-
-        // add x-axis label
-        draw.toTextMode(this.ctx, this.fontSize(), config.axis_colour);
-        this.ctx.fillText(this.options.x_label, this.lengths.x_center, this.c_height - (this.fontSize() / 2));
-
-        // add y-axis label
-        this.ctx.save();
-        this.ctx.translate(parseInt(this.fontSize()), this.lengths.y_center);
-        this.ctx.rotate(-Math.PI / 2);
-        this.ctx.fillText(this.options.y_label, 0, 0);
-        this.ctx.restore();
     }
 
-    drawAxis() {
+    _drawAxis() {
         this.ctx.lineWidth = 1;
         let offset = 0;
 
-        while (offset <= Math.max(this.axisManager.yAxisScaleNumbers.length, this.data.maxLen() + 1)) {
+        while (offset <= Math.max(this.axisManager.yAxisScaleNumbers.length, this.dataManager.maxLen() + 1)) {
             this.ctx.strokeStyle = utils.rgba(config.axis_colour, 40);
 
             // grid drawing
@@ -175,7 +174,7 @@ class BasicGraph {
 
 
             // The X-Axis drawing
-            if (offset <= this.max_xTicks + 1) {
+            if (offset <= this.max_xTicks /*+ 1*/) {
                 let x_offset = offset * this.squareSize.x;
 
                 draw.verticalLine(this.ctx,
@@ -198,17 +197,16 @@ class BasicGraph {
         }
     }
 
-    drawData() {
+    _drawData() {
         let lineWidth = config.lineWidth;
-        let clazz = this;
 
         // convert the data into {x, y} format
-        this.data.toPos();
+        this.dataManager.toPos();
 
-        for (let line of this.data.get()) {
+        for (let line of this.dataManager.get()) {
             // alter the line width if there are more data points than maximum ticks on graph.
             // reduce it to one pixel.
-            if (this.data.maxLen() > config.xTicks) {
+            if (this.dataManager.maxLen() > config.xTicks) {
                 lineWidth = 2;
             }
 
@@ -221,9 +219,9 @@ class BasicGraph {
 
             let points = [];
 
-            line.pos_data.forEach((x) => {
-                points.push(new Point(x, clazz));
-            });
+            for (let idx = 0; idx < line.pos_data.length; idx++) {
+                points.push(new Point(line.pos_data[idx], this));
+            }
 
             if (line["interpolation"] === "cubic") {
                 let controlPoints = [];
@@ -302,16 +300,21 @@ class BasicGraph {
     calculatePadding() {
         let longestItem = arrays.longest(this.axisManager.xAxisScaleNumbers.map(x => x.toString()));
 
-        draw.toTextMode(this.ctx, 14, config.axis_colour);
-        this.padding.left = Math.ceil(this.options.padding + this.ctx.measureText(longestItem).width + this.label_size);
-        this.padding.bottom = Math.ceil(this.options.padding + this.label_size + this.fontSize());
+        // Set the config font size of axis labels, and then we can effectively 'measure' the width of the text
+        draw.toTextMode(this.ctx, config.axisLabelFontSize, config.axis_colour);
+        this.padding.left = Math.ceil(this.options.padding + this.ctx.measureText(longestItem).width + this.labelFontSize);
+        this.padding.bottom = Math.ceil(this.options.padding + this.labelFontSize + this.fontSize());
     }
 
     draw() {
+        /* Draw our Axis', including negative scales & scale labels */
         this.axisManager.draw();
-        this.drawLabels();
-        this.drawAxis();
-        this.drawData();
+
+        /* Draw the 'X-Label' & 'Y-Label' labels on the graph canvas */
+        this._drawLabels();
+
+        this._drawAxis();
+        this._drawData();
     }
 
     redraw() {

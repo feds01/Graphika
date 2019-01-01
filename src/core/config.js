@@ -27,6 +27,9 @@ module.exports = {
      * */
     tension: 0.5,
 
+    /* size of Y-Axis & X-Axis labels */
+    axisLabelFontSize: 14,
+
     /* Default value for the axis colour */
     axis_colour: 'rgb(94,94,94)'
 
