@@ -10,17 +10,20 @@
  * @email <alexander.fedotov.uk@gmail.com>
  */
 
+const arrays = require("../utils/arrays");
+const assert = require("./../utils/assert").assert;
 
-class Data {
+class DataManager {
     constructor(data) {
         this.data = data;
+        // Assert that each data 'label' is unique
+        // TODO: show/display the conflicting labels. Could probably done by using a 'reduce'
+        assert(arrays.uniqueValues(this.labels()).size === this.labels().length,
+            "data must have unique labels for each data set");
 
-        // Ensure that the provided data can be accessed and is not empty data, this
-        // is simple sanitization
-        for(let entry of this.data) {
-            if (!Array.isArray(entry.data) || entry.data.length === 0) {
-                throw Error("graph.js (graph) data must be a non-empty array.");
-            }
+        // Ensure that the provided data can be accessed and is not empty data, this is simple sanitization
+        for (let entry of this.data) {
+            assert(Array.isArray(entry.data) && entry.data.length !== 0, "data must be a non-empty array.");
         }
     }
 
@@ -56,6 +59,10 @@ class Data {
         return this.data.map(x => x.colour);
     };
 
+    labels() {
+        return this.data.map(x => x.label);
+    }
+
     toPos() {
         for (let entry = 0; entry < this.data.length; entry++) {
             this.data[entry].pos_data = [];
@@ -71,5 +78,5 @@ class Data {
 }
 
 module.exports = {
-    Data: Data
+    DataManager: DataManager
 };

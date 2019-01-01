@@ -42,8 +42,16 @@ module.exports = {
     },
 
     /*
-   * Get all only positive () values from a given array.
-   * */
+    // Get all only positive () values from a given array.
+    */
+    uniqueValues: function (array) {
+        return new Set(array);
+    },
+
+
+    /*
+    // Get all only positive () values from a given array.
+    */
     positiveAndZeroValues: function (array) {
         return array.filter(function(value) {
             return value >= 0;
