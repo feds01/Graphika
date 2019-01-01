@@ -50,5 +50,9 @@ module.exports = {
     isUndefOrNaN: function (o) {
         return isNaN(o) || typeof o === "undefined";
 
+    },
+
+    isUndefOrNull: function (o) {
+        return typeof o == "undefined" || o == null;
     }
 };

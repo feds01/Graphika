@@ -28,19 +28,19 @@ const defaultOptions = {
 const AxisType = {
     X_AXIS: 'x-axis',
     Y_AXIS: 'y-axis'
-}
+};
 
 class Axis {
     constructor(manager, type, options) {
-        this.maxDataPoints = manager.graph.data.maxLen();
-        this.data = manager.graph.data.join();
+        this.maxDataPoints = manager.graph.dataManager.maxLen();
+        this.data = manager.graph.dataManager.join();
         this.options = options;
         this.graph = manager.graph;
         this.type = type;
 
         this.manager = manager;
 
-        /// This is the variable which holds the tick step of the axis.
+        // This is the variable which holds the tick step of the axis.
         this.tickStep = null;
 
         // we have negative values in the data set and therefore will require two
@@ -64,7 +64,7 @@ class Axis {
 
         switch (this.type) {
             case AxisType.X_AXIS:
-                this.options['maxTicks'] = Math.min(this.graph.data.maxLen(), config.xTicks);
+                this.options["maxTicks"] = Math.min(this.graph.dataManager.maxLen(), config.xTicks);
 
                 this.scales.positive = new Scale({
                     min: 0,
