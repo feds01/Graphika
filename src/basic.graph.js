@@ -4,7 +4,7 @@ const draw = require("./core/drawing");
 const config = require("./core/config");
 const interpolation = require("./core/interpolation");
 
-const {Data} = require("./core/data");
+const {DataManager} = require("./core/dataManager");
 const {Point} = require("./core/point");
 const colours = require("./utils/colours");
 const {AxisManager} = require("./core/axis-manager");
@@ -21,11 +21,11 @@ const {AxisManager} = require("./core/axis-manager");
  * @property gridded -> if true, the graph will be drawn with lines at the intervals on the graph.
  * */
 class BasicGraph {
-    constructor(graphContainerId, options, _data) {
+    constructor(HtmlElementId, options, _data) {
         /**
          * @since v0.0.1 The id of the html container that the graph should
          * be drawn within * */
-        this.graphContainerId = graphContainerId;
+        this.graphContainerId = HtmlElementId;
 
         /**
          * @since v0.0.1 Graph options, this contain x-labels, y-label, tittle, legends, points
@@ -35,7 +35,7 @@ class BasicGraph {
         /**
          * @since v0.0.1 Data() object which contains the data for the lines the graph should
          * plot, the object also contains various utility functions to fetch stats on the data. * */
-        this.data = new Data(_data);
+        this.data = new DataManager(_data);
 
         /**
          * @since v0.0.1 Default values for options within the object, however this will
@@ -127,7 +127,7 @@ class BasicGraph {
 
     setData(_data) {
         // re-create the data object & call re-draw
-        this.data = new Data(_data);
+        this.data = new DataManager(_data);
         this.redraw();
     }
 

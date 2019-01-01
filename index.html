@@ -63,7 +63,7 @@
                 colour: Graph.Colours.FLAMINGO_PINK
             },
             {
-                label: 'student_1',
+                label: 'student_2',
                 interpolation: 'cubic',
                 data: getRandomArray(11, -20, 100),
                 colour: Graph.Colours.ELECTRIC_BLUE
@@ -71,6 +71,11 @@
         ]
     );
     graph.draw();
+
+    // @Broken at the moment
+    // setTimeout(() => {
+    //     graph.removeLineByLabel("student_1");
+    // }, 1000);
 </script>
 </body>
 </html>
