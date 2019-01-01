@@ -4,11 +4,10 @@ const draw = require("./core/drawing");
 const config = require("./core/config");
 const interpolation = require("./core/interpolation");
 
-const {Axis, AxisType} = require("./core/axis");
 const {Data} = require("./core/data");
 const {Point} = require("./core/point");
 const colours = require("./utils/colours");
-
+const {AxisManager} = require("./core/axis-manager");
 
 /**
  * @property x_label -> The label which is present on the x-axis of the graph
@@ -37,9 +36,6 @@ class BasicGraph {
          * @since v0.0.1 Data() object which contains the data for the lines the graph should
          * plot, the object also contains various utility functions to fetch stats on the data. * */
         this.data = new Data(_data);
-
-        this.lengths = {};
-        this.squareSize = {x: 0, y: 0};
 
         /**
          * @since v0.0.1 Default values for options within the object, however this will
@@ -88,14 +84,6 @@ class BasicGraph {
         }();
 
 
-        this.padding = {
-            top: this.options.padding,
-            left: undefined,
-            right: this.options.padding,
-            bottom: undefined,
-            val: this.options.padding
-        };
-
         // if no labels provided, they are disabled as in no room is provided
         // for them to be drawn.
         if (this.options.y_label.toString() !== "" &&
@@ -105,6 +93,43 @@ class BasicGraph {
         } else {
             this.label_size = 0;
         }
+
+        /**
+         * @since v0.0.1 AxisManager object is a manager class for the Axis objects of this Graph object,
+         * The AxisManager contains the xAxis & yAxis objects, it also handles the synchronisation of scales &
+         * negative axis modes.
+         * */
+        this.axisManager = new AxisManager(this);
+
+        this.padding = {
+            top: this.options.padding,
+            left: null,
+            right: this.options.padding,
+            bottom: null,
+            val: this.options.padding
+        };
+
+        this.calculatePadding();
+
+        this.max_xTicks = Math.min(this.data.maxLen(), config.xTicks);
+        this.x_length = this.c_width - (this.padding.right + this.padding.left + this.label_size);
+        this.y_length = this.c_height - (this.padding.top + this.padding.bottom + this.label_size);
+
+
+        this.squareSize = {
+            x: this.x_length / (this.axisManager.xAxisScaleNumbers.length - 1),
+            y: this.y_length / this.axisManager.yAxisScaleNumbers.length
+        };
+
+
+        this.lengths = {
+            x_begin: this.padding.left + this.label_size,
+            y_begin: this.padding.top,
+            x_end: this.c_width - this.padding.right,
+            y_end: this.c_height - this.padding.bottom,
+            x_center: this.padding.left + this.label_size + this.x_length / 2,
+            y_center: this.label_size + this.y_length / 2,
+        };
     }
 
     setData(_data) {
@@ -145,12 +170,12 @@ class BasicGraph {
         this.ctx.lineWidth = 1;
         let offset = 0;
 
-        while (offset <= Math.max(this.yAxis.scaleNumbers.length, this.data.maxLen() + 1)) {
+        while (offset <= Math.max(this.axisManager.yAxisScaleNumbers.length, this.data.maxLen() + 1)) {
             this.ctx.strokeStyle = utils.rgba(config.axis_colour, 40);
 
             // grid drawing
-            let y_len = this.options.gridded ? 9 + this.yAxis.scaleNumbers.length * this.squareSize.y : 9,
-                x_len = this.options.gridded ? 9 + this.xAxis.scaleNumbers.length * this.squareSize.x : 9;
+            let y_len = this.options.gridded ? 9 + this.axisManager.yAxisScaleNumbers.length * this.squareSize.y : 9,
+                x_len = this.options.gridded ? 9 + this.axisManager.xAxisScaleNumbers.length * this.squareSize.x : 9;
 
 
             // The X-Axis drawing
@@ -164,7 +189,7 @@ class BasicGraph {
                 );
             }
             // The Y-Axis drawing
-            if (offset <= this.yAxis.scaleNumbers.length) {
+            if (offset <= this.axisManager.yAxisScaleNumbers.length) {
                 let y_offset = offset * this.squareSize.y;
 
                 draw.horizontalLine(this.ctx,
@@ -271,7 +296,7 @@ class BasicGraph {
 
             // draw the points
             for (let p of points) {
-                if (this.xAxis.scaleNumbers.indexOf(p.data.x) > -1) {
+                if (this.axisManager.xAxisScaleNumbers.indexOf(p.data.x) > -1) {
                     // convert the data point into a graphical point
                     draw.circle(this.ctx, p.x, p.y, lineWidth);
                 }
@@ -281,7 +306,7 @@ class BasicGraph {
 
 
     calculatePadding() {
-        let longestItem = arrays.longest(this.yAxis.scaleNumbers.map(x => x.toString()));
+        let longestItem = arrays.longest(this.axisManager.xAxisScaleNumbers.map(x => x.toString()));
 
         draw.toTextMode(this.ctx, 14, config.axis_colour);
         this.padding.left = Math.ceil(this.options.padding + this.ctx.measureText(longestItem).width + this.label_size);
@@ -289,33 +314,7 @@ class BasicGraph {
     }
 
     draw() {
-        // initialise the y-axis & x-axis
-        this.yAxis = new Axis(this, AxisType.Y_AXIS, {axis_colour: config.axis_colour});
-        this.xAxis = new Axis(this, AxisType.X_AXIS, {axis_colour: config.axis_colour});
-
-        // If the Y-Axis object has detected present negative values, we should update
-        // the X-Axis to correspond to this change. This should be done in a better way
-        // TODO: GraphScales object to better manage our scales
-        this.xAxis.negativeScale = this.yAxis.negativeScale;
-
-        this.calculatePadding();
-
-        this.max_xTicks = Math.min(this.data.maxLen(), config.xTicks);
-        this.x_length = this.c_width - (this.padding.right + this.padding.left + this.label_size);
-        this.y_length = this.c_height - (this.padding.top + this.padding.bottom + this.label_size);
-
-        this.lengths = {
-            x_begin: this.padding.left + this.label_size,
-            y_begin: this.padding.top,
-            x_end: this.c_width - this.padding.right,
-            y_end: this.c_height - this.padding.bottom,
-            x_center: this.padding.left + this.label_size + this.x_length / 2,
-            y_center: this.label_size + this.y_length / 2,
-        };
-
-        this.yAxis.draw();
-        this.xAxis.draw();
-
+        this.axisManager.draw();
         this.drawLabels();
         this.drawAxis();
         this.drawData();

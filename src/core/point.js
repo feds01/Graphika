@@ -34,6 +34,7 @@ class Point {
     constructor(data, graph) {
         this.data = data;
         this.graph = graph;
+        this.manager = graph.axisManager;
 
         if(this.graph === undefined) {
             throw "Point class must be provided with the relevant graph."
@@ -41,10 +42,10 @@ class Point {
 
         // calculate actual graphical coordinates
         let actual_xSize = data.x / graph.data.maxLen();
-        let actual_ySize = data.y  / graph.yAxis.sharedTickStep;
+        let actual_ySize = data.y / this.manager.telemetry.yAxis.tickStep;
 
         this.x = graph.lengths.x_begin + (actual_xSize * graph.x_length);
-        this.y = graph.xAxis.yStart - (actual_ySize * graph.squareSize.y);
+        this.y = this.manager.telemetry.xAxis.yStart - (actual_ySize * graph.squareSize.y);
     }
 }
 

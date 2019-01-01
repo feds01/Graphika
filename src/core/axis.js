@@ -15,6 +15,7 @@ const arrays = require("../utils/arrays");
 const config = require("./config");
 const draw = require("./drawing");
 const utils = require("./../utils");
+const assert = require("./../utils/assert").assert;
 
 const defaultOptions = {
     minTicks: 10,
@@ -30,16 +31,25 @@ const AxisType = {
 }
 
 class Axis {
-    constructor(graph, type, options) {
-        this.maxDataPoints = graph.data.maxLen();
-        this.data = graph.data.join();
+    constructor(manager, type, options) {
+        this.maxDataPoints = manager.graph.data.maxLen();
+        this.data = manager.graph.data.join();
         this.options = options;
-        this.graph = graph;
+        this.graph = manager.graph;
         this.type = type;
+
+        this.manager = manager;
+
+        /// This is the variable which holds the tick step of the axis.
+        this.tickStep = null;
 
         // we have negative values in the data set and therefore will require two
         // different scales
         this.scales = {};
+
+        // Y & X positions which represent the start of the drawing line
+        this.yStart = null;
+        this.xStart = null;
 
         // fill in missing option values with default values
         for (let option of Object.keys(defaultOptions)) {
@@ -54,7 +64,7 @@ class Axis {
 
         switch (this.type) {
             case AxisType.X_AXIS:
-                this.options['maxTicks'] = Math.min(graph.data.maxLen(), config.xTicks);
+                this.options['maxTicks'] = Math.min(this.graph.data.maxLen(), config.xTicks);
 
                 this.scales.positive = new Scale({
                     min: 0,
@@ -91,13 +101,13 @@ class Axis {
                 // tick step to the same one. This is because the tick steps must be
                 // consistent for both negative and positive scales.
                 if (this.negativeScale) {
-                    this.sharedTickStep = Math.max(this.scales["positive"].getTickStep(), this.scales["negative"].getTickStep());
+                    this.tickStep = Math.max(this.scales["positive"].getTickStep(), this.scales["negative"].getTickStep());
 
-                    this.scales["positive"].setTickStep(this.sharedTickStep);
-                    this.scales["negative"].setTickStep(this.sharedTickStep);
+                    this.scales["positive"].setTickStep(this.tickStep);
+                    this.scales["negative"].setTickStep(this.tickStep);
 
                 } else {
-                    this.sharedTickStep = this.scales["positive"].getTickStep();
+                    this.tickStep = this.scales["positive"].getTickStep();
                 }
                 break;
             default:
@@ -115,28 +125,30 @@ class Axis {
         this.yStart = this.graph.lengths.y_end;
         this.xStart = this.graph.lengths.x_begin;
 
-        if (this.type === "y-axis") {
-            this.graph.squareSize.y = this.graph.y_length / this.scaleNumbers.length;
-        } else {
-            this.graph.squareSize.x = this.graph.x_length / (this.scaleNumbers.length - 1);
-        }
-
         // position the x-axis then in the center of the y-axis, calculate this offset by indexing
         // where the zero '0' value is and multiplying this by the amount of squares there are between
         // the zero and the last axis value.
-        if (this.type === 'x-axis') {
-            if (this.negativeScale) {
-                let yOffset = this.graph.squareSize.y * this.graph.yAxis.scaleNumbers.indexOf(0);
+        if (this.type === AxisType.X_AXIS && this.negativeScale) {
+            let zeroIndex = this.manager.scaleNumbers['y'].indexOf(0);
 
-                this.yStart = this.graph.lengths.y_end - yOffset;
-            }
+            // The zero index must not be '-1' or in other words, not found.
+            assert(zeroIndex !== -1, `couldn't find the '0' tick position in Axis{${this.type}}`);
+
+            this.yStart = this.graph.lengths.y_end - (this.graph.squareSize.y * this.manager.scaleNumbers.y.indexOf(0));
+        }
+
+        // Set the Axis' telemetry data, so it can be accessed by the manager
+        this.telemetry = {
+            "xStart": this.xStart,
+            "yStart": this.yStart,
+            "tickStep": this.tickStep
         }
     }
 
     generateScaleNumbers() {
         this.scaleNumbers = [];
 
-        if (this.type === 'x-axis') {
+        if (this.type === AxisType.X_AXIS) {
             this.scaleNumbers = arrays.fillRange(this.options.maxTicks + 1).map(
                 x => this.scales["positive"].tickStep * x
             );
@@ -167,7 +179,8 @@ class Axis {
         this.graph.ctx.strokeStyle = utils.rgba(this.options.axis_colour, 60);
         this.graph.ctx.lineWidth = 1;
 
-        if (this.type === "y-axis") {
+        /// Y-Axis Drawing !
+        if (this.type === AxisType.Y_AXIS) {
             draw.verticalLine(this.graph.ctx, this.xStart, this.graph.lengths.y_end, -this.graph.y_length);
             // if the graph has a zero scale setting, and the y-scale first element is a 0
             // (excluding negative scales), don't draw the 0 on the first tick and remove it from
@@ -201,7 +214,7 @@ class Axis {
 
             // check if the sharedZero was detected in y-axis draw method, do the same thing
             // as for the y-axis and then draw the centered 0.
-            if (this.graph.yAxis.sharedZero) {
+            if (this.manager.sharedZero) {
                 this.scaleNumbers.shift();
                 this.sharedZero = true;
 
