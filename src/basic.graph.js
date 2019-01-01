@@ -50,8 +50,6 @@ class BasicGraph {
             zero_scale: true,
         };
 
-        let clazz = this;
-
         // Sanitise the configuration
         if ((this.options !== null) && (this.options !== undefined)) {
             Object.keys(this.options).forEach((option) => {
@@ -79,16 +77,11 @@ class BasicGraph {
             }
         }
 
-        this.font_size = function () {
-            return parseInt(clazz.ctx.font.substr(0, 2));
-        }();
-
-
         // if no labels provided, they are disabled as in no room is provided
         // for them to be drawn.
         if (this.options.y_label.toString() !== "" &&
             this.options.x_label.toString() !== "") {
-            this.label_size = this.font_size;
+            this.label_size = this.fontSize();
 
         } else {
             this.label_size = 0;
@@ -138,6 +131,10 @@ class BasicGraph {
         this.redraw();
     }
 
+    fontSize() {
+        return parseInt(this.ctx.font.substr(0, 2), 10);
+    }
+
     removeLineByLabel(label) {
         for (let k = 0; k < this.data.data.length - 1; k++) {
             if (this.data.data[k].label === label) {
@@ -154,17 +151,16 @@ class BasicGraph {
         }
 
         // add x-axis label
-        draw.toTextMode(this.ctx, this.options.font_size, config.axis_colour);
-        this.ctx.fillText(this.options.x_label, this.lengths.x_center, this.c_height - (this.font_size / 2));
+        draw.toTextMode(this.ctx, this.fontSize(), config.axis_colour);
+        this.ctx.fillText(this.options.x_label, this.lengths.x_center, this.c_height - (this.fontSize() / 2));
 
         // add y-axis label
         this.ctx.save();
-        this.ctx.translate(parseInt(this.font_size), this.lengths.y_center);
+        this.ctx.translate(parseInt(this.fontSize()), this.lengths.y_center);
         this.ctx.rotate(-Math.PI / 2);
         this.ctx.fillText(this.options.y_label, 0, 0);
         this.ctx.restore();
     }
-
 
     drawAxis() {
         this.ctx.lineWidth = 1;
@@ -201,7 +197,6 @@ class BasicGraph {
             offset++;
         }
     }
-
 
     drawData() {
         let lineWidth = config.lineWidth;
@@ -304,13 +299,12 @@ class BasicGraph {
         }
     }
 
-
     calculatePadding() {
         let longestItem = arrays.longest(this.axisManager.xAxisScaleNumbers.map(x => x.toString()));
 
         draw.toTextMode(this.ctx, 14, config.axis_colour);
         this.padding.left = Math.ceil(this.options.padding + this.ctx.measureText(longestItem).width + this.label_size);
-        this.padding.bottom = Math.ceil(this.options.padding + this.label_size + this.font_size);
+        this.padding.bottom = Math.ceil(this.options.padding + this.label_size + this.fontSize());
     }
 
     draw() {
