@@ -66,23 +66,24 @@ Result:
 The library also supports data sets which include negative numbers:
 
 ```javascript
-let graph = new Graph('graph', {
-            x_label: 'X-Label',
-            y_label: 'Y-Label',
-            tittle_pos: 'top-center',
+ let graph = new Graph("graph", {
+            x_label: "X-Label",
+            y_label: "Y-Label",
+            title_pos: "top-center",
+            title: "Graph with negative scale",
             gridded: true
         },
         [
             {
                 style: "dashed",
-                label: 'student_1',
-                interpolation: 'cubic',
+                label: "student_1",
+                interpolation: "cubic",
                 data: getRandomArray(11, -20, 20),
                 colour: Graph.Colours.FLAMINGO_PINK
             },
             {
-                label: 'student_1',
-                interpolation: 'cubic',
+                label: "student_2",
+                interpolation: "cubic",
                 data: getRandomArray(11, -20, 20),
                 colour: Graph.Colours.ELECTRIC_BLUE
             }
