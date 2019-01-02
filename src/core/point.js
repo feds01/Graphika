@@ -41,10 +41,9 @@ class Point {
         }
 
         // calculate actual graphical coordinates
-        let actual_xSize = data.x / graph.dataManager.maxLen();
         let actual_ySize = data.y / this.manager.telemetry.yAxis.tickStep;
 
-        this.x = graph.lengths.x_begin + (actual_xSize * graph.x_length);
+        this.x = graph.lengths.x_begin + (data.x * graph.squareSize.x);
         this.y = this.manager.telemetry.xAxis.yStart - (actual_ySize * graph.squareSize.y);
     }
 }
