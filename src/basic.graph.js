@@ -111,9 +111,12 @@ class BasicGraph {
         this.y_length = this.c_height - (this.padding.top + this.padding.bottom + this.labelFontSize);
 
 
+        // Subtract a 1 from each length because we actually don't need to worry about the first
+        // iteration. Having an extra pole will make the square size less than it should be, We're
+        // actually only really concerned about how many 'gaps' there are between each item
         this.squareSize = {
             x: this.x_length / (this.axisManager.xAxisScaleNumbers.length - 1),
-            y: this.y_length / this.axisManager.yAxisScaleNumbers.length
+            y: this.y_length / (this.axisManager.yAxisScaleNumbers.length - 1)
         };
 
 
@@ -161,20 +164,19 @@ class BasicGraph {
         }
     }
 
-    _drawAxis() {
+    _drawAxisGrid() {
         this.ctx.lineWidth = 1;
         let offset = 0;
 
-        while (offset <= Math.max(this.axisManager.yAxisScaleNumbers.length, this.dataManager.maxLen() + 1)) {
+        // grid drawing
+        const y_len = this.options.gridded ? 9 + this.y_length : 9;
+        const x_len = this.options.gridded ? 9 + this.x_length : 9;
+
+        while (offset <= Math.max(this.axisManager.yAxisScaleNumbers.length - 1, this.dataManager.maxLen())) {
             this.ctx.strokeStyle = utils.rgba(config.axis_colour, 40);
 
-            // grid drawing
-            let y_len = this.options.gridded ? 9 + this.axisManager.yAxisScaleNumbers.length * this.squareSize.y : 9,
-                x_len = this.options.gridded ? 9 + this.axisManager.xAxisScaleNumbers.length * this.squareSize.x : 9;
-
-
             // The X-Axis drawing
-            if (offset <= this.max_xTicks /*+ 1*/) {
+            if (offset < this.max_xTicks) {
                 let x_offset = offset * this.squareSize.x;
 
                 draw.verticalLine(this.ctx,
@@ -313,7 +315,7 @@ class BasicGraph {
         /* Draw the 'X-Label' & 'Y-Label' labels on the graph canvas */
         this._drawLabels();
 
-        this._drawAxis();
+        this._drawAxisGrid();
         this._drawData();
     }
 

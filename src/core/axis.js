@@ -40,6 +40,12 @@ class Axis {
 
         this.manager = manager;
 
+        /*
+        // This is the flag which represents if the Axis is split into two scales, negative & positive.
+        // Initial value is false, because we don's assume that provided dataset will use negative values.
+        */
+        this.negativeScale = false;
+
         // This is the variable which holds the tick step of the axis.
         this.tickStep = null;
 
@@ -84,8 +90,6 @@ class Axis {
                         name: "negative scale"
                     });
                     this.negativeScale = true;
-                } else {
-                    this.negativeScale = false;
                 }
 
                 let positiveValues = arrays.positiveAndZeroValues(this.data);
@@ -123,7 +127,6 @@ class Axis {
      * * */
     determineAxisPosition() {
         this.yStart = this.graph.lengths.y_end;
-        this.xStart = this.graph.lengths.x_begin;
 
         // position the x-axis then in the center of the y-axis, calculate this offset by indexing
         // where the zero '0' value is and multiplying this by the amount of squares there are between
@@ -139,7 +142,6 @@ class Axis {
 
         // Set the Axis' telemetry data, so it can be accessed by the manager
         this.telemetry = {
-            "xStart": this.xStart,
             "yStart": this.yStart,
             "tickStep": this.tickStep
         }
@@ -149,18 +151,19 @@ class Axis {
         this.scaleNumbers = [];
 
         if (this.type === AxisType.X_AXIS) {
-            this.scaleNumbers = arrays.fillRange(this.options.maxTicks + 1).map(
+            this.scaleNumbers = arrays.fillRange(this.options.maxTicks).map(
                 x => this.scales["positive"].tickStep * x
             );
 
         } else {
             if (this.negativeScale) {
+                // @Cleanup: this is a quite horrible way to do this, maybe use a simple representation
                 this.scaleNumbers = this.scales['negative'].getTickLabels().map(x => x === 0 ? x : x * -1).slice().reverse();
             }
             this.scaleNumbers = arrays.join(this.scaleNumbers, this.scales["positive"].getTickLabels());
 
             // check if 0 & -0 exist, if so remove the negative 0
-            for (let i = 0; i < this.scaleNumbers.length - 1; i++) {
+            for (let i = 0; i < this.scaleNumbers.length; i++) {
                 if (this.scaleNumbers[i] === this.scaleNumbers[i + 1] &&
                     this.scaleNumbers[i] === 0) {
                     this.scaleNumbers.splice(i + 1, 1);
@@ -181,7 +184,7 @@ class Axis {
 
         /// Y-Axis Drawing !
         if (this.type === AxisType.Y_AXIS) {
-            draw.verticalLine(this.graph.ctx, this.xStart, this.graph.lengths.y_end, -this.graph.y_length);
+            draw.verticalLine(this.graph.ctx, this.graph.lengths.x_begin, this.graph.lengths.y_end, -this.graph.y_length);
             // if the graph has a zero scale setting, and the y-scale first element is a 0
             // (excluding negative scales), don't draw the 0 on the first tick and remove it from
             // scaleNumbers for the time being.
@@ -210,7 +213,7 @@ class Axis {
             }
 
         } else {
-            draw.horizontalLine(this.graph.ctx, this.xStart, this.yStart, this.graph.x_length);
+            draw.horizontalLine(this.graph.ctx, this.graph.lengths.x_begin, this.yStart, this.graph.x_length);
 
             // check if the sharedZero was detected in y-axis draw method, do the same thing
             // as for the y-axis and then draw the centered 0.
@@ -233,7 +236,7 @@ class Axis {
                 draw.toTextMode(this.graph.ctx, 14, this.options.axis_colour);
 
                 this.graph.ctx.fillText(number.toString(),
-                    this.xStart + x_offset,
+                    this.graph.lengths.x_begin + x_offset,
                     this.graph.lengths.y_end + 9 + scale_offset
                 );
                 offset++;
