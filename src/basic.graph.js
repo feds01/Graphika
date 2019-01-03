@@ -2,19 +2,19 @@ const utils = require("./utils");
 const arrays = require("./utils/arrays");
 const draw = require("./core/drawing");
 const config = require("./core/config");
+const colours = require("./utils/colours");
 const interpolation = require("./core/interpolation");
 
-const {DataManager} = require("./core/dataManager");
 const {Point} = require("./core/point");
-const colours = require("./utils/colours");
 const {AxisManager} = require("./core/axis-manager");
+const {DataManager} = require("./core/dataManager");
 
 /**
  * @property x_label -> The label which is present on the x-axis of the graph
  * @property y_label -> The label which is present on the y-axis of the graph
- * @property tittle  -> The tittle of the graph, if 'null' is passed, no tittle is displayed.
+ * @property title  -> The tittle of the graph, if 'null' is passed, no tittle is displayed.
  *
- * @property tittle_pos -> The position of where the tittle text is shown, options include:
+ * @property title_pos -> The position of where the tittle text is shown, options include:
  *           top-left, top-center, top-right, bottom-left, bottom-center, bottom-right
  *
  *
@@ -52,7 +52,7 @@ class BasicGraph {
 
         /**
          *  @since v0.0.1 This is the font size of the labels, initially it is set to 0, later on it is set if
-         * the labels are not null
+         * the labels are not empty strings or null.
          * */
         this.labelFontSize = 0;
 
@@ -66,22 +66,17 @@ class BasicGraph {
         }
 
         this.options = this.defaultConfig;
-        this.elementMap = utils.findObjectElements(this.HtmlElementId, this.options);
 
         // find canvas element and tittle element.
-        try {
-            this.canvas = this.elementMap.canvas;
-            this.ctx = this.canvas.getContext("2d");
-            draw.toTextMode(this.ctx, 16, this.options.axis_colour);
+        const elementMap = utils.findObjectElements(this.HtmlElementId, this.options);
 
-            this.c_width = this.canvas.width;
-            this.c_height = this.canvas.height;
+        this.canvas = elementMap.canvas;
+        this.ctx = this.canvas.getContext("2d");
+        draw.toTextMode(this.ctx, 16, this.options.axis_colour);
 
-        } catch (e) {
-            if (utils.isUndefOrNull(this.canvas)) {
-                throw Error("Provided canvas ID/Element does not exist!\n" + e);
-            }
-        }
+        this.c_width = this.canvas.width;
+        this.c_height = this.canvas.height;
+
 
         // if no labels provided, they are disabled as in no room is provided
         // for them to be drawn.
