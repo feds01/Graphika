@@ -77,6 +77,10 @@ class AxisManager {
     get xAxisScaleNumbers() {
         return this.xAxis.scaleNumbers;
     }
+
+    get joinedScaleNumbers() {
+        return [...this.scaleNumbers["x"], ...this.scaleNumbers["y"]];
+    }
 }
 
 module.exports = {

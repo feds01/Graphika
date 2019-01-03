@@ -295,7 +295,7 @@ class BasicGraph {
     }
 
     calculatePadding() {
-        let longestItem = arrays.longest(this.axisManager.xAxisScaleNumbers.map(x => x.toString()));
+        let longestItem = arrays.longest(this.axisManager.joinedScaleNumbers.map(label => label.toString()));
 
         // Set the config font size of axis labels, and then we can effectively 'measure' the width of the text
         draw.toTextMode(this.ctx, config.axisLabelFontSize, config.axis_colour);
@@ -310,7 +310,10 @@ class BasicGraph {
         /* Draw the 'X-Label' & 'Y-Label' labels on the graph canvas */
         this._drawLabels();
 
+        /* Draw the Grid on the Graph lines & axis ticks, if enabled */
         this._drawAxisGrid();
+
+        /* Draw the data sets on the graph, using the provided dataset configurations  */
         this._drawData();
     }
 
