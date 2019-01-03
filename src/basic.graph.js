@@ -95,8 +95,7 @@ class BasicGraph {
             top: this.options.padding,
             left: null,
             right: this.options.padding,
-            bottom: null,
-            val: this.options.padding
+            bottom: null
         };
 
         this.calculatePadding();
