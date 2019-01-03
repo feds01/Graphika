@@ -47,7 +47,7 @@ class BasicGraph {
             title_pos: "top-center",
             gridded: false,
             padding: 14,
-            zero_scale: true,
+            sharedZero: true,
         };
 
         /**

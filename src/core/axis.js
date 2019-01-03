@@ -26,8 +26,8 @@ const defaultOptions = {
 };
 
 const AxisType = {
-    X_AXIS: 'x-axis',
-    Y_AXIS: 'y-axis'
+    X_AXIS: "x-axis",
+    Y_AXIS: "y-axis"
 };
 
 class Axis {
@@ -76,7 +76,7 @@ class Axis {
                     min: 0,
                     max: this.maxDataPoints - 1,
                     maxTicks: this.options.maxTicks,
-                    name: 'positive scale'
+                    name: "positive scale"
                 });
                 break;
             case AxisType.Y_AXIS:
@@ -98,7 +98,7 @@ class Axis {
                     min: Math.min(...positiveValues),
                     max: Math.max(...positiveValues),
                     maxTicks: this.negativeScale ? this.options.maxTicks / 2 : this.options.maxTicks,
-                    name: 'positive scale'
+                    name: "positive scale"
                 });
 
                 // Get the largest tick step of the two and set the other scale
@@ -132,7 +132,7 @@ class Axis {
         // where the zero '0' value is and multiplying this by the amount of squares there are between
         // the zero and the last axis value.
         if (this.type === AxisType.X_AXIS && this.negativeScale) {
-            let zeroIndex = this.manager.scaleNumbers['y'].indexOf(0);
+            let zeroIndex = this.manager.scaleNumbers["y"].indexOf(0);
 
             // The zero index must not be '-1' or in other words, not found.
             assert(zeroIndex !== -1, `couldn't find the '0' tick position in Axis{${this.type}}`);
@@ -144,7 +144,7 @@ class Axis {
         this.telemetry = {
             "yStart": this.yStart,
             "tickStep": this.tickStep
-        }
+        };
     }
 
     generateScaleNumbers() {
@@ -158,7 +158,7 @@ class Axis {
         } else {
             if (this.negativeScale) {
                 // @Cleanup: this is a quite horrible way to do this, maybe use a simple representation
-                this.scaleNumbers = this.scales['negative'].getTickLabels().map(x => x === 0 ? x : x * -1).slice().reverse();
+                this.scaleNumbers = this.scales["negative"].getTickLabels().map(x => x === 0 ? x : x * -1).slice().reverse();
             }
             this.scaleNumbers = arrays.join(this.scaleNumbers, this.scales["positive"].getTickLabels());
 
@@ -176,7 +176,7 @@ class Axis {
         // determine the positions of the x-axis
         this.determineAxisPosition();
         this.sharedZero = false;
-        let offset = 0;
+        let offset = this.manager.sharedZero ? 1 : 0;
 
         // get the context ready to draw
         this.graph.ctx.strokeStyle = utils.rgba(this.options.axis_colour, 60);
@@ -185,49 +185,23 @@ class Axis {
         /// Y-Axis Drawing !
         if (this.type === AxisType.Y_AXIS) {
             draw.verticalLine(this.graph.ctx, this.graph.lengths.x_begin, this.graph.lengths.y_end, -this.graph.y_length);
-            // if the graph has a zero scale setting, and the y-scale first element is a 0
-            // (excluding negative scales), don't draw the 0 on the first tick and remove it from
-            // scaleNumbers for the time being.
-            if (this.graph.options.zero_scale && this.scaleNumbers.indexOf(0) === 0) {
-                this.scaleNumbers.shift();
-                this.sharedZero = true;
-
-                offset++;
-            }
 
             for (let number of this.scaleNumbers) {
                 let y_offset = offset * this.graph.squareSize.y;
                 let scale_offset = Math.ceil(this.graph.ctx.measureText(number.toString()).width / 1.5);
 
-                this.graph.ctx.textBaseline = 'middle';
-                this.graph.ctx.fillText(number.toString(),
-                    this.graph.lengths.x_begin - 9 - scale_offset,
-                    this.graph.lengths.y_end - y_offset
-                );
-                offset++;
-            }
+                this.graph.ctx.textBaseline = "middle";
 
-            // add the '0' back if it was removed
-            if (this.sharedZero) {
-                this.scaleNumbers = [0].concat(this.scaleNumbers);
+                if (!(this.manager.sharedZero && number === 0)) {
+                    this.graph.ctx.fillText(number.toString(),
+                        this.graph.lengths.x_begin - 9 - scale_offset,
+                        this.graph.lengths.y_end - y_offset
+                    );
+                    offset++;
+                }
             }
-
         } else {
             draw.horizontalLine(this.graph.ctx, this.graph.lengths.x_begin, this.yStart, this.graph.x_length);
-
-            // check if the sharedZero was detected in y-axis draw method, do the same thing
-            // as for the y-axis and then draw the centered 0.
-            if (this.manager.sharedZero) {
-                this.scaleNumbers.shift();
-                this.sharedZero = true;
-
-                offset = 1;
-
-                this.graph.ctx.fillText('0',
-                    this.graph.lengths.x_begin - this.graph.padding.val,
-                    this.graph.lengths.y_end + this.graph.padding.val
-                );
-            }
 
             for (let number of this.scaleNumbers) {
                 let x_offset = offset * this.graph.squareSize.x;
@@ -235,19 +209,16 @@ class Axis {
 
                 draw.toTextMode(this.graph.ctx, 14, this.options.axis_colour);
 
-                this.graph.ctx.fillText(number.toString(),
-                    this.graph.lengths.x_begin + x_offset,
-                    this.graph.lengths.y_end + 9 + scale_offset
-                );
-                offset++;
-            }
-
-            // add the '0' back if it was removed
-            if (this.sharedZero) {
-                this.scaleNumbers = [0].concat(this.scaleNumbers);
+                // if sharedZero isn't enabled and the number isn't zero, draw the number label
+                if (!(this.manager.sharedZero && number === 0)) {
+                    this.graph.ctx.fillText(number.toString(),
+                        this.graph.lengths.x_begin + x_offset,
+                        this.graph.lengths.y_end + 9 + scale_offset
+                    );
+                    offset++;
+                }
             }
         }
-
     }
 }
 

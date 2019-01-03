@@ -50,6 +50,7 @@
 
     let graph = new Graph('g', {
             x_label: 'X-Label',
+            sharedZero: true,
             y_label: 'Y-Label',
             title_pos: 'top-center',
             gridded: true
@@ -59,13 +60,13 @@
                 style: "dashed",
                 label: 'student_1',
                 interpolation: 'cubic',
-                data: getRandomArray(20, -20, 20),
+                data: getRandomArray(20, 0, 20),
                 colour: Graph.Colours.FLAMINGO_PINK
             },
             {
                 label: 'student_2',
                 interpolation: 'cubic',
-                data: getRandomArray(11, -20, 100),
+                data: getRandomArray(11, 0, 100),
                 colour: Graph.Colours.ELECTRIC_BLUE
             }
         ]
