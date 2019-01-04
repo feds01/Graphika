@@ -47,10 +47,7 @@ class Axis {
         this.hasNegativeScale = false;
 
         // This is the variable which holds the tick step of the axis.
-        this.tickStep = null;
-
-        // Y & X positions which represent the start of the drawing line
-        this.yStart = null;
+        this.tickStep = 0;
 
         // we have negative values in the data set and therefore will require two
         // different scales
@@ -130,6 +127,9 @@ class Axis {
      * Takes in input as the lengths object from a graph object.
      * * */
     determineAxisPosition() {
+        // Y & X positions which represent the start of the drawing line
+        // @Cleanup: this must be determined here because the graph 'lengths' haven't been
+        // calculated yet.
         this.yStart = this.graph.lengths.y_end;
 
         // position the x-axis then in the center of the y-axis, calculate this offset by indexing
@@ -143,12 +143,6 @@ class Axis {
 
             this.yStart = this.graph.lengths.y_end - (this.graph.squareSize.y * this.manager.scaleNumbers.y.indexOf(0));
         }
-
-        // Set the Axis' telemetry data, so it can be accessed by the manager
-        this.telemetry = {
-            "yStart": this.yStart,
-            "tickStep": this.tickStep
-        };
     }
 
     generateScaleNumbers() {
@@ -176,10 +170,16 @@ class Axis {
         }
     }
 
+    // There must be some cleaner way to get this value, maybe using AxisManager store this value.
+    get yStartingPosition() {
+        return this.yStart;
+    }
+
     draw() {
         // determine the positions of the x-axis
         this.determineAxisPosition();
         this.sharedZero = false;
+
         let offset = this.manager.sharedZero ? 1 : 0;
 
         // get the context ready to draw
