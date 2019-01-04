@@ -14,7 +14,7 @@
     "no-invalid-regexp": "error",
     "no-console": "off",
     "no-unused-vars": "off",
-    "no-trailing-spaces": "warn",
+    "no-trailing-spaces": "off",
     "spaced-comment": "warn",
     "use-isnan": "error",
     "eqeqeq": "error",

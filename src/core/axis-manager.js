@@ -30,7 +30,7 @@ class AxisManager {
         // If the Y-Axis object has detected present negative values, we should update
         // the X-Axis to correspond to this change. This should be done in a better way
         // TODO: GraphScales object to better manage our scales
-        this.xAxis.negativeScale = this.yAxis.negativeScale;
+        this.xAxis.hasNegativeScale = this.yAxis.hasNegativeScale;
 
         // This is the variable which holds the tick step for positive & negative scales on
         // the Y-Axis
