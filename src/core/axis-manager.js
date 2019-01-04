@@ -63,11 +63,18 @@ class AxisManager {
 
         this.yAxis.draw();
         this.xAxis.draw();
+    }
 
-        this.telemetry = {
-            "xAxis": this.xAxis.telemetry,
-            "yAxis": this.yAxis.telemetry,
-        };
+    get xAxisTickStep() {
+        return this.xAxis.tickStep;
+    }
+
+    get yAxisTickStep() {
+        return this.yAxis.tickStep;
+    }
+
+    get xAxisYStart() {
+        return this.xAxis.yStart;
     }
 
     get yAxisScaleNumbers() {

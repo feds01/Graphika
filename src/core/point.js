@@ -30,21 +30,21 @@
  * @email <alexander.fedotov.uk@gmail.com>
  */
 
+const assert = require("./../utils/assert").assert;
+
 class Point {
     constructor(data, graph) {
         this.data = data;
         this.graph = graph;
         this.manager = graph.axisManager;
 
-        if(this.graph === undefined) {
-            throw "Point class must be provided with the relevant graph."
-        }
+        assert(this.graph !== undefined, "Point class must be provided with the relevant graph.");
 
         // calculate actual graphical coordinates
-        let actual_ySize = data.y / this.manager.telemetry.yAxis.tickStep;
+        let actual_ySize = data.y / this.manager.yAxisTickStep;
 
         this.x = graph.lengths.x_begin + (data.x * graph.squareSize.x);
-        this.y = this.manager.telemetry.xAxis.yStart - (actual_ySize * graph.squareSize.y);
+        this.y = this.manager.xAxis.yStartingPosition - (actual_ySize * graph.squareSize.y);
     }
 }
 
