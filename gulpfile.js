@@ -13,11 +13,12 @@ gulp.task("js", () => {
         .bundle()
         .on("error", function (err) {
             console.log("Error : " + err.message);
+            this.emit("end");
         })
         .pipe(source("graph.min.js"))
         .pipe(buffer())
         .pipe(minify())
-        .pipe(size({'gzip': true}))
+        .pipe(size({"gzip": true}))
         .pipe(gulp.dest("./dist"));
 });
 
