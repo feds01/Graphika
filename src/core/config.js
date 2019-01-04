@@ -31,7 +31,8 @@ module.exports = {
     axisLabelFontSize: 14,
 
     /* Default value for the axis colour */
-    axis_colour: 'rgb(94,94,94)'
+    axis_colour: "rgb(94,94,94)",
 
-
+    /* Debug flag for drawer calls, this will log all instructions the draw module gets */
+    debug_draw: false,
 };

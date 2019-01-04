@@ -76,10 +76,10 @@ class Axis {
                 this.positveScale = new Scale({
                     min: 0,
                     max: this.maxDataPoints - 1,
-                    maxTicks: this.options.maxTicks,
-                    name: "positive scale"
+                    maxTicks: this.options.maxTicks
                 });
                 break;
+
             case AxisType.Y_AXIS:
                 if (arrays.negativeValues(this.data).length > 0) {
                     let negativeDataSet = arrays.negativeValues(this.data).map(x => Math.abs(x));
@@ -87,9 +87,9 @@ class Axis {
                     this.negativeScale = new Scale({
                         min: Math.min(...negativeDataSet),
                         max: Math.max(...negativeDataSet),
-                        maxTicks: this.options.maxTicks / 2,
-                        name: "negative scale"
+                        maxTicks: this.options.maxTicks / 2
                     });
+
                     this.hasNegativeScale = true;
                 }
 
