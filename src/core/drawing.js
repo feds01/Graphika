@@ -10,27 +10,42 @@
  * @email <alexander.fedotov.uk@gmail.com>
  */
 
+const config =require( "./config");
+
 const TWO_PI = Math.PI * 2;
+const debug_prefix = "[debug/draw] ";
 
 module.exports = {
     circle: function(ctx, x, y, rad) {
+        if(config.debug_draw) {
+            console.log(`${debug_prefix}circle, args->{${x}, ${y}, ${rad}}`);
+        }
+
         // begin new path, draw circle and then close path.
         ctx.beginPath();
 
         ctx.arc(x, y, rad, 0, TWO_PI);
         ctx.fill();
 
-        ctx.closePath()
+        ctx.closePath();
 
     },
 
     horizontalLine: function (ctx, x, y, len) {
+        if(config.debug_draw) {
+            console.log(`${debug_prefix}horizontalLine, args->{x=${x}, y=${y}, len=${len}}`);
+        }
+
         ctx.beginPath();
         ctx.strokeRect(x, y, len, 1);
         ctx.closePath();
     },
 
     verticalLine: function (ctx, x, y, len) {
+        if(config.debug_draw) {
+            console.log(`${debug_prefix}verticalLine, args->{x=${x}, y=${y}, len=${len}}`);
+        }
+
         ctx.beginPath();
         ctx.strokeRect(x, y, 1, len);
         ctx.closePath();
@@ -43,8 +58,12 @@ module.exports = {
      *
      * @since v0.0.1 * */
     toTextMode: function (ctx, size, colour) {
+        if(config.debug_draw) {
+            console.log(`${debug_prefix}toTextMode, args-{${size}, ${colour}`);
+        }
+
         ctx.strokeStyle = colour;
-        ctx.textAlign = 'center';
+        ctx.textAlign = "center";
         ctx.font = `${size}px "Robot Mono", monospace`;
     }
 };

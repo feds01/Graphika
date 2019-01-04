@@ -100,7 +100,6 @@ class BasicGraph {
 
         this.calculatePadding();
 
-        this.max_xTicks = Math.min(this.dataManager.maxLen(), config.xTicks);
         this.x_length = this.c_width - (this.padding.right + this.padding.left + this.labelFontSize);
         this.y_length = this.c_height - (this.padding.top + this.padding.bottom + this.labelFontSize);
 
@@ -124,9 +123,9 @@ class BasicGraph {
         };
     }
 
-    setData(_data) {
+    setData(data) {
         // re-create the data object & call re-draw
-        this.dataManager = new DataManager(_data);
+        this.dataManager = new DataManager(data);
         this.redraw();
     }
 
@@ -160,17 +159,18 @@ class BasicGraph {
 
     _drawAxisGrid() {
         this.ctx.lineWidth = 1;
-        let offset = 0;
-
         // grid drawing
+        const xMaxTicks = Math.min(this.dataManager.maxLen(), config.xTicks);
         const y_len = this.options.gridded ? 9 + this.y_length : 9;
         const x_len = this.options.gridded ? 9 + this.x_length : 9;
+
+        let offset = 0;
 
         while (offset <= Math.max(this.axisManager.yAxisScaleNumbers.length - 1, this.dataManager.maxLen())) {
             this.ctx.strokeStyle = utils.rgba(config.axis_colour, 40);
 
             // The X-Axis drawing
-            if (offset < this.max_xTicks) {
+            if (offset < xMaxTicks) {
                 let x_offset = offset * this.squareSize.x;
 
                 draw.verticalLine(this.ctx,
@@ -180,13 +180,15 @@ class BasicGraph {
                 );
             }
             // The Y-Axis drawing
-            if (offset <= this.axisManager.yAxisScaleNumbers.length) {
+            if (offset < this.axisManager.yAxisScaleNumbers.length) {
                 let y_offset = offset * this.squareSize.y;
+
+                console.log(offset);
 
                 draw.horizontalLine(this.ctx,
                     this.lengths.x_begin - 9,
                     this.lengths.y_end - y_offset,
-                    x_len
+                    x_len,
                 );
             }
             offset++;
