@@ -9,6 +9,20 @@ const {Drawer} = require("./core/drawing");
 const {AxisManager} = require("./core/axis-manager");
 const {DataManager} = require("./core/dataManager");
 
+
+/**
+ * @since v0.0.1 Default values for options within the object, however this will
+ * soon be phased out in favour of core/config * */
+const defaultConfig = {
+    x_label: "",
+    y_label: "",
+    title: "Graph",
+    title_pos: "top-center",
+    gridded: false,
+    padding: 14,
+    sharedZero: true,
+};
+
 /**
  * @property x_label -> The label which is present on the x-axis of the graph
  * @property y_label -> The label which is present on the y-axis of the graph
@@ -30,7 +44,7 @@ class BasicGraph {
         /**
          * @since v0.0.1 Graph options, this contain x-labels, y-label, tittle, legends, points
          * style, gridded, etc. More on graph options can be read in the documentation * */
-        this.options = options;
+        this.options = defaultConfig;
 
         /**
          * @since v0.0.1 DataManager() object which contains the data for the lines the graph should
@@ -38,34 +52,20 @@ class BasicGraph {
         this.dataManager = new DataManager(data);
 
         /**
-         * @since v0.0.1 Default values for options within the object, however this will
-         * soon be phased out in favour of core/config * */
-        this.defaultConfig = {
-            x_label: "",
-            y_label: "",
-            title: "Graph",
-            title_pos: "top-center",
-            gridded: false,
-            padding: 14,
-            sharedZero: true,
-        };
-
-        /**
          *  @since v0.0.1 This is the font size of the labels, initially it is set to 0, later on it is set if
          * the labels are not empty strings or null.
          * */
         this.labelFontSize = 0;
 
-        // Sanitise the configuration
-        if (!utils.isUndefOrNull(this.options)) {
-            Object.keys(this.options).forEach((option) => {
-                if (this.defaultConfig.hasOwnProperty(option)) {
-                    this.defaultConfig[option] = this.options[option];
+        // Loop through provided options, and overwrite default options if the user provided
+        // options contain a value
+        if (!utils.isUndefOrNull(options)) {
+            Object.keys(options).forEach((option) => {
+                if (defaultConfig.hasOwnProperty(option)) {
+                    this.options[option] = options[option];
                 }
             });
         }
-
-        this.options = this.defaultConfig;
 
         // find canvas element and tittle element.
         const elementMap = utils.findObjectElements(this.HtmlElementId, this.options);
