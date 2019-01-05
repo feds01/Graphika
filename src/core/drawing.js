@@ -10,46 +10,64 @@
  * @email <alexander.fedotov.uk@gmail.com>
  */
 
-const config =require( "./config");
+const config = require( "./config");
+const assert = require("./../utils/assert").assert;
 
 const TWO_PI = Math.PI * 2;
 const debug_prefix = "[debug/draw] ";
 
-module.exports = {
-    circle: function(ctx, x, y, rad) {
+class Drawer {
+    constructor(canvas, context) {
+        this.canvas = canvas;
+        this.context = context;
+    }
+
+    _coordinateSafetyCheck(x, y) {
+        assert(x >= 0 && x <= this.canvas.width, "Drawer request failed since x-coordinate is out of bounds");
+        assert(y >= 0 && y <= this.canvas.height, "Drawer request failed since y-coordinate is out of bounds");
+    }
+
+    circle(x, y, rad) {
+        this._coordinateSafetyCheck(x, y);
+
         if(config.debug_draw) {
             console.log(`${debug_prefix}circle, args->{${x}, ${y}, ${rad}}`);
         }
 
         // begin new path, draw circle and then close path.
-        ctx.beginPath();
+        this.context.beginPath();
+        this.context.arc(x, y, rad, 0, TWO_PI);
+        this.context.fill();
+        this.context.closePath();
+    }
 
-        ctx.arc(x, y, rad, 0, TWO_PI);
-        ctx.fill();
+    horizLine(x, y, len) {
+        this._coordinateSafetyCheck(x, y);
 
-        ctx.closePath();
-
-    },
-
-    horizontalLine: function (ctx, x, y, len) {
         if(config.debug_draw) {
             console.log(`${debug_prefix}horizontalLine, args->{x=${x}, y=${y}, len=${len}}`);
         }
 
-        ctx.beginPath();
-        ctx.strokeRect(x, y, len, 1);
-        ctx.closePath();
-    },
+        assert((x + len) >= 0 && (x + len) <= this.canvas.width);
 
-    verticalLine: function (ctx, x, y, len) {
+        this.context.beginPath();
+        this.context.strokeRect(x, y, len, 1);
+        this.context.closePath();
+    }
+
+    vertLine(x, y, len) {
+        this._coordinateSafetyCheck(x, y);
+
         if(config.debug_draw) {
             console.log(`${debug_prefix}verticalLine, args->{x=${x}, y=${y}, len=${len}}`);
         }
 
-        ctx.beginPath();
-        ctx.strokeRect(x, y, 1, len);
-        ctx.closePath();
-    },
+        assert((y + len) >= 0 && (y + len) <= this.canvas.width);
+
+        this.context.beginPath();
+        this.context.strokeRect(x, y, 1, len);
+        this.context.closePath();
+    }
 
     /**
      * This simply switches the canvas context to be text mode ready,
@@ -57,13 +75,29 @@ module.exports = {
      * change stroke colour to the axis' colour.
      *
      * @since v0.0.1 * */
-    toTextMode: function (ctx, size, colour) {
+    toTextMode(size, colour) {
         if(config.debug_draw) {
             console.log(`${debug_prefix}toTextMode, args-{${size}, ${colour}`);
         }
 
-        ctx.strokeStyle = colour;
-        ctx.textAlign = "center";
-        ctx.font = `${size}px "Robot Mono", monospace`;
+        this.context.strokeStyle = colour;
+        this.context.textAlign = "center";
+        this.context.font = `${size}px "Robot Mono", monospace`;
     }
+
+    text(text, x, y, size, colour){
+        this._coordinateSafetyCheck(x, y);
+
+        this.toTextMode(size, colour);
+        this.context.fillText(text, x, y);
+
+    }
+
+    get width() { return this.canvas.width; }
+
+    get height() { return this.canvas.height; }
+}
+
+module.exports = {
+    Drawer: Drawer
 };

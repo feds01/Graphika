@@ -1,5 +1,5 @@
 let Graph = require("./basic.graph")();
 
-Graph.Scale = require("./core/scale");
+Graph.Colours = require("./utils/colours");
 
 module.exports = Graph;

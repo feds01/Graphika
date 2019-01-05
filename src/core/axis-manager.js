@@ -51,9 +51,10 @@ class AxisManager {
         // check if the sharedZero was detected in y-axis draw method, do the same thing
         // as for the y-axis and then draw the centered 0.
         if (this.sharedZero) {
-            this.graph.ctx.fillText("0",
+            this.graph.drawer.text("0",
                 this.graph.lengths.x_begin - this.graph.options.padding,
-                this.graph.lengths.y_end + this.graph.options.padding
+                this.graph.lengths.y_end + this.graph.options.padding,
+                14, config.axis_colour
             );
         }
 

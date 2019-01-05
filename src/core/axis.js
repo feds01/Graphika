@@ -10,12 +10,12 @@
  * @email <alexander.fedotov.uk@gmail.com>
  */
 
-const {Scale} = require("./scale");
 const arrays = require("../utils/arrays");
 const config = require("./config");
-const draw = require("./drawing");
 const utils = require("./../utils");
 const assert = require("./../utils/assert").assert;
+
+const {Scale} = require("./scale");
 
 const defaultOptions = {
     minTicks: 10,
@@ -32,14 +32,14 @@ const AxisType = {
 
 class Axis {
     constructor(manager, type, options) {
-        this.maxDataPoints = manager.graph.dataManager.maxLen();
-        this.data = manager.graph.dataManager.join();
+        this.manager = manager;
+        this.maxDataPoints = this.manager.graph.dataManager.maxLen();
+        this.data = this.manager.graph.dataManager.join();
+        this.graph = this.manager.graph;
         this.options = options;
-        this.graph = manager.graph;
         this.type = type;
 
-        this.manager = manager;
-
+        let positiveValues = arrays.positiveAndZeroValues(this.data);
         /*
         // This is the flag which represents if the Axis is split into two scales, negative & positive.
         // Initial value is false, because we don's assume that provided dataset will use negative values.
@@ -61,13 +61,12 @@ class Axis {
             }
         }
 
-        if (this.options.maxTicks <= 0 || this.options.minTicks <= 0) {
-            throw Error("Max/Min ticks cannot be 0 or negative");
-        }
-
-        let positiveValues = arrays.positiveAndZeroValues(this.data);
-
-
+        // Ensure that minTicks & maxTicks don't overflow and aren't negative, otherwise they would cause a
+        // DivisionByZero or Infinity issues
+        assert(
+            this.options.maxTicks > 0 && this.options.minTicks > 0,
+            "Max/Min ticks cannot be 0 or negative"
+        );
 
         switch (this.type) {
             case AxisType.X_AXIS:
@@ -188,13 +187,12 @@ class Axis {
 
         // Y-Axis Drawing !
         if (this.type === AxisType.Y_AXIS) {
-            draw.verticalLine(this.graph.ctx, this.graph.lengths.x_begin, this.graph.lengths.y_end, -this.graph.y_length);
+            this.graph.drawer.vertLine(this.graph.lengths.x_begin, this.graph.lengths.y_end, -this.graph.y_length);
+            this.graph.ctx.textBaseline = "middle";
 
             for (let number of this.scaleNumbers) {
                 let y_offset = offset * this.graph.squareSize.y;
                 let scale_offset = Math.ceil(this.graph.ctx.measureText(number.toString()).width / 1.5);
-
-                this.graph.ctx.textBaseline = "middle";
 
                 if (!(this.manager.sharedZero && number === 0)) {
                     this.graph.ctx.fillText(number.toString(),
@@ -205,13 +203,12 @@ class Axis {
                 }
             }
         } else {
-            draw.horizontalLine(this.graph.ctx, this.graph.lengths.x_begin, this.yStart, this.graph.x_length);
+            this.graph.drawer.horizLine(this.graph.lengths.x_begin, this.yStart, this.graph.x_length);
+            this.graph.drawer.toTextMode(14, this.options.axis_colour);
 
             for (let number of this.scaleNumbers) {
                 let x_offset = offset * this.graph.squareSize.x;
                 let scale_offset = this.graph.fontSize() / 2;
-
-                draw.toTextMode(this.graph.ctx, 14, this.options.axis_colour);
 
                 // if sharedZero isn't enabled and the number isn't zero, draw the number label
                 if (!(this.manager.sharedZero && number === 0)) {
