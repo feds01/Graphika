@@ -1,11 +1,11 @@
 const utils = require("./utils");
 const arrays = require("./utils/arrays");
-const draw = require("./core/drawing");
 const config = require("./core/config");
 const colours = require("./utils/colours");
 const interpolation = require("./core/interpolation");
 
 const {Point} = require("./core/point");
+const {Drawer} = require("./core/drawing");
 const {AxisManager} = require("./core/axis-manager");
 const {DataManager} = require("./core/dataManager");
 
@@ -72,11 +72,10 @@ class BasicGraph {
 
         this.canvas = elementMap.canvas;
         this.ctx = this.canvas.getContext("2d");
-        draw.toTextMode(this.ctx, 16, this.options.axis_colour);
 
-        this.c_width = this.canvas.width;
-        this.c_height = this.canvas.height;
+        this.drawer = new Drawer(this.canvas, this.ctx);
 
+        this.drawer.toTextMode(this.ctx, 16, this.options.axis_colour);
 
         // if no labels provided, they are disabled as in no room is provided
         // for them to be drawn.
@@ -100,8 +99,8 @@ class BasicGraph {
 
         this.calculatePadding();
 
-        this.x_length = this.c_width - (this.padding.right + this.padding.left + this.labelFontSize);
-        this.y_length = this.c_height - (this.padding.top + this.padding.bottom + this.labelFontSize);
+        this.x_length = this.drawer.width - (this.padding.right + this.padding.left + this.labelFontSize);
+        this.y_length = this.drawer.height - (this.padding.top + this.padding.bottom + this.labelFontSize);
 
 
         // Subtract a 1 from each length because we actually don't need to worry about the first
@@ -116,8 +115,8 @@ class BasicGraph {
         this.lengths = {
             x_begin: this.padding.left + this.labelFontSize,
             y_begin: this.padding.top,
-            x_end: this.c_width - this.padding.right,
-            y_end: this.c_height - this.padding.bottom,
+            x_end: this.drawer.width - this.padding.right,
+            y_end: this.drawer.height - this.padding.bottom,
             x_center: this.padding.left + this.labelFontSize + this.x_length / 2,
             y_center: this.labelFontSize + this.y_length / 2,
         };
@@ -145,8 +144,11 @@ class BasicGraph {
     _drawLabels() {
         if (this.labelFontSize !== 0) {
             // add x-axis label
-            draw.toTextMode(this.ctx, this.fontSize(), config.axis_colour);
-            this.ctx.fillText(this.options.x_label, this.lengths.x_center, this.c_height - (this.fontSize() / 2));
+            this.drawer.text(
+                this.options.x_label, this.lengths.x_center,
+                this.drawer.height - (this.fontSize() / 2),
+                this.ctx, this.fontSize(), config.axis_colour
+            );
 
             // add y-axis label
             this.ctx.save();
@@ -173,7 +175,7 @@ class BasicGraph {
             if (offset < xMaxTicks) {
                 let x_offset = offset * this.squareSize.x;
 
-                draw.verticalLine(this.ctx,
+                this.drawer.vertLine(
                     this.lengths.x_begin + x_offset,
                     this.lengths.y_end + 9,
                     -y_len
@@ -183,9 +185,7 @@ class BasicGraph {
             if (offset < this.axisManager.yAxisScaleNumbers.length) {
                 let y_offset = offset * this.squareSize.y;
 
-                console.log(offset);
-
-                draw.horizontalLine(this.ctx,
+                this.drawer.horizLine(
                     this.lengths.x_begin - 9,
                     this.lengths.y_end - y_offset,
                     x_len,
@@ -289,7 +289,7 @@ class BasicGraph {
             for (let p of points) {
                 if (this.axisManager.xAxisScaleNumbers.indexOf(p.data.x) > -1) {
                     // convert the data point into a graphical point
-                    draw.circle(this.ctx, p.x, p.y, lineWidth);
+                    this.drawer.circle(p.x, p.y, lineWidth);
                 }
             }
         }
@@ -299,7 +299,7 @@ class BasicGraph {
         let longestItem = arrays.longest(this.axisManager.joinedScaleNumbers.map(label => label.toString()));
 
         // Set the config font size of axis labels, and then we can effectively 'measure' the width of the text
-        draw.toTextMode(this.ctx, config.axisLabelFontSize, config.axis_colour);
+        this.drawer.toTextMode(config.axisLabelFontSize, config.axis_colour);
         this.padding.left = Math.ceil(this.options.padding + this.ctx.measureText(longestItem).width + this.labelFontSize);
         this.padding.bottom = Math.ceil(this.options.padding + this.labelFontSize + this.fontSize());
     }
@@ -320,7 +320,7 @@ class BasicGraph {
 
     redraw() {
         // clear the rectangle and reset colour
-        this.ctx.clearRect(0, 0, this.c_width, this.c_height);
+        this.ctx.clearRect(0, 0, this.drawer.width, this.drawer.height);
         this.ctx.strokeStyle = config.axis_colour;
         this.ctx.fillStyle = colours.BLACK;
 
@@ -334,7 +334,6 @@ module.exports = function () {
     };
 
     Graph.Graph = Graph;
-    Graph.Colours = require("./utils/colours");
 
     return Graph;
 };
