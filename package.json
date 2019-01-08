@@ -17,14 +17,22 @@
   },
   "homepage": "https://github.com/feds01/graph-js#readme",
   "devDependencies": {
-    "browserify": "^16.2.3",
-    "eslint": "^5.9.0",
+    "eslint": "5.6.0",
     "gulp": "^4.0.0",
+    "gulp-eslint": "^5.0.0",
+    "gulp-file": "^0.4.0",
+    "gulp-htmllint": "^0.0.16",
+    "gulp-replace": "^1.0.0",
     "gulp-size": "^3.0.0",
-    "vinyl-buffer": "^1.0.1",
-    "vinyl-source-stream": "latest"
-  },
-  "dependencies": {
-    "google-closure-compiler": "^20181210.0.0"
+    "gulp-streamify": "^1.0.2",
+    "gulp-terser": "^1.1.6",
+    "gulp-util": "^3.0.0",
+    "gulp-zip": "^4.2.0",
+    "rollup": "^0.67.4",
+    "rollup-plugin-commonjs": "^9.2.0",
+    "rollup-plugin-istanbul": "^2.0.1",
+    "rollup-plugin-node-resolve": "^3.4.0",
+    "rollup-plugin-terser": "^3.0.0",
+    "watchify": "^3.9.0"
   }
 }

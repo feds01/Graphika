@@ -1,66 +1,63 @@
-const size = require("gulp-size");
-
-/* jshint strict: false */
-/* globals require, console */
 let gulp = require("gulp");
-let exit = require("gulp-exit");
+let size = require("gulp-size");
+let terser = require("gulp-terser");
+let util = require("gulp-util");
+let exec = require("child_process").exec;
+let yargs = require("yargs");
 
-let browserify = require("browserify");
-let watchify = require("watchify");
-let babelify = require("babelify");
+let argv = yargs
+    .option("verbose", {default: false})
+    .argv;
 
-let source = require("vinyl-source-stream");
-let buffer = require("vinyl-buffer");
+let srcDir = "./src/";
 
-let rename = require("gulp-rename");
-let uglify = require("gulp-uglify");
-let sourcemaps = require("gulp-sourcemaps");
+if (argv.verbose) {
+    util.log("Gulp running with options: " + JSON.stringify(argv, null, 2));
+}
 
+gulp.task("build", buildTask);
+gulp.task("library-size", librarySizeTask);
+gulp.task("module-sizes", moduleSizesTask);
+gulp.task("size", gulp.parallel("library-size", "module-sizes"));
+gulp.task("default", gulp.parallel("build"));
 
-function compile(watch) {
-    let bundle = watchify(browserify("./src/graph.js", {debug: true}).transform(babelify, {
-        // Use all of the ES2015 spec
-        presets: ["es2015"],
-        sourceMaps: true
-    }));
+function run(bin, args, done) {
+    return new Promise(function(resolve, reject) {
+        let exe = "\"" + process.execPath + "\"";
+        let src = require.resolve(bin);
+        let ps = exec([exe, src].concat(args || []).join(" "));
 
-    function reBundle() {
-        return bundle
-            .bundle()
-            .on("error", function (err) {
-                console.error(err);
-                this.emit("end");
-            })
-            .pipe(source("build.js"))
-            .pipe(buffer())
-            .pipe(rename("graph.min.js"))
-            .pipe(sourcemaps.init({loadMaps: true}))
-            .pipe(uglify())
-            .pipe(sourcemaps.write("./"))
-            .pipe(gulp.dest("./dist"));
-    }
-
-    if (watch) {
-        bundle.on("update", function () {
-            console.log("-> bundling...");
-            reBundle();
+        ps.stdout.pipe(process.stdout);
+        ps.stderr.pipe(process.stderr);
+        ps.on("close", function(error) {
+            if (error) {
+                reject(error);
+            } else {
+                resolve();
+            }
         });
-
-        reBundle();
-    } else {
-        reBundle().pipe(exit());
-    }
+    });
 }
 
-function watch() {
-    return compile(true);
+
+function buildTask() {
+    return run("rollup/bin/rollup", ["-c", "--sourcemap" , argv.watch ? "--watch" : ""]);
 }
 
-gulp.task("build", function () {
-    return compile();
-});
-gulp.task("watch", function () {
-    return watch();
-});
 
-gulp.task("default", ["watch"]);
+
+function librarySizeTask() {
+    return gulp.src("dist/graph.min.js")
+        .pipe(size({
+            gzip: true
+        }));
+}
+
+function moduleSizesTask() {
+    return gulp.src(srcDir + "**/*.js")
+        .pipe(terser())
+        .pipe(size({
+            showFiles: true,
+            gzip: true
+        }));
+}
