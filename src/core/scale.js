@@ -2,7 +2,7 @@
  * Module description: src/core/scale.js
  *
  * This module holds the Scale class and it's methods, the scale class is used
- * to calculate the tick steps, tick number and other operations realted with
+ * to calculate the tick steps, tick number and other operations related with
  * graph/chart scales.
  *
  * Created on 29/06/2018
@@ -10,8 +10,9 @@
  * @email <alexander.fedotov.uk@gmail.com>
  */
 
-const arrays = require('./../utils/arrays');
 const utils = require("./../utils");
+const arrays = require("./../utils/arrays");
+const assert = require("./../utils/assert").assert;
 
 class Scale {
     constructor(options) {
@@ -22,16 +23,11 @@ class Scale {
          * @property Maximum data value within the data set.* */
         this.max = options.max;
 
-        /**
-        * @property Name of the scale
-        * */
-        this.name = options.name;
-
         /*
         * The range of the values, simply a max - min subtraction*/
         this.range = 0;
 
-        if(utils.isUndefOrNaN(this.min) || utils.isUndefOrNaN(this.max)) {
+        if (utils.isUndefOrNaN(this.min) || utils.isUndefOrNaN(this.max)) {
             throw ("Min/Max value of scale cannot be NaN or undefined.");
         }
 
@@ -44,10 +40,10 @@ class Scale {
         this.calculate();
 
         // recalculate to get proper tick range
-        while(this.tickStep * this.maxTicks < this.range) {
+        while (this.tickStep * this.maxTicks < this.range) {
             this.maxTicks--;
 
-            this.calculate()
+            this.calculate();
         }
     }
 
@@ -55,8 +51,8 @@ class Scale {
         this.range = Scale.niceNum(this.max - this.min, false);
         this.tickStep = Scale.niceNum(this.range / (this.maxTicks - 1), true);
 
-        this.niceMin = Math.floor(this.min / this.tickStep) * this.tickStep;
-        this.niceMax = Math.ceil(this.max / this.tickStep) * this.tickStep;
+        // this.niceMin = Math.floor(this.min / this.tickStep) * this.tickStep;
+        // this.niceMax = Math.ceil(this.max / this.tickStep) * this.tickStep;
 
         this.generateTickValues();
     }
@@ -68,11 +64,9 @@ class Scale {
     }
 
     setMaxTicks(val) {
-        if (isNaN(val) || val <= 0) {
-            console.error('cannot have negative max ticks or non numerical amount of ticks' + val);
-        } else {
-            this.maxTicks = val;
-        }
+        assert(!isNaN(val) && val > 0, "Cannot have negative ticks / non-numerical tick max for Scale");
+
+        this.maxTicks = val;
         this.calculate();
     }
 

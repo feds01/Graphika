@@ -15,7 +15,7 @@ class AxisManager {
         this.graph = graph;
 
         // Object to hold Axis(...) options
-        this.options = {axis_colour: config.axis_colour};
+        this.options = {axisColour: config.axisColour};
 
         // initialise the y-axis & x-axis
         this.yAxis = new Axis(this, AxisType.Y_AXIS, this.options);
@@ -31,10 +31,6 @@ class AxisManager {
         // the X-Axis to correspond to this change. This should be done in a better way
         // TODO: GraphScales object to better manage our scales
         this.xAxis.hasNegativeScale = this.yAxis.hasNegativeScale;
-
-        // This is the variable which holds the tick step for positive & negative scales on
-        // the Y-Axis
-        this.tickStep = this.xAxis.tickStep;
 
         /* Work out if we should do a 'zeroScale', where the 'X' & 'Y' axis' share a zero */
         // if the graph has a zero scale setting, and the y-scale first element is a 0
@@ -54,12 +50,12 @@ class AxisManager {
             this.graph.drawer.text("0",
                 this.graph.lengths.x_begin - this.graph.options.padding,
                 this.graph.lengths.y_end + this.graph.options.padding,
-                14, config.axis_colour
+                14, config.axisColour
             );
         }
 
         // get the context ready to draw
-        this.graph.ctx.strokeStyle = utils.rgba(this.options.axis_colour, 60);
+        this.graph.ctx.strokeStyle = utils.rgba(this.options.axisColour, 60);
         this.graph.ctx.lineWidth = config.gridLineWidth;
 
         this.yAxis.draw();

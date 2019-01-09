@@ -33,7 +33,6 @@ const AxisType = {
 class Axis {
     constructor(manager, type, options) {
         this.manager = manager;
-        this.maxDataPoints = this.manager.graph.dataManager.maxLen();
         this.data = this.manager.graph.dataManager.join();
         this.graph = this.manager.graph;
         this.options = options;
@@ -75,14 +74,12 @@ class Axis {
 
                 this.positveScale = new Scale({
                     min: 0,
-                    max: this.maxDataPoints - 1,
+                    max: this.graph.dataManager.maxLen() - 1,
                     maxTicks: this.options.maxTicks
                 });
 
                 this.tickStep = this.positveScale.getTickStep();
-
                 break;
-
             case AxisType.Y_AXIS:
                 if (arrays.negativeValues(this.data).length > 0) {
                     let negativeDataSet = arrays.negativeValues(this.data).map(x => Math.abs(x));
@@ -100,7 +97,6 @@ class Axis {
                     min: Math.min(...positiveValues),
                     max: Math.max(...positiveValues),
                     maxTicks: this.hasNegativeScale ? this.options.maxTicks / 2 : this.options.maxTicks,
-                    name: "positive scale"
                 });
 
                 /*
@@ -125,10 +121,7 @@ class Axis {
     }
 
 
-    /**
-     * @since v0.0.1
-     * Takes in input as the lengths object from a graph object.
-     * * */
+    /** @since v0.0.1 Takes in input as the lengths object from a graph object. */
     determineAxisPosition() {
         // Y & X positions which represent the start of the drawing line
         // @Cleanup: this must be determined here because the graph 'lengths' haven't been
@@ -180,44 +173,46 @@ class Axis {
     draw() {
         // determine the positions of the x-axis
         this.determineAxisPosition();
-        this.sharedZero = false;
-
         let offset = this.manager.sharedZero ? 1 : 0;
 
         // get the context ready to draw
-        this.graph.ctx.strokeStyle = utils.rgba(this.options.axis_colour, 60);
         this.graph.ctx.lineWidth = config.gridLineWidth;
+        this.graph.ctx.strokeStyle = utils.rgba(this.options.axisColour, 60);
 
         // Y-Axis Drawing !
         if (this.type === AxisType.Y_AXIS) {
-            this.graph.drawer.verticalLine(this.graph.lengths.x_begin, this.graph.lengths.y_end, -this.graph.y_length);
+            this.graph.drawer.verticalLine(this.graph.lengths.x_begin, this.graph.lengths.y_end, -this.graph.yLength);
             this.graph.ctx.textBaseline = "middle";
 
             for (let number of this.scaleNumbers) {
-                let y_offset = offset * this.graph.squareSize.y;
-                let scale_offset = Math.ceil(this.graph.ctx.measureText(number.toString()).width / 1.5);
-
                 if (!(this.manager.sharedZero && number === 0)) {
-                    this.graph.ctx.fillText(number.toString(),
+                    let y_offset = offset * this.graph.squareSize.y;
+                    let scale_offset = Math.ceil(this.graph.ctx.measureText(number).width / 1.5);
+
+                    this.graph.drawer.text(
+                        number,
                         this.graph.lengths.x_begin - 9 - scale_offset,
-                        this.graph.lengths.y_end - y_offset
+                        this.graph.lengths.y_end - y_offset,
+                        config.scaleLabelFontSize,
+                        this.options.axisColour
                     );
                     offset++;
                 }
             }
         } else {
-            this.graph.drawer.horizontalLine(this.graph.lengths.x_begin, this.yStart, this.graph.x_length);
-            this.graph.drawer.toTextMode(14, this.options.axis_colour);
+            this.graph.drawer.horizontalLine(this.graph.lengths.x_begin, this.yStart, this.graph.xLength);
 
             for (let number of this.scaleNumbers) {
-                let x_offset = offset * this.graph.squareSize.x;
-                let scale_offset = this.graph.fontSize() / 2;
-
                 // if sharedZero isn't enabled and the number isn't zero, draw the number label
                 if (!(this.manager.sharedZero && number === 0)) {
-                    this.graph.ctx.fillText(number.toString(),
+                    let x_offset = offset * this.graph.squareSize.x;
+                    let scale_offset = this.graph.fontSize() / 2;
+
+                    this.graph.drawer.text(number,
                         this.graph.lengths.x_begin + x_offset,
-                        this.graph.lengths.y_end + 9 + scale_offset
+                        this.graph.lengths.y_end + 9 + scale_offset,
+                        config.scaleLabelFontSize,
+                        this.options.axisColour
                     );
                     offset++;
                 }
