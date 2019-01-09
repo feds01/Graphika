@@ -42,8 +42,22 @@ class Point {
 
         // calculate actual graphical coordinates
         let actual_ySize = data.y / this.manager.yAxisTickStep;
+        let xRatio = data.x / this.manager.xAxisTickStep;
 
-        this.x = graph.lengths.x_begin + (data.x * graph.squareSize.x);
+
+        /*
+        // Work out fraction between the data 'x' and the longest data length. Then multiply it by the available
+        // graph canvas length to get a 'ratio' of the length and then add the 'x_begin' value to counter for the
+        // axis offset.
+        */
+        this.x = graph.lengths.x_begin + (xRatio * graph.squareSize.x);
+
+        /*
+        // Get the ratio of the actual 'y' data value, divide it by the Y-Axis tick step and multiply it by the
+        // Y square size. Negate the worked out value from the graph 'yStartingPosition' because the yStartingPosition
+        // is not always at the 'y' beelining of the graph, this is due to the graph possibly containing negative
+        // numbers, and therefore the graph must adjust the position of the Y-Axis.
+        */
         this.y = this.manager.xAxis.yStartingPosition - (actual_ySize * graph.squareSize.y);
     }
 }

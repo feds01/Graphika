@@ -74,7 +74,6 @@ class BasicGraph {
         this.ctx = this.canvas.getContext("2d");
 
         this.drawer = new Drawer(this.canvas, this.ctx);
-
         this.drawer.toTextMode(this.ctx, 16, this.options.axis_colour);
 
         // if no labels provided, they are disabled as in no room is provided
@@ -161,6 +160,8 @@ class BasicGraph {
 
     _drawAxisGrid() {
         this.ctx.lineWidth = 1;
+        this.ctx.strokeStyle = utils.rgba(config.axis_colour, 40);
+
         // grid drawing
         const xMaxTicks = Math.min(this.dataManager.maxLen(), config.xTicks);
         const y_len = this.options.gridded ? 9 + this.y_length : 9;
@@ -168,14 +169,12 @@ class BasicGraph {
 
         let offset = 0;
 
-        while (offset <= Math.max(this.axisManager.yAxisScaleNumbers.length - 1, this.dataManager.maxLen())) {
-            this.ctx.strokeStyle = utils.rgba(config.axis_colour, 40);
-
+        while (offset <= Math.max(this.axisManager.yAxisScaleNumbers.length - 1, xMaxTicks)) {
             // The X-Axis drawing
             if (offset < xMaxTicks) {
                 let x_offset = offset * this.squareSize.x;
 
-                this.drawer.vertLine(
+                this.drawer.verticalLine(
                     this.lengths.x_begin + x_offset,
                     this.lengths.y_end + 9,
                     -y_len
@@ -185,7 +184,7 @@ class BasicGraph {
             if (offset < this.axisManager.yAxisScaleNumbers.length) {
                 let y_offset = offset * this.squareSize.y;
 
-                this.drawer.horizLine(
+                this.drawer.horizontalLine(
                     this.lengths.x_begin - 9,
                     this.lengths.y_end - y_offset,
                     x_len,

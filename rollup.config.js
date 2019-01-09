@@ -15,7 +15,7 @@ const pkg = require("./package.json");
 
 const input = "src/graph.js";
 const banner = `/*!
- * graph.js v${pkg.version}
+ * graph.js v${pkg.version} 
  * ${pkg.homepage}
  * (c) ${new Date().getFullYear()} Wasabi & Co.
  */`;

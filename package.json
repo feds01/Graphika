@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "browserify src/graph.js -s Graph > dist/graph.js"
+    "build": "gulp build",
+    "watch": "gulp build --watch",
+    "size": "gulp size"
   },
   "repository": {
     "type": "git",

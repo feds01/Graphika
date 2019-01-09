@@ -41,7 +41,7 @@ class Drawer {
         this.context.closePath();
     }
 
-    horizLine(x, y, len) {
+    horizontalLine(x, y, len) {
         this._coordinateSafetyCheck(x, y);
 
         if(config.debug_draw) {
@@ -55,7 +55,7 @@ class Drawer {
         this.context.closePath();
     }
 
-    vertLine(x, y, len) {
+    verticalLine(x, y, len) {
         this._coordinateSafetyCheck(x, y);
 
         if(config.debug_draw) {
