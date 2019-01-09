@@ -10,10 +10,15 @@
  */
 
 module.exports = {
-    /* this value is the default line width size for a linear graph.
+    /* this value is the default data-line width for a graph.
      * It may change depending on if there are more data points than
      * the default value of ticks on the x-axis. */
     lineWidth: 2,
+
+    /* this value is the default axis, scale & grid line width for a graph, This value
+     *  may be overridden by providing the value within a Graph(...) object constructor.
+    * */
+    gridLineWidth: 1,
 
     /* this is the maximum amount of ticks which are available on the x-axis */
     xTicks: 20,

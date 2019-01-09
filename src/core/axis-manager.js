@@ -60,7 +60,7 @@ class AxisManager {
 
         // get the context ready to draw
         this.graph.ctx.strokeStyle = utils.rgba(this.options.axis_colour, 60);
-        this.graph.ctx.lineWidth = 1;
+        this.graph.ctx.lineWidth = config.gridLineWidth;
 
         this.yAxis.draw();
         this.xAxis.draw();

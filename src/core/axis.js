@@ -186,7 +186,7 @@ class Axis {
 
         // get the context ready to draw
         this.graph.ctx.strokeStyle = utils.rgba(this.options.axis_colour, 60);
-        this.graph.ctx.lineWidth = 1;
+        this.graph.ctx.lineWidth = config.gridLineWidth;
 
         // Y-Axis Drawing !
         if (this.type === AxisType.Y_AXIS) {
