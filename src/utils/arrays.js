@@ -11,8 +11,12 @@ module.exports = {
     * of the longest item, just the longest item.
     * */
     longest: function (arr) {
+        function intLen(k) {
+            return Math.ceil(Math.log10(k));
+        }
+
         return arr.reduce((a, b) => {
-           return a.length > b.length ? a : b;
+           return intLen(a) > intLen(b) ? a : b;
         });
     },
 

@@ -32,11 +32,14 @@ module.exports = {
      * */
     tension: 0.5,
 
-    /* size of Y-Axis & X-Axis labels */
+    /* font size of X-Axis & Y-Axis labels */
     axisLabelFontSize: 14,
 
+    /* font size of X-Axis & Y-Axis scale labels */
+    scaleLabelFontSize: 12,
+
     /* Default value for the axis colour */
-    axis_colour: "rgb(94,94,94)",
+    axisColour: "rgb(94,94,94)",
 
     /* Debug flag for drawer calls, this will log all instructions the draw module gets */
     debug_draw: false,

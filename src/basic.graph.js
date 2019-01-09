@@ -21,6 +21,7 @@ const defaultConfig = {
     gridded: false,
     padding: 14,
     sharedZero: true,
+    optimizeSquareSize: true
 };
 
 /**
@@ -68,13 +69,13 @@ class BasicGraph {
         }
 
         // find canvas element and tittle element.
-        const elementMap = utils.findObjectElements(this.HtmlElementId, this.options);
+        const { canvas } = utils.findObjectElements(this.HtmlElementId, this.options);
 
-        this.canvas = elementMap.canvas;
+        this.canvas = canvas;
         this.ctx = this.canvas.getContext("2d");
 
         this.drawer = new Drawer(this.canvas, this.ctx);
-        this.drawer.toTextMode(this.ctx, 16, this.options.axis_colour);
+        this.drawer.toTextMode(this.ctx, 16, this.options.axisColour);
 
         // if no labels provided, they are disabled as in no room is provided
         // for them to be drawn.
@@ -98,27 +99,20 @@ class BasicGraph {
 
         this.calculatePadding();
 
-        this.x_length = this.drawer.width - (this.padding.right + this.padding.left + this.labelFontSize);
-        this.y_length = this.drawer.height - (this.padding.top + this.padding.bottom + this.labelFontSize);
+        this.xLength = this.canvas.width - (this.padding.right + this.padding.left + this.labelFontSize);
+        this.yLength = this.canvas.height - (this.padding.top + this.padding.bottom + this.labelFontSize);
 
 
         // Subtract a 1 from each length because we actually don't need to worry about the first
         // iteration. Having an extra pole will make the square size less than it should be, We're
         // actually only really concerned about how many 'gaps' there are between each item
         this.squareSize = {
-            x: this.x_length / (this.axisManager.xAxisScaleNumbers.length - 1),
-            y: this.y_length / (this.axisManager.yAxisScaleNumbers.length - 1)
+            x: this.xLength / (this.axisManager.xAxisScaleNumbers.length - 1),
+            y: this.yLength / (this.axisManager.yAxisScaleNumbers.length - 1)
         };
 
-
-        this.lengths = {
-            x_begin: this.padding.left + this.labelFontSize,
-            y_begin: this.padding.top,
-            x_end: this.drawer.width - this.padding.right,
-            y_end: this.drawer.height - this.padding.bottom,
-            x_center: this.padding.left + this.labelFontSize + this.x_length / 2,
-            y_center: this.labelFontSize + this.y_length / 2,
-        };
+        // Calculate all the necessary length the graph requires to draw itself.
+        this.calculateLengths();
     }
 
     setData(data) {
@@ -146,7 +140,7 @@ class BasicGraph {
             this.drawer.text(
                 this.options.x_label, this.lengths.x_center,
                 this.drawer.height - (this.fontSize() / 2),
-                this.ctx, this.fontSize(), config.axis_colour
+                this.ctx, this.fontSize(), config.axisColour
             );
 
             // add y-axis label
@@ -160,12 +154,12 @@ class BasicGraph {
 
     _drawAxisGrid() {
         this.ctx.lineWidth = config.gridLineWidth;
-        this.ctx.strokeStyle = utils.rgba(config.axis_colour, 40);
+        this.ctx.strokeStyle = utils.rgba(config.axisColour, 40);
 
         // grid drawing
         const xMaxTicks = Math.min(this.dataManager.maxLen(), config.xTicks);
-        const y_len = this.options.gridded ? 9 + this.y_length : 9;
-        const x_len = this.options.gridded ? 9 + this.x_length : 9;
+        const y_len = this.options.gridded ? 9 + this.yLength : 9;
+        const x_len = this.options.gridded ? 9 + this.xLength : 9;
 
         let offset = 0;
 
@@ -294,16 +288,49 @@ class BasicGraph {
         }
     }
 
+    calculateLengths() {
+        this.lengths = {
+            x_begin: this.padding.left + this.labelFontSize,
+            y_begin: this.padding.top,
+            x_end: this.drawer.width - this.padding.right,
+            y_end: this.drawer.height - this.padding.bottom,
+            x_center: this.padding.left + this.labelFontSize + this.xLength / 2,
+            y_center: this.labelFontSize + this.yLength / 2,
+        };
+    }
+
     calculatePadding() {
-        let longestItem = arrays.longest(this.axisManager.joinedScaleNumbers.map(label => label.toString()));
+        let longestItem = arrays.longest(this.axisManager.joinedScaleNumbers);
 
         // Set the config font size of axis labels, and then we can effectively 'measure' the width of the text
-        this.drawer.toTextMode(config.axisLabelFontSize, config.axis_colour);
+        this.drawer.toTextMode(config.axisLabelFontSize, config.axisColour);
         this.padding.left = Math.ceil(this.options.padding + this.ctx.measureText(longestItem).width + this.labelFontSize);
         this.padding.bottom = Math.ceil(this.options.padding + this.labelFontSize + this.fontSize());
     }
 
     draw() {
+        /* optimise x-square-size if float */
+        if (this.options.optimizeSquareSize && this.squareSize.x % 1 !== 0) {
+            let preferredSquareSize = Math.round(this.squareSize.x);
+            let numberOfSquares = this.axisManager.xAxisScaleNumbers.length - 1;
+
+            /* If the square size was some round up, rather than down, we need to check if
+             * we can actually apply the 'scale' up with the padding space available to the right
+             * of the graph. If we can't fit in the scale up, we will have to go down as we are
+             * guaranteed to have enough space. */
+            if (preferredSquareSize > this.squareSize.x) {
+                if (this.padding.right - (preferredSquareSize - this.squareSize.x) * numberOfSquares < 0) {
+                    preferredSquareSize--;
+                }
+            }
+            this.squareSize.x = preferredSquareSize;
+
+            /* we need to re-calculate right padding before we can call calculateLengths() as it is dependant on the
+             * right padding value, which has now changed. */
+            this.padding.right = this.canvas.width - ((this.squareSize.x * numberOfSquares) + this.lengths.x_begin);
+            this.xLength =       this.canvas.width - (this.padding.right + this.padding.left + this.labelFontSize);
+        }
+
         /* Draw our Axis', including negative scales & scale labels */
         this.axisManager.draw();
 
@@ -320,7 +347,7 @@ class BasicGraph {
     redraw() {
         // clear the rectangle and reset colour
         this.ctx.clearRect(0, 0, this.drawer.width, this.drawer.height);
-        this.ctx.strokeStyle = config.axis_colour;
+        this.ctx.strokeStyle = config.axisColour;
         this.ctx.fillStyle = colours.BLACK;
 
         this.draw();
