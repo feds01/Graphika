@@ -64,4 +64,3 @@ dist/
 
 # webstorm IDE working files
 .idea/*
-package-lock.json

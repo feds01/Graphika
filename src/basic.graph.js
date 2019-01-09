@@ -159,7 +159,7 @@ class BasicGraph {
     }
 
     _drawAxisGrid() {
-        this.ctx.lineWidth = 1;
+        this.ctx.lineWidth = config.gridLineWidth;
         this.ctx.strokeStyle = utils.rgba(config.axis_colour, 40);
 
         // grid drawing
