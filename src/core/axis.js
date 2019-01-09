@@ -40,9 +40,10 @@ class Axis {
         this.type = type;
 
         let positiveValues = arrays.positiveAndZeroValues(this.data);
+
         /*
         // This is the flag which represents if the Axis is split into two scales, negative & positive.
-        // Initial value is false, because we don's assume that provided dataset will use negative values.
+        // Initial value is false, because we don's assume that provided data set will use negative values.
         */
         this.hasNegativeScale = false;
 
@@ -77,6 +78,9 @@ class Axis {
                     max: this.maxDataPoints - 1,
                     maxTicks: this.options.maxTicks
                 });
+
+                this.tickStep = this.positveScale.getTickStep();
+
                 break;
 
             case AxisType.Y_AXIS:
@@ -151,7 +155,6 @@ class Axis {
             this.scaleNumbers = arrays.fillRange(this.options.maxTicks).map(
                 x => this.positveScale.tickStep * x
             );
-
         } else {
             if (this.hasNegativeScale) {
                 // @Cleanup: this is a quite horrible way to do this, maybe use a simple representation
@@ -187,7 +190,7 @@ class Axis {
 
         // Y-Axis Drawing !
         if (this.type === AxisType.Y_AXIS) {
-            this.graph.drawer.vertLine(this.graph.lengths.x_begin, this.graph.lengths.y_end, -this.graph.y_length);
+            this.graph.drawer.verticalLine(this.graph.lengths.x_begin, this.graph.lengths.y_end, -this.graph.y_length);
             this.graph.ctx.textBaseline = "middle";
 
             for (let number of this.scaleNumbers) {
@@ -203,7 +206,7 @@ class Axis {
                 }
             }
         } else {
-            this.graph.drawer.horizLine(this.graph.lengths.x_begin, this.yStart, this.graph.x_length);
+            this.graph.drawer.horizontalLine(this.graph.lengths.x_begin, this.yStart, this.graph.x_length);
             this.graph.drawer.toTextMode(14, this.options.axis_colour);
 
             for (let number of this.scaleNumbers) {

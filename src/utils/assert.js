@@ -9,7 +9,7 @@
 module.exports = {
     assert: function (condition, message) {
         if (!condition) {
-            throw(`Assertion failed: ${message}`);
+            throw new Error(`Assertion failed: ${message}`);
         }
     }
 };

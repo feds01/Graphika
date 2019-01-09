@@ -3,7 +3,7 @@ module.exports = {
     * fills an empty array from 0 to max with integers and then returns the new array.
     * */
     fillRange: function (max) {
-        return Array.apply(null, {length: max}).map(Number.call, Number);
+        return Array.from(Array(max).keys());
     },
 
     /*
@@ -25,7 +25,7 @@ module.exports = {
     },
 
     /*
-    * Get the next element of an array, this method is also a safety wrapper function, if the
+* Get the next element of an array, this method is also a safety wrapper function, if the
     * given index is equal to the length of the array - 1, or larger, return the last element
      * of the array, rather than undefined. * */
     getNext: function(index, data) {
