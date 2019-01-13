@@ -153,7 +153,7 @@ class Axis {
                 // @Cleanup: this is a quite horrible way to do this, maybe use a simple representation
                 this.scaleNumbers = this.negativeScale.getTickLabels().map(x => x === 0 ? x : x * -1).slice().reverse();
             }
-            this.scaleNumbers = arrays.join(this.scaleNumbers, this.positveScale.getTickLabels());
+            this.scaleNumbers = [...this.scaleNumbers, ...this.positveScale.getTickLabels()];
 
             // check if 0 & -0 exist, if so remove the negative 0
             for (let i = 0; i < this.scaleNumbers.length; i++) {
@@ -173,7 +173,7 @@ class Axis {
     draw() {
         // determine the positions of the x-axis
         this.determineAxisPosition();
-        let offset = this.manager.sharedZero ? 1 : 0;
+        let offset = this.manager.sharedAxisZero ? 1 : 0;
 
         // get the context ready to draw
         this.graph.ctx.lineWidth = config.gridLineWidth;
@@ -185,7 +185,7 @@ class Axis {
             this.graph.ctx.textBaseline = "middle";
 
             for (let number of this.scaleNumbers) {
-                if (!(this.manager.sharedZero && number === 0)) {
+                if (!(this.manager.sharedAxisZero && number === 0)) {
                     let y_offset = offset * this.graph.squareSize.y;
                     let scale_offset = Math.ceil(this.graph.ctx.measureText(number).width / 1.5);
 
@@ -203,8 +203,8 @@ class Axis {
             this.graph.drawer.horizontalLine(this.graph.lengths.x_begin, this.yStart, this.graph.xLength);
 
             for (let number of this.scaleNumbers) {
-                // if sharedZero isn't enabled and the number isn't zero, draw the number label
-                if (!(this.manager.sharedZero && number === 0)) {
+                // if sharedAxisZero isn't enabled and the number isn't zero, draw the number label
+                if (!(this.manager.sharedAxisZero && number === 0)) {
                     let x_offset = offset * this.graph.squareSize.x;
                     let scale_offset = this.graph.fontSize() / 2;
 

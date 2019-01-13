@@ -20,7 +20,14 @@ const defaultConfig = {
     title_pos: "top-center",
     gridded: false,
     padding: 14,
-    sharedZero: true,
+
+    /* In the case of both axis' beginning with zero, it will replace it with a single centralised zero */
+    sharedAxisZero: true,
+
+    /* This will draw a 'circle' every time a point intersects a grid boundary  */
+    annotatePoints: true,
+
+    /* This will ensure that the X-Axis gris square length is an integer. */
     optimizeSquareSize: true
 };
 
@@ -69,13 +76,13 @@ class BasicGraph {
         }
 
         // find canvas element and tittle element.
-        const { canvas } = utils.findObjectElements(this.HtmlElementId, this.options);
+        const {canvas} = utils.findObjectElements(this.HtmlElementId, this.options);
 
         this.canvas = canvas;
         this.ctx = this.canvas.getContext("2d");
 
         this.drawer = new Drawer(this.canvas, this.ctx);
-        this.drawer.toTextMode(this.ctx, 16, this.options.axisColour);
+        this.drawer.toTextMode(16, this.options.axisColour);
 
         // if no labels provided, they are disabled as in no room is provided
         // for them to be drawn.
@@ -189,24 +196,16 @@ class BasicGraph {
     }
 
     _drawData() {
-        let lineWidth = config.lineWidth;
-
         // convert the data into {x, y} format
         this.dataManager.toPos();
 
         for (let line of this.dataManager.get()) {
-            // alter the line width if there are more data points than maximum ticks on graph.
-            // reduce it to one pixel.
-            if (this.dataManager.maxLen() > config.xTicks) {
-                lineWidth = 2;
-            }
-
             // setup for drawing
             this.ctx.lineJoin = "round";
+            this.ctx.lineWidth = config.lineWidth;
+            this.ctx.fillStyle   = utils.rgba(line.colour, 40);
             this.ctx.strokeStyle = utils.rgba(line.colour, 40);
-            this.ctx.fillStyle = utils.rgba(line.colour, 40);
             this.ctx.setLineDash(line["style"] === "dashed" ? [5, 5] : []);
-            this.ctx.lineWidth = lineWidth;
 
             let points = [];
 
@@ -278,12 +277,13 @@ class BasicGraph {
                 }
             }
 
-            // draw the points
-            for (let p of points) {
-                if (this.axisManager.xAxisScaleNumbers.indexOf(p.data.x) > -1) {
-                    // convert the data point into a graphical point
-                    this.drawer.circle(p.x, p.y, lineWidth);
-                }
+            // if point annotation is enabled, draw the points.
+            if (this.options.annotatePoints) {
+                points.forEach((point) => {
+                    if ((point.data.x / this.axisManager.xAxisTickStep) % 1 === 0) {
+                        point.draw();
+                    }
+                });
             }
         }
     }
@@ -328,7 +328,7 @@ class BasicGraph {
             /* we need to re-calculate right padding before we can call calculateLengths() as it is dependant on the
              * right padding value, which has now changed. */
             this.padding.right = this.canvas.width - ((this.squareSize.x * numberOfSquares) + this.lengths.x_begin);
-            this.xLength =       this.canvas.width - (this.padding.right + this.padding.left + this.labelFontSize);
+            this.xLength = this.canvas.width - (this.padding.right + this.padding.left + this.labelFontSize);
         }
 
         /* Draw our Axis', including negative scales & scale labels */

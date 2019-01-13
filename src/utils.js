@@ -1,5 +1,5 @@
 const isUndefOrNull = (o) => {
-    return typeof o == "undefined" || o == null;
+    return typeof o === "undefined" || o === null;
 };
 
 module.exports = {

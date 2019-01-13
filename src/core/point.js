@@ -30,6 +30,7 @@
  * @email <alexander.fedotov.uk@gmail.com>
  */
 
+const config = require("./config");
 const assert = require("./../utils/assert").assert;
 
 class Point {
@@ -59,6 +60,13 @@ class Point {
         // numbers, and therefore the graph must adjust the position of the Y-Axis.
         */
         this.y = this.manager.xAxis.yStartingPosition - (actual_ySize * graph.squareSize.y);
+    }
+
+    /**
+     * @since v0.0.1 This function is a simple draw function which will just draw a circle at the calculated x & y
+     * points, this saves higher level functions from accessing x, y and drawing circles. */
+    draw() {
+        this.graph.drawer.circle(this.x, this.y, config.lineWidth);
     }
 }
 

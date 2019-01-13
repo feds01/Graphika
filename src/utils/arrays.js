@@ -46,7 +46,7 @@ module.exports = {
     },
 
     /*
-    // Get all only positive () values from a given array.
+    // Get all unique values from a given array.
     */
     uniqueValues: function (array) {
         return new Set(array);
@@ -54,18 +54,11 @@ module.exports = {
 
 
     /*
-    // Get all only positive () values from a given array.
+    // Get all only positive and zero values from a given array.
     */
     positiveAndZeroValues: function (array) {
         return array.filter(function(value) {
             return value >= 0;
         });
     },
-
-    /*
-     check if a value is within the given array
-    * */
-    join(arrA, arrB) {
-        return arrA.concat(arrB);
-    }
 };
