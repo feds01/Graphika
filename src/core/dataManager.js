@@ -32,32 +32,32 @@ class DataManager {
     }
 
     join() {
-        return [].concat.apply([], this.data.map(x => x.data))
+        return [].concat.apply([], this.data.map(x => x.data));
     }
 
     lengths() {
         return this.data.map(x => x.data.length);
-    };
+    }
 
     maxLen() {
         return Math.max(...this.data.map(x => x.data.length));
-    };
+    }
 
     minLen() {
         return Math.min(...this.data.map(x => x.data.length));
-    };
+    }
 
     max() {
         return Math.max(...[].concat.apply([], this.data.map(x => x.data)));
-    };
+    }
 
     min() {
         return Math.min(...[].concat.apply([], this.data.map(x => x.data)));
-    };
+    }
 
     colourList() {
         return this.data.map(x => x.colour);
-    };
+    }
 
     labels() {
         return this.data.map(x => x.label);
@@ -74,7 +74,7 @@ class DataManager {
                 });
             }
         }
-    };
+    }
 }
 
 module.exports = {

@@ -36,17 +36,17 @@ class AxisManager {
         // if the graph has a zero scale setting, and the y-scale first element is a 0
         // (excluding negative scales), don't draw the 0 on the first tick and remove it from
         // scaleNumbers for the time being.
-        if (this.graph.options.sharedZero &&
+        if (this.graph.options.sharedAxisZero &&
             this.scaleNumbers["x"].indexOf(0) === 0 &&
             this.scaleNumbers["y"].indexOf(0) === 0) {
-            this.sharedZero = true;
+            this.sharedAxisZero = true;
         }
     }
 
     draw() {
-        // check if the sharedZero was detected in y-axis draw method, do the same thing
+        // check if the sharedAxisZero was detected in y-axis draw method, do the same thing
         // as for the y-axis and then draw the centered 0.
-        if (this.sharedZero) {
+        if (this.sharedAxisZero) {
             this.graph.drawer.text("0",
                 this.graph.lengths.x_begin - this.graph.options.padding,
                 this.graph.lengths.y_end + this.graph.options.padding,
