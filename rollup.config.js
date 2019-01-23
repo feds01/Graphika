@@ -6,11 +6,11 @@
  * @email <alexander.fedotov.uk@gmail.com>
  */
 
-/* eslint-env es6 */
-
 const commonjs = require("rollup-plugin-commonjs");
 const resolve = require("rollup-plugin-node-resolve");
 const terser = require("rollup-plugin-terser").terser;
+// const compiler = require('@ampproject/rollup-plugin-closure-compiler');
+
 const pkg = require("./package.json");
 
 const input = "src/graph.js";
@@ -46,8 +46,14 @@ module.exports = [
             terser({
                 output: {
                     preamble: banner
-                }
+                },
+                compress: {
+                    warnings: true
+                },
+                keep_classnames: false,
+                keep_fnames: false,
             })
+            // compiler(),
         ],
         output: {
             name: "Graph",
