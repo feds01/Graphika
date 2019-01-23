@@ -17,6 +17,9 @@ class AxisManager {
         // Object to hold Axis(...) options
         this.options = {axisColour: config.axisColour};
 
+        // Assume that the object won't have a negative scale.
+        this.negativeScale = false;
+
         // initialise the y-axis & x-axis
         this.yAxis = new Axis(this, AxisType.Y_AXIS, this.options);
         this.xAxis = new Axis(this, AxisType.X_AXIS, this.options);
@@ -41,6 +44,13 @@ class AxisManager {
             this.scaleNumbers["y"].indexOf(0) === 0) {
             this.sharedAxisZero = true;
         }
+    }
+
+    /**  if the the graph has a negative scale
+     * @param value
+     */
+    set negativeScale(value) {
+        this.hasNegativeScale = value;
     }
 
     draw() {

@@ -40,12 +40,6 @@ class Axis {
 
         let positiveValues = arrays.positiveAndZeroValues(this.data);
 
-        /*
-        // This is the flag which represents if the Axis is split into two scales, negative & positive.
-        // Initial value is false, because we don's assume that provided data set will use negative values.
-        */
-        this.hasNegativeScale = false;
-
         // This is the variable which holds the tick step of the axis.
         this.tickStep = 0;
 
@@ -90,13 +84,13 @@ class Axis {
                         maxTicks: this.options.maxTicks / 2
                     });
 
-                    this.hasNegativeScale = true;
+                    this.manager.negativeScale = true;
                 }
 
                 this.positveScale = new Scale({
                     min: Math.min(...positiveValues),
                     max: Math.max(...positiveValues),
-                    maxTicks: this.hasNegativeScale ? this.options.maxTicks / 2 : this.options.maxTicks,
+                    maxTicks: this.manager.hasNegativeScale ? this.options.maxTicks / 2 : this.options.maxTicks,
                 });
 
                 /*
@@ -104,7 +98,7 @@ class Axis {
                 // tick step to the same one. This is because the tick steps must be
                 // consistent for both negative and positive scales. Synchronise the tickSteps basically.
                 */
-                if (this.hasNegativeScale) {
+                if (this.manager.hasNegativeScale) {
                     this.tickStep = Math.max(this.positveScale.getTickStep(), this.negativeScale.getTickStep());
 
                     this.positveScale.setTickStep(this.tickStep);
@@ -131,7 +125,7 @@ class Axis {
         // position the x-axis then in the center of the y-axis, calculate this offset by indexing
         // where the zero '0' value is and multiplying this by the amount of squares there are between
         // the zero and the last axis value.
-        if (this.type === AxisType.X_AXIS && this.hasNegativeScale) {
+        if (this.type === AxisType.X_AXIS && this.manager.hasNegativeScale) {
             let zeroIndex = this.manager.scaleNumbers["y"].indexOf(0);
 
             // The zero index must not be '-1' or in other words, not found.
@@ -149,7 +143,7 @@ class Axis {
                 x => this.positveScale.tickStep * x
             );
         } else {
-            if (this.hasNegativeScale) {
+            if (this.manager.hasNegativeScale) {
                 // @Cleanup: this is a quite horrible way to do this, maybe use a simple representation
                 this.scaleNumbers = this.negativeScale.getTickLabels().map(x => x === 0 ? x : x * -1).slice().reverse();
             }
