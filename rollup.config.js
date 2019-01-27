@@ -50,6 +50,7 @@ module.exports = [
                 compress: {
                     warnings: true
                 },
+                sourcemap: true,
                 keep_classnames: false,
                 keep_fnames: false,
             })

@@ -10,7 +10,7 @@
  * @email <alexander.fedotov.uk@gmail.com>
  */
 
-const config = require( "./config");
+const config = require("./config");
 const assert = require("./../utils/assert").assert;
 
 const TWO_PI = Math.PI * 2;
@@ -30,7 +30,7 @@ class Drawer {
     circle(x, y, rad) {
         this._coordinateSafetyCheck(x, y);
 
-        if(config.debug_draw) {
+        if (config.debug_draw) {
             console.log(`${debug_prefix}circle, args->{${x}, ${y}, ${rad}}`);
         }
 
@@ -44,7 +44,7 @@ class Drawer {
     horizontalLine(x, y, len) {
         this._coordinateSafetyCheck(x, y);
 
-        if(config.debug_draw) {
+        if (config.debug_draw) {
             console.log(`${debug_prefix}horizontalLine, args->{x=${x}, y=${y}, len=${len}}`);
         }
 
@@ -58,7 +58,7 @@ class Drawer {
     verticalLine(x, y, len) {
         this._coordinateSafetyCheck(x, y);
 
-        if(config.debug_draw) {
+        if (config.debug_draw) {
             console.log(`${debug_prefix}verticalLine, args->{x=${x}, y=${y}, len=${len}}`);
         }
 
@@ -76,7 +76,7 @@ class Drawer {
      *
      * @since v0.0.1 * */
     toTextMode(size, colour) {
-        if(config.debug_draw) {
+        if (config.debug_draw) {
             console.log(`${debug_prefix}toTextMode, args-{${size}, ${colour}`);
         }
 
@@ -85,7 +85,7 @@ class Drawer {
         this.context.font = `${size}px "Robot Mono", monospace`;
     }
 
-    text(text, x, y, size, colour){
+    text(text, x, y, size, colour) {
         this._coordinateSafetyCheck(x, y);
 
         this.toTextMode(size, colour);
