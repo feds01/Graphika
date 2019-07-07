@@ -20,15 +20,15 @@
   "homepage": "https://github.com/feds01/graph-js#readme",
   "devDependencies": {
     "eslint": "5.6.0",
-    "gulp": "^4.0.0",
+    "gulp": "^4.0.2",
     "gulp-size": "^3.0.0",
-    "gulp-terser": "^1.1.6",
+    "gulp-terser": "^1.2.0",
     "gulp-util": "^3.0.0",
     "rollup": "^0.67.4",
-    "rollup-plugin-commonjs": "^9.2.0",
+    "rollup-plugin-commonjs": "^9.3.4",
     "rollup-plugin-istanbul": "^2.0.1",
     "rollup-plugin-node-resolve": "^3.4.0",
     "rollup-plugin-terser": "^3.0.0",
-    "watchify": "^3.9.0"
+    "watchify": "^3.11.1"
   }
 }
