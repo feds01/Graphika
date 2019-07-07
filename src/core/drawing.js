@@ -10,11 +10,8 @@
  * @email <alexander.fedotov.uk@gmail.com>
  */
 
-const config = require("./config");
 const assert = require("./../utils/assert").assert;
-
 const TWO_PI = Math.PI * 2;
-const debug_prefix = "[debug/draw] ";
 
 class Drawer {
     constructor(canvas, context) {
@@ -30,10 +27,6 @@ class Drawer {
     circle(x, y, rad) {
         this._coordinateSafetyCheck(x, y);
 
-        if (config.debug_draw) {
-            console.log(`${debug_prefix}circle, args->{${x}, ${y}, ${rad}}`);
-        }
-
         // begin new path, draw circle and then close path.
         this.context.beginPath();
         this.context.arc(x, y, rad, 0, TWO_PI);
@@ -43,11 +36,6 @@ class Drawer {
 
     horizontalLine(x, y, len) {
         this._coordinateSafetyCheck(x, y);
-
-        if (config.debug_draw) {
-            console.log(`${debug_prefix}horizontalLine, args->{x=${x}, y=${y}, len=${len}}`);
-        }
-
         assert((x + len) >= 0 && (x + len) <= this.canvas.width);
 
         this.context.beginPath();
@@ -57,11 +45,6 @@ class Drawer {
 
     verticalLine(x, y, len) {
         this._coordinateSafetyCheck(x, y);
-
-        if (config.debug_draw) {
-            console.log(`${debug_prefix}verticalLine, args->{x=${x}, y=${y}, len=${len}}`);
-        }
-
         assert((y + len) >= 0 && (y + len) <= this.canvas.width);
 
         this.context.beginPath();
@@ -76,10 +59,6 @@ class Drawer {
      *
      * @since v0.0.1 * */
     toTextMode(size, colour) {
-        if (config.debug_draw) {
-            console.log(`${debug_prefix}toTextMode, args-{${size}, ${colour}`);
-        }
-
         this.context.strokeStyle = colour;
         this.context.textAlign = "center";
         this.context.font = `${size}px "Robot Mono", monospace`;
