@@ -6,6 +6,7 @@ const interpolation = require("./core/interpolation");
 
 const {Point} = require("./core/point");
 const {Drawer} = require("./core/drawing");
+const {GridOptions} = require("./options");
 const {AxisManager} = require("./core/axis-manager");
 const {DataManager} = require("./core/dataManager");
 
@@ -18,17 +19,10 @@ const defaultConfig = {
     y_label: "",
     title: "Graph",
     title_pos: "top-center",
-    gridded: false,
     padding: 14,
-
-    /* In the case of both axis' beginning with zero, it will replace it with a single centralised zero */
-    sharedAxisZero: true,
 
     /* This will draw a 'circle' every time a point intersects a grid boundary  */
     annotatePoints: true,
-
-    /* This will ensure that the X-Axis gris square length is an integer. */
-    optimizeSquareSize: true
 };
 
 /**
@@ -65,10 +59,17 @@ class BasicGraph {
          * */
         this.labelFontSize = 0;
 
+        /**
+         * @since v0.0.1 This is the grid options data store class, it stores all options which are related with a
+         * graphics griding options such as using a sharedAxisZero or using strict mode to determine the grid.
+         * */
+        this.gridOptions = new GridOptions(options["gridOptions"]);
+
         // Loop through provided options, and overwrite default options if the user provided
         // options contain a value
         if (!utils.isUndefOrNull(options)) {
             Object.keys(options).forEach((option) => {
+                // let's move away from this approach
                 if (defaultConfig.hasOwnProperty(option)) {
                     this.options[option] = options[option];
                 }
@@ -132,13 +133,41 @@ class BasicGraph {
         return parseInt(this.ctx.font.substr(0, 2), 10);
     }
 
+    /**
+     * @since v0.0.1
+     * @API This method is used to remove a line by a given 'label' which is present with every line that
+     * is present on the graph. If the developer does not specify a label, a random string is generated and that
+     * is used as a label instead.
+     *
+     * // TODO: most likely not random string, just use incremental labeling like 'line_2', 'line_3' etc.
+     * */
     removeLineByLabel(label) {
-        for (let k = 0; k < this.dataManager.data.length - 1; k++) {
-            if (this.dataManager.data[k].label === label) {
+        let foundLine = false;
+
+        for (let k = 0; k < this.dataManager.data.length; k++) {
+            if (this.dataManager.data[k].label === label && !foundLine) {
                 this.dataManager.data.splice(k, 1);
+                foundLine = true;
             }
         }
-        this.redraw(); // re-draw the graph
+
+        // re-draw the graph regardless if a line was found found or not
+        this.redraw();
+
+        if (!foundLine) {
+            console.warn("No line with label '" + label + "' found on this graph.");
+        }
+    }
+
+    /**
+     * @since v0.0.1
+     * @API This method is used to fetch all line labels that are present on this graph.
+     *
+     * */
+    getLineLabels() {
+        return this.dataManager.data.map((lineData) => {
+            return lineData.label;
+        });
     }
 
     _drawLabels() {
@@ -165,8 +194,8 @@ class BasicGraph {
 
         // grid drawing
         const xMaxTicks = Math.min(this.dataManager.maxLen(), config.xTicks);
-        const y_len = this.options.gridded ? 9 + this.yLength : 9;
-        const x_len = this.options.gridded ? 9 + this.xLength : 9;
+        const y_len = this.gridOptions.gridded ? 9 + this.yLength : 9;
+        const x_len = this.gridOptions.gridded ? 9 + this.xLength : 9;
 
         let offset = 0;
 
@@ -203,7 +232,7 @@ class BasicGraph {
             // setup for drawing
             this.ctx.lineJoin = "round";
             this.ctx.lineWidth = config.lineWidth;
-            this.ctx.fillStyle   = utils.rgba(line.colour, 40);
+            this.ctx.fillStyle = utils.rgba(line.colour, 40);
             this.ctx.strokeStyle = utils.rgba(line.colour, 40);
             this.ctx.setLineDash(line["style"] === "dashed" ? [5, 5] : []);
 
@@ -310,7 +339,7 @@ class BasicGraph {
 
     draw() {
         /* optimise x-square-size if float */
-        if (this.options.optimizeSquareSize && this.squareSize.x % 1 !== 0) {
+        if (this.gridOptions.optimizeSquareSize && this.squareSize.x % 1 !== 0) {
             let preferredSquareSize = Math.round(this.squareSize.x);
             let numberOfSquares = this.axisManager.xAxisScaleNumbers.length - 1;
 

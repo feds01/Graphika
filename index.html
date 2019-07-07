@@ -49,17 +49,21 @@
     }
 
     const dataset = {
-        1: getRandomArray(20, -100, 100),
-        2: getRandomArray(20, -100, 100)
+        1: getRandomArray(20, 0, 14),
+        2: getRandomArray(20, 0, 100)
     };
 
     console.time("graph");
     let graph = new Graph('g', {
             x_label: 'X-Label',
-            sharedZero: true,
             y_label: 'Y-Label',
             title_pos: 'top-center',
-            gridded: true
+            gridOptions: {
+                sharedZero: true,
+                optimiseSquareSize: true,
+                gridded: true,
+                strict: false
+            },
         },
         [
             {

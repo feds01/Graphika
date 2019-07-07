@@ -39,7 +39,7 @@ class AxisManager {
         // if the graph has a zero scale setting, and the y-scale first element is a 0
         // (excluding negative scales), don't draw the 0 on the first tick and remove it from
         // scaleNumbers for the time being.
-        if (this.graph.options.sharedAxisZero &&
+        if (this.graph.gridOptions.sharedAxisZero &&
             this.scaleNumbers["x"].indexOf(0) === 0 &&
             this.scaleNumbers["y"].indexOf(0) === 0) {
             this.sharedAxisZero = true;
