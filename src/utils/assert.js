@@ -12,5 +12,7 @@ module.exports = {
             throw new Error(`Assertion failed: ${message}`);
         }
     }
+
+    // TODO: maybe add an assert_warn function which does not throw error, but a warning.
 };
 

@@ -8,6 +8,7 @@
 
 const config = require("./config");
 const utils = require("../utils");
+const arrays = require("../utils/arrays");
 const {Axis, AxisType} = require("./axis");
 
 class AxisManager {
@@ -17,8 +18,10 @@ class AxisManager {
         // Object to hold Axis(...) options
         this.options = {axisColour: config.axisColour};
 
-        // Assume that the object won't have a negative scale.
-        this.negativeScale = false;
+        this.data = graph.dataManager.join();
+
+        // Does the data contain any negative values, if so enable negative axis.
+        this.negativeScale = arrays.negativeValues(this.data).length > 0;
 
         // initialise the y-axis & x-axis
         this.yAxis = new Axis(this, AxisType.Y_AXIS, this.options);
@@ -29,11 +32,6 @@ class AxisManager {
             "x": this.xAxis.scaleNumbers,
             "y": this.yAxis.scaleNumbers
         };
-
-        // If the Y-Axis object has detected present negative values, we should update
-        // the X-Axis to correspond to this change. This should be done in a better way
-        // TODO: GraphScales object to better manage our scales
-        this.xAxis.hasNegativeScale = this.yAxis.hasNegativeScale;
 
         /* Work out if we should do a 'zeroScale', where the 'X' & 'Y' axis' share a zero */
         // if the graph has a zero scale setting, and the y-scale first element is a 0
@@ -46,12 +44,6 @@ class AxisManager {
         }
     }
 
-    /**  if the the graph has a negative scale
-     * @param value
-     */
-    set negativeScale(value) {
-        this.hasNegativeScale = value;
-    }
 
     draw() {
         // check if the sharedAxisZero was detected in y-axis draw method, do the same thing

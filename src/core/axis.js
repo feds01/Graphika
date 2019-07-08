@@ -13,7 +13,7 @@
 const arrays = require("../utils/arrays");
 const config = require("./config");
 const utils = require("./../utils");
-const assert = require("./../utils/assert").assert;
+const {assert} = require("./../utils/assert");
 
 const {Scale} = require("./scale");
 
@@ -38,8 +38,6 @@ class Axis {
         this.options = options;
         this.type = type;
 
-        let positiveValues = arrays.positiveAndZeroValues(this.data);
-
         // This is the variable which holds the tick step of the axis.
         this.tickStep = 0;
 
@@ -62,60 +60,14 @@ class Axis {
             "Max/Min ticks cannot be 0 or negative"
         );
 
-        switch (this.type) {
-            case AxisType.X_AXIS:
-                this.options["maxTicks"] = Math.min(this.graph.dataManager.maxLen(), config.xTicks);
-
-                this.positveScale = new Scale({
-                    min: 0,
-                    max: this.graph.dataManager.maxLen() - 1,
-                    maxTicks: this.options.maxTicks
-                });
-
-                this.tickStep = this.positveScale.getTickStep();
-                break;
-            case AxisType.Y_AXIS:
-                if (arrays.negativeValues(this.data).length > 0) {
-                    let negativeDataSet = arrays.negativeValues(this.data).map(x => Math.abs(x));
-                    // divide the max ticks by two since negative and positive are sharing the scale.
-                    this.negativeScale = new Scale({
-                        min: Math.min(...negativeDataSet),
-                        max: Math.max(...negativeDataSet),
-                        maxTicks: this.options.maxTicks / 2
-                    });
-
-                    this.manager.negativeScale = true;
-                }
-
-                this.positveScale = new Scale({
-                    min: Math.min(...positiveValues),
-                    max: Math.max(...positiveValues),
-                    maxTicks: this.manager.hasNegativeScale ? this.options.maxTicks / 2 : this.options.maxTicks,
-                });
-
-                /*
-                // Get the largest tick step of the two and set the other scale
-                // tick step to the same one. This is because the tick steps must be
-                // consistent for both negative and positive scales. Synchronise the tickSteps basically.
-                */
-                if (this.manager.hasNegativeScale) {
-                    this.tickStep = Math.max(this.positveScale.getTickStep(), this.negativeScale.getTickStep());
-
-                    this.positveScale.setTickStep(this.tickStep);
-                    this.negativeScale.setTickStep(this.tickStep);
-
-                } else {
-                    this.tickStep = this.positveScale.getTickStep();
-                }
-                break;
-            default:
-                throw Error(`graph.js: Unrecognised Axis type '${this.type}'`);
-        }
+        this._computeAxisScale();
         this.generateScaleNumbers();
     }
 
 
-    /** @since v0.0.1 Takes in input as the lengths object from a graph object. */
+    /**
+     * @since v0.0.1 Takes in input as the lengths object from a graph object.
+     * */
     determineAxisPosition() {
         // Y & X positions which represent the start of the drawing line
         // @Cleanup: this must be determined here because the graph 'lengths' haven't been
@@ -125,13 +77,62 @@ class Axis {
         // position the x-axis then in the center of the y-axis, calculate this offset by indexing
         // where the zero '0' value is and multiplying this by the amount of squares there are between
         // the zero and the last axis value.
-        if (this.type === AxisType.X_AXIS && this.manager.hasNegativeScale) {
+        if (this.type === AxisType.X_AXIS && this.manager.negativeScale) {
             let zeroIndex = this.manager.scaleNumbers["y"].indexOf(0);
 
             // The zero index must not be '-1' or in other words, not found.
             assert(zeroIndex !== -1, `couldn't find the '0' tick position in Axis{${this.type}}`);
 
             this.yStart = this.graph.lengths.y_end - (this.graph.squareSize.y * this.manager.scaleNumbers.y.indexOf(0));
+        }
+    }
+
+    _computeAxisScale() {
+        if (this.type === AxisType.X_AXIS) {
+            this.options["maxTicks"] = Math.min(this.graph.dataManager.maxLen(), config.xTicks);
+
+            this.positveScale = new Scale({
+                min: 0,
+                max: this.graph.dataManager.maxLen() - 1,
+                maxTicks: this.options.maxTicks
+            });
+
+            this.tickStep = this.positveScale.getTickStep();
+        } else if (this.type === AxisType.Y_AXIS) {
+            let positiveValues = arrays.positiveAndZeroValues(this.data);
+
+            if (this.manager.negativeScale) {
+                let negativeDataSet = arrays.negativeValues(this.data).map(x => Math.abs(x));
+                // divide the max ticks by two since negative and positive are sharing the scale.
+                this.negativeScale = new Scale({
+                    min: Math.min(...negativeDataSet),
+                    max: Math.max(...negativeDataSet),
+                    maxTicks: this.options.maxTicks / 2
+                });
+            }
+
+            this.positveScale = new Scale({
+                min: Math.min(...positiveValues),
+                max: Math.max(...positiveValues),
+                maxTicks: this.manager.negativeScale ? this.options.maxTicks / 2 : this.options.maxTicks,
+            });
+
+            /*
+            // Get the largest tick step of the two and set the other scale tick step to the same one. This is
+            // because the tick steps must be consistent for both negative and positive scales. Synchronise the
+            // tickSteps basically.
+            */
+            if (this.manager.negativeScale) {
+                this.tickStep = Math.max(this.positveScale.getTickStep(), this.negativeScale.getTickStep());
+
+                this.positveScale.setTickStep(this.tickStep);
+                this.negativeScale.setTickStep(this.tickStep);
+
+            } else {
+                this.tickStep = this.positveScale.getTickStep();
+            }
+        } else {
+            throw Error(`graph.js: Unrecognised Axis type '${this.type}'`);
         }
     }
 
@@ -143,7 +144,7 @@ class Axis {
                 x => this.positveScale.tickStep * x
             );
         } else {
-            if (this.manager.hasNegativeScale) {
+            if (this.manager.negativeScale) {
                 // @Cleanup: this is a quite horrible way to do this, maybe use a simple representation
                 this.scaleNumbers = this.negativeScale.getTickLabels().map(x => x === 0 ? x : x * -1).slice().reverse();
             }
