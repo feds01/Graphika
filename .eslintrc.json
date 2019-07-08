@@ -11,7 +11,7 @@
     "no-const-assign": "error",
     "no-unreachable": "error",
     "no-invalid-regexp": "error",
-    "no-console": "warn",
+    "no-console": "off",
     "no-unused-vars": "off",
     "no-trailing-spaces": "off",
     "no-undef": "warn",

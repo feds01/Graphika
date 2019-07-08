@@ -3,6 +3,7 @@ const arrays = require("./utils/arrays");
 const config = require("./core/config");
 const colours = require("./utils/colours");
 const interpolation = require("./core/interpolation");
+const {assert} = require("./utils/assert");
 
 const {Point} = require("./core/point");
 const {Drawer} = require("./core/drawing");
@@ -123,12 +124,6 @@ class BasicGraph {
         this.calculateLengths();
     }
 
-    setData(data) {
-        // re-create the data object & call re-draw
-        this.dataManager = new DataManager(data);
-        this.redraw();
-    }
-
     fontSize() {
         return parseInt(this.ctx.font.substr(0, 2), 10);
     }
@@ -152,11 +147,8 @@ class BasicGraph {
         }
 
         // re-draw the graph regardless if a line was found found or not
-        this.redraw();
-
-        if (!foundLine) {
-            console.warn("No line with label '" + label + "' found on this graph.");
-        }
+        this.draw();
+        assert(foundLine, "No line with label '" + label + "' found on this graph.");
     }
 
     /**
@@ -338,6 +330,11 @@ class BasicGraph {
     }
 
     draw() {
+        // clear the rectangle and reset colour
+        this.ctx.clearRect(0, 0, this.drawer.width, this.drawer.height);
+        this.ctx.strokeStyle = config.axisColour;
+        this.ctx.fillStyle = colours.BLACK;
+
         /* optimise x-square-size if float */
         if (this.gridOptions.optimizeSquareSize && this.squareSize.x % 1 !== 0) {
             let preferredSquareSize = Math.round(this.squareSize.x);
@@ -371,15 +368,6 @@ class BasicGraph {
 
         /* Draw the data sets on the graph, using the provided dataset configurations  */
         this._drawData();
-    }
-
-    redraw() {
-        // clear the rectangle and reset colour
-        this.ctx.clearRect(0, 0, this.drawer.width, this.drawer.height);
-        this.ctx.strokeStyle = config.axisColour;
-        this.ctx.fillStyle = colours.BLACK;
-
-        this.draw();
     }
 }
 
