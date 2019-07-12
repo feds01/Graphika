@@ -29,7 +29,7 @@ const defaultConfig = {
 /**
  * @property x_label -> The label which is present on the x-axis of the graph
  * @property y_label -> The label which is present on the y-axis of the graph
- * @property title  -> The tittle of the graph, if 'null' is passed, no tittle is displayed.
+ * @property title  -> The title of the graph, if 'null' is passed, no tittle is displayed.
  *
  * @property title_pos -> The position of where the tittle text is shown, options include:
  *           top-left, top-center, top-right, bottom-left, bottom-center, bottom-right
