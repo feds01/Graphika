@@ -245,6 +245,18 @@ class BasicGraph {
                         points[k], arrays.getNext(k, points),
                         config.tension, this
                     ));
+
+                    // perform a check to see if a control point goes out of the graph bounds,
+                    // if so we correct this behaviour by setting the 'y' to the lengths.y_begin
+                    // value.
+                    // TODO: implement check for control points which go out of bounds on lower port.
+                    if (controlPoints[k - 1].prev.y < this.lengths.y_begin) {
+                        controlPoints[k - 1].prev.y = this.lengths.y_begin;
+                    }
+
+                    if (controlPoints[k - 1].next.y < this.lengths.y_begin) {
+                        controlPoints[k - 1].next.y = this.lengths.y_begin;
+                    }
                 }
 
                 // draw the cubic spline curves

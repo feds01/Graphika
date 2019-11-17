@@ -38,6 +38,6 @@ module.exports = {
                 x: current.data.x - fb * (prev.data.x - next.data.x),
                 y: current.data.y - fb * (prev.data.y - next.data.y)
             }, graph)
-        }
+        };
     }
 };
