@@ -28,5 +28,8 @@ const LegendPosition = {
          this.position = position === null ? LegendPosition.AUTO : position;
      }
 
-     draw() {}
+     draw() {
+
+
+     }
 }
