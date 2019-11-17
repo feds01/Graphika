@@ -50,7 +50,8 @@
 
     const dataset = {
         1: getRandomArray(20, -100, 100),
-        2: getRandomArray(20, -100, 100)
+        2: getRandomArray(20, -100, 100),
+        3: getRandomArray(20, -50, 50)
     };
 
     console.time("graph");
@@ -62,7 +63,7 @@
                 sharedZero: true,
                 optimiseSquareSize: true,
                 gridded: true,
-                strict: false
+                strict: true
             },
         },
         [
@@ -78,6 +79,12 @@
                 interpolation: 'cubic',
                 data: dataset[2],
                 colour: Graph.Colours.ELECTRIC_BLUE
+            },
+            {
+                label: 'student_3',
+                interpolation: 'cubic',
+                data: dataset[3],
+                colour: Graph.Colours.EMERALD_GREEN
             }
         ]
     );

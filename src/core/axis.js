@@ -72,7 +72,7 @@ class Axis {
         // Y & X positions which represent the start of the drawing line
         // @Cleanup: this must be determined here because the graph 'lengths' haven't been
         // calculated yet.
-        this.yStart = this.graph.lengths.y_end;
+        this.yStart = this.graph.padding.top + this.graph.yLength;
 
         // position the x-axis then in the center of the y-axis, calculate this offset by indexing
         // where the zero '0' value is and multiplying this by the amount of squares there are between
@@ -83,7 +83,7 @@ class Axis {
             // The zero index must not be '-1' or in other words, not found.
             assert(zeroIndex !== -1, `couldn't find the '0' tick position in Axis{${this.type}}`);
 
-            this.yStart = this.graph.lengths.y_end - (this.graph.squareSize.y * this.manager.scaleNumbers.y.indexOf(0));
+            this.yStart = this.graph.lengths.y_begin + (this.graph.gridRectSize.y * this.manager.scaleNumbers.y.indexOf(0));
         }
     }
 
@@ -146,9 +146,10 @@ class Axis {
         } else {
             if (this.manager.negativeScale) {
                 // @Cleanup: this is a quite horrible way to do this, maybe use a simple representation
-                this.scaleNumbers = this.negativeScale.getTickLabels().map(x => x === 0 ? x : x * -1).slice().reverse();
+                this.scaleNumbers = this.negativeScale.getTickLabels().map(x => x === 0 ? x : x * -1).slice();
             }
-            this.scaleNumbers = [...this.scaleNumbers, ...this.positveScale.getTickLabels()];
+
+            this.scaleNumbers = [...this.positveScale.getTickLabels().reverse(), ...this.scaleNumbers];
 
             // check if 0 & -0 exist, if so remove the negative 0
             for (let i = 0; i < this.scaleNumbers.length; i++) {
@@ -176,18 +177,18 @@ class Axis {
 
         // Y-Axis Drawing !
         if (this.type === AxisType.Y_AXIS) {
-            this.graph.drawer.verticalLine(this.graph.lengths.x_begin, this.graph.lengths.y_end, -this.graph.yLength);
+            this.graph.drawer.verticalLine(this.graph.lengths.x_begin, this.graph.lengths.y_begin, this.graph.yLength + 9);
             this.graph.ctx.textBaseline = "middle";
 
             for (let number of this.scaleNumbers) {
                 if (!(this.manager.sharedAxisZero && number === 0)) {
-                    let y_offset = offset * this.graph.squareSize.y;
+                    let y_offset = offset * this.graph.gridRectSize.y;
                     let scale_offset = Math.ceil(this.graph.ctx.measureText(number).width / 1.5);
 
                     this.graph.drawer.text(
                         number,
                         this.graph.lengths.x_begin - 9 - scale_offset,
-                        this.graph.lengths.y_end - y_offset,
+                        this.graph.lengths.y_begin + y_offset,
                         config.scaleLabelFontSize,
                         this.options.axisColour
                     );
@@ -200,12 +201,12 @@ class Axis {
             for (let number of this.scaleNumbers) {
                 // if sharedAxisZero isn't enabled and the number isn't zero, draw the number label
                 if (!(this.manager.sharedAxisZero && number === 0)) {
-                    let x_offset = offset * this.graph.squareSize.x;
-                    let scale_offset = this.graph.fontSize() / 2;
+                    let x_offset = offset * this.graph.gridRectSize.x;
+                    let scale_offset = this.graph.padding.top + this.graph.fontSize();
 
                     this.graph.drawer.text(number,
                         this.graph.lengths.x_begin + x_offset,
-                        this.graph.lengths.y_end + 9 + scale_offset,
+                        this.graph.yLength + 9 + scale_offset,
                         config.scaleLabelFontSize,
                         this.options.axisColour
                     );

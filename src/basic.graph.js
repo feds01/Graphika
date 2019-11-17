@@ -109,16 +109,25 @@ class BasicGraph {
         this.calculatePadding();
 
         this.xLength = this.canvas.width - (this.padding.right + this.padding.left + this.labelFontSize);
-        this.yLength = this.canvas.height - (this.padding.top + this.padding.bottom + this.labelFontSize);
+        this.yLength = this.canvas.height - (this.padding.top + this.padding.bottom);
 
 
         // Subtract a 1 from each length because we actually don't need to worry about the first
         // iteration. Having an extra pole will make the square size less than it should be, We're
         // actually only really concerned about how many 'gaps' there are between each item
-        this.squareSize = {
+        this.gridRectSize = {
             x: this.xLength / (this.axisManager.xAxisScaleNumbers.length - 1),
             y: this.yLength / (this.axisManager.yAxisScaleNumbers.length - 1)
         };
+
+        // if 'strict' grid mode is enabled, we select the smallest grid size out of x and y
+        // and set this to being the grid size lengths
+        if (this.gridOptions.strict) {
+            let gridRectLength = Math.min(this.gridRectSize.x, this.gridRectSize.y);
+
+            this.gridRectSize.x = gridRectLength;
+            this.gridRectSize.y = gridRectLength;
+        }
 
         // Calculate all the necessary length the graph requires to draw itself.
         this.calculateLengths();
@@ -194,21 +203,21 @@ class BasicGraph {
         while (offset <= Math.max(this.axisManager.yAxisScaleNumbers.length - 1, xMaxTicks)) {
             // The X-Axis drawing
             if (offset < xMaxTicks) {
-                let x_offset = offset * this.squareSize.x;
+                let x_offset = offset * this.gridRectSize.x;
 
                 this.drawer.verticalLine(
                     this.lengths.x_begin + x_offset,
-                    this.lengths.y_end + 9,
-                    -y_len
+                    this.lengths.y_begin,
+                    y_len
                 );
             }
             // The Y-Axis drawing
             if (offset < this.axisManager.yAxisScaleNumbers.length) {
-                let y_offset = offset * this.squareSize.y;
+                let y_offset = offset * this.gridRectSize.y;
 
                 this.drawer.horizontalLine(
                     this.lengths.x_begin - 9,
-                    this.lengths.y_end - y_offset,
+                    this.lengths.y_begin + y_offset,
                     x_len,
                 );
             }
@@ -322,11 +331,14 @@ class BasicGraph {
     }
 
     calculateLengths() {
+        this.xLength = this.canvas.width - (this.padding.right + this.padding.left + this.labelFontSize);
+        this.yLength = this.canvas.height - (this.padding.top + this.padding.bottom + this.labelFontSize);
+
         this.lengths = {
             x_begin: this.padding.left + this.labelFontSize,
             y_begin: this.padding.top,
             x_end: this.drawer.width - this.padding.right,
-            y_end: this.drawer.height - this.padding.bottom,
+            y_end: this.drawer.height - (this.padding.bottom + this.labelFontSize),
             x_center: this.padding.left + this.labelFontSize + this.xLength / 2,
             y_center: this.labelFontSize + this.yLength / 2,
         };
@@ -348,26 +360,37 @@ class BasicGraph {
         this.ctx.fillStyle = colours.BLACK;
 
         /* optimise x-square-size if float */
-        if (this.gridOptions.optimizeSquareSize && this.squareSize.x % 1 !== 0) {
-            let preferredSquareSize = Math.round(this.squareSize.x);
+        if (this.gridOptions.optimiseSquareSize && this.gridRectSize.x % 1 !== 0) {
+            let preferredSquareSize = Math.round(this.gridRectSize.x);
             let numberOfSquares = this.axisManager.xAxisScaleNumbers.length - 1;
 
             /* If the square size was some round up, rather than down, we need to check if
              * we can actually apply the 'scale' up with the padding space available to the right
              * of the graph. If we can't fit in the scale up, we will have to go down as we are
              * guaranteed to have enough space. */
-            if (preferredSquareSize > this.squareSize.x) {
-                if (this.padding.right - (preferredSquareSize - this.squareSize.x) * numberOfSquares < 0) {
+            if (preferredSquareSize > this.gridRectSize.x) {
+                if (this.padding.right - (preferredSquareSize - this.gridRectSize.x) * numberOfSquares < 0) {
                     preferredSquareSize--;
                 }
             }
-            this.squareSize.x = preferredSquareSize;
+            this.gridRectSize.x = preferredSquareSize;
+
+            // If 'strict' mode is set in gridOptions, we also need to set the value of the 'y' length
+            // to be the same as the x length.
+            if (this.gridOptions.strict) {
+                this.gridRectSize.y = preferredSquareSize;
+            }
 
             /* we need to re-calculate right padding before we can call calculateLengths() as it is dependant on the
              * right padding value, which has now changed. */
-            this.padding.right = this.canvas.width - ((this.squareSize.x * numberOfSquares) + this.lengths.x_begin);
+            this.padding.right = this.canvas.width - ((this.gridRectSize.x * numberOfSquares) + this.lengths.x_begin);
             this.xLength = this.canvas.width - (this.padding.right + this.padding.left + this.labelFontSize);
         }
+
+        this.calculateLengths();
+
+        // TODO: this should be used as a general form for the Y-Axis length of the graph.
+        this.yLength = (this.axisManager.yAxisScaleNumbers.length - 1) * this.gridRectSize.y;
 
         /* Draw our Axis', including negative scales & scale labels */
         this.axisManager.draw();
