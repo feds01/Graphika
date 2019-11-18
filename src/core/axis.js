@@ -92,7 +92,7 @@ class Axis {
 
     _computeAxisScale() {
         if (this.type === AxisType.X_AXIS) {
-            this.options["maxTicks"] = Math.min(this.graph.dataManager.maxLen(), config.xTicks);
+            this.options.maxTicks = Math.min(this.graph.dataManager.maxLen(), config.xTicks);
 
             this.positveScale = new Scale({
                 min: 0,

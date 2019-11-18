@@ -63,7 +63,7 @@
                 sharedZero: true,
                 optimiseSquareSize: true,
                 gridded: true,
-                strict: true
+                strict: false
             },
         },
         [
@@ -72,9 +72,12 @@
                 label: "student_1",
                 interpolation: "cubic",
                 data: dataset[1],
-                colour: Graph.Colours.FLAMINGO_PINK
+                colour: Graph.Colours.FLAMINGO_PINK,
+                area: {
+                    colour: Graph.Colours.FLAMINGO_PINK
+                }
             },
-            {
+           /* {
                 label: "student_2",
                 interpolation: "cubic",
                 data: dataset[2],
@@ -85,7 +88,7 @@
                 interpolation: "cubic",
                 data: dataset[3],
                 colour: Graph.Colours.EMERALD_GREEN
-            }
+            }*/
         ]
     );
     console.timeEnd("graph_init");
