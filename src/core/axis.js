@@ -39,7 +39,7 @@ class Axis {
         this.type = type;
 
         // This is the variable which holds the tick step of the axis.
-        this.tickStep = 0;
+        this.scaleStep = 0;
 
         // we have negative values in the data set and therefore will require two
         // different scales
@@ -97,7 +97,7 @@ class Axis {
                 maxTicks: this.options.maxTicks
             });
 
-            this.tickStep = this.positveScale.getTickStep();
+            this.scaleStep = this.positveScale.getScaleStep();
         } else if (this.type === AxisType.Y_AXIS) {
             let positiveValues = arrays.positiveAndZeroValues(this.data);
 
@@ -107,7 +107,8 @@ class Axis {
                 this.negativeScale = new Scale({
                     min: Math.min(...negativeDataSet),
                     max: Math.max(...negativeDataSet),
-                    maxTicks: this.options.maxTicks / 2
+                    maxTicks: this.options.maxTicks / 2,
+                    isNegativeScale: true,
                 });
             }
 
@@ -123,13 +124,13 @@ class Axis {
             // tickSteps basically.
             */
             if (this.manager.negativeScale) {
-                this.tickStep = Math.max(this.positveScale.getTickStep(), this.negativeScale.getTickStep());
+                this.scaleStep = Math.max(this.positveScale.getScaleStep(), this.negativeScale.getScaleStep());
 
-                this.positveScale.setTickStep(this.tickStep);
-                this.negativeScale.setTickStep(this.tickStep);
+                this.positveScale.setTickStep(this.scaleStep);
+                this.negativeScale.setTickStep(this.scaleStep);
 
             } else {
-                this.tickStep = this.positveScale.getTickStep();
+                this.scaleStep = this.positveScale.getScaleStep();
             }
         } else {
             throw Error(`graph.js: Unrecognised Axis type '${this.type}'`);
@@ -141,27 +142,24 @@ class Axis {
 
         if (this.type === AxisType.X_AXIS) {
             this.scaleNumbers = arrays.fillRange(this.options.maxTicks).map(
-                x => this.positveScale.tickStep * x
+                x => this.positveScale.scaleStep * x
             );
         } else {
             if (this.manager.negativeScale) {
-                // @Cleanup: this is a quite horrible way to do this, maybe use a simple representation
-                this.scaleNumbers = this.negativeScale.getTickLabels().map(x => x === 0 ? x : x * -1).slice();
-            }
+                this.scaleNumbers = this.negativeScale.getScaleLabels(true, true);
 
-            this.scaleNumbers = [...this.positveScale.getTickLabels().reverse(), ...this.scaleNumbers];
+                // check if 0 & -0 exist, if so remove the negative 0
+                if (this.scaleNumbers[this.scaleNumbers.length - 1] === 0) this.scaleNumbers.pop();
 
-            // check if 0 & -0 exist, if so remove the negative 0
-            for (let i = 0; i < this.scaleNumbers.length; i++) {
-                if (this.scaleNumbers[i] === this.scaleNumbers[i + 1] &&
-                    this.scaleNumbers[i] === 0) {
-                    this.scaleNumbers.splice(i + 1, 1);
-                }
+                this.scaleNumbers = [...this.scaleNumbers, ...this.positveScale.getScaleLabels()];
+            } else {
+                this.scaleNumbers = this.positveScale.getScaleLabels();
             }
         }
     }
 
-    // There must be some cleaner way to get this value, maybe using AxisManager store this value.
+    // @Cleanup: There must be some cleaner way to get this value, maybe using
+    // AxisManager store this value.
     get yStartingPosition() {
         return this.yStart;
     }
@@ -188,7 +186,7 @@ class Axis {
                     this.graph.drawer.text(
                         number,
                         this.graph.lengths.x_begin - 9 - scale_offset,
-                        this.graph.lengths.y_begin + y_offset,
+                        this.graph.padding.top + this.graph.yLength - y_offset,
                         config.scaleLabelFontSize,
                         this.options.axisColour
                     );

@@ -17,15 +17,21 @@ const assert = require("./../utils/assert").assert;
 class Scale {
     constructor(options) {
         /**
-         * @property Minimum data value within the data set.* */
+         * @property min Minimum data value within the data set.* */
         this.min = options.min;
         /**
-         * @property Maximum data value within the data set.* */
+         * @property max Maximum data value within the data set.* */
         this.max = options.max;
 
-        /*
-        * The range of the values, simply a max - min subtraction*/
+        /**
+         * @property range The range of the values, simply a max - min subtraction
+         * */
         this.range = 0;
+
+        /**
+         * @property isNegativeScale boolean flag to denote if scale is working with negatives.
+         * */
+        this.isNegativeScale = false;
 
         if (utils.isUndefOrNaN(this.min) || utils.isUndefOrNaN(this.max)) {
             throw ("Min/Max value of scale cannot be NaN or undefined.");
@@ -34,13 +40,14 @@ class Scale {
         /*
         * Target number of ticks on the axis which will be displayed. * */
         this.maxTicks = options.maxTicks;
-        this.tickLabels = [];
-        this.tickStep = 0;
+        this.isNegativeScale = options.isNegativeScale ? options.isNegativeScale : false;
+        this.scaleLabels = [];
+        this.scaleStep = 0;
 
         this.calculate();
 
         // recalculate to get proper tick range
-        while (this.tickStep * this.maxTicks < this.range) {
+        while (this.scaleStep * this.maxTicks < this.range) {
             this.maxTicks--;
 
             this.calculate();
@@ -49,7 +56,7 @@ class Scale {
 
     calculate() {
         this.range = Scale.niceNum(this.max - this.min, false);
-        this.tickStep = Scale.niceNum(this.range / (this.maxTicks - 1), true);
+        this.scaleStep = Scale.niceNum(this.range / (this.maxTicks - 1), true);
 
         // this.niceMin = Math.floor(this.min / this.tickStep) * this.tickStep;
         // this.niceMax = Math.ceil(this.max / this.tickStep) * this.tickStep;
@@ -59,8 +66,8 @@ class Scale {
 
     generateTickValues() {
         // fill array with labels.
-        this.tickLabels = arrays.fillRange(this.maxTicks + 1)
-            .map(x => (x * this.tickStep));
+        this.scaleLabels = arrays.fillRange(this.maxTicks + 1)
+            .map(x => (x * this.scaleStep));
     }
 
     setMaxTicks(val) {
@@ -71,7 +78,7 @@ class Scale {
     }
 
     setTickStep(val) {
-        this.tickStep = val;
+        this.scaleStep = val;
         this.maxTicks = Math.ceil(this.max / val);
 
         this.generateTickValues();
@@ -81,12 +88,32 @@ class Scale {
         return this.maxTicks;
     }
 
-    getTickLabels() {
-        return this.tickLabels;
+    /**
+     * Function to get scale values for the given scale object. The function
+     * also accepts values that allow the scale values to be transformed to be
+     * represented on a axis/graph.
+     *
+     * @param natural {boolean} If the scale labels should be returned as what they truly
+     * are. This is because the scale does not handle negative numbers and thus masks them
+     * as positive numbers. The natural parameter will return them as negatives, if this scale
+     * is a negative scale.
+     *
+     * @param rtl {boolean} If the numbers should be returned from Right-To-Left (largest to
+     * smallest) or else.
+     *
+     * @returns {Array<number>} the scale labels.
+     * */
+    getScaleLabels(natural = true, rtl = false) {
+        let scaleLabels = this.scaleLabels;
+
+        if (natural && this.isNegativeScale) scaleLabels = scaleLabels.map((x) => -x);
+        if (rtl) scaleLabels = scaleLabels.reverse();
+
+        return scaleLabels;
     }
 
-    getTickStep() {
-        return this.tickStep;
+    getScaleStep() {
+        return this.scaleStep;
     }
 
     static niceNum(range, round) {
