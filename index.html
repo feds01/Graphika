@@ -54,7 +54,7 @@
         3: getRandomArray(20, -50, 50)
     };
 
-    console.time("graph");
+    console.time("graph_init");
     let graph = new Graph('g', {
             x_label: 'X-Label',
             y_label: 'Y-Label',
@@ -88,8 +88,11 @@
             }
         ]
     );
+    console.timeEnd("graph_init");
+
+    console.time("graph_draw");
     graph.draw();
-    console.timeEnd("graph");
+    console.timeEnd("graph_draw");
     // @Broken at the moment
     // setTimeout(() => {
     //     graph.removeLineByLabel("student_1");
