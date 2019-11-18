@@ -37,13 +37,12 @@ class Point {
     constructor(data, graph) {
         this.data = data;
         this.graph = graph;
-        this.manager = graph.axisManager;
 
         assert(this.graph !== undefined, "Point class must be provided with the relevant graph.");
 
         // calculate actual graphical coordinates
-        let actualYSize = data.y / this.manager.yAxisTickStep;
-        let xRatio = data.x / this.manager.xAxisTickStep;
+        let actualYSize = data.y / graph.axisManager.yAxisTickStep;
+        let xRatio = data.x / graph.axisManager.xAxisTickStep;
 
 
         /*
@@ -59,7 +58,7 @@ class Point {
         // is not always at the 'y' beelining of the graph, this is due to the graph possibly containing negative
         // numbers, and therefore the graph must adjust the position of the Y-Axis.
         */
-        this.y = this.manager.xAxis.yStartingPosition - (actualYSize * graph.gridRectSize.y);
+        this.y = graph.axisManager.xAxis.yStartingPosition - (actualYSize * graph.gridRectSize.y);
     }
 
     /**

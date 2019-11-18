@@ -1,11 +1,12 @@
+
+
 const utils = require("./utils");
 const arrays = require("./utils/arrays");
 const config = require("./core/config");
 const colours = require("./utils/colours");
-const interpolation = require("./core/interpolation");
 const {assert} = require("./utils/assert");
 
-const {Point} = require("./core/point");
+const {Line} = require("./core/line");
 const {Drawer} = require("./core/drawing");
 const {GridOptions} = require("./options");
 const {AxisManager} = require("./core/axis-manager");
@@ -226,107 +227,11 @@ class BasicGraph {
     }
 
     _drawData() {
-        // convert the data into {x, y} format
-        this.dataManager.toPos();
+        for (let lineData of this.dataManager.get()) {
+            const {style, area, colour, interpolation, label} = lineData;
 
-        for (let line of this.dataManager.get()) {
-            // setup for drawing
-            this.ctx.lineJoin = "round";
-            this.ctx.lineWidth = config.lineWidth;
-            this.ctx.fillStyle = utils.rgba(line.colour, 40);
-            this.ctx.strokeStyle = utils.rgba(line.colour, 40);
-            this.ctx.setLineDash(line["style"] === "dashed" ? [5, 5] : []);
-
-            let points = [];
-
-            for (let idx = 0; idx < line.pos_data.length; idx++) {
-                points.push(new Point(line.pos_data[idx], this));
-            }
-
-            if (line["interpolation"] === "cubic") {
-                let controlPoints = [];
-
-                // start from point 1 and not point 0, as point one and last point will
-                // be quadratic curves and not splines
-                for (let k = 1; k < points.length - 1; k++) {
-                    controlPoints.push(interpolation.splineCurve(
-                        arrays.getPrevious(k, points),
-                        points[k], arrays.getNext(k, points),
-                        config.tension, this
-                    ));
-
-                    // perform a check to see if a control point goes out of the graph bounds,
-                    // if so we correct this behaviour by setting the 'y' to the lengths.y_begin
-                    // value.
-                    // TODO: implement check for control points which go out of bounds on lower port.
-                    if (controlPoints[k - 1].prev.y < this.lengths.y_begin) {
-                        controlPoints[k - 1].prev.y = this.lengths.y_begin;
-                    }
-
-                    if (controlPoints[k - 1].next.y < this.lengths.y_begin) {
-                        controlPoints[k - 1].next.y = this.lengths.y_begin;
-                    }
-                }
-
-                // draw the cubic spline curves
-                for (let i = 1; i < points.length - 2; i++) {
-                    // begin current trajectory, by moving to starting point
-                    this.ctx.beginPath();
-                    this.ctx.moveTo(points[i].x, points[i].y);
-
-                    // create bezier curve using the next control point of previous entry
-                    // and previous control point of current entry and which leads to next
-                    // point
-                    this.ctx.bezierCurveTo(
-                        controlPoints[i - 1].next.x, controlPoints[i - 1].next.y,
-                        controlPoints[i].prev.x, controlPoints[i].prev.y,
-                        points[i + 1].x, points[i + 1].y
-                    );
-                    this.ctx.stroke();
-                    this.ctx.closePath();
-                }
-
-                // now draw the starting quadratic between first and second curve
-                this.ctx.beginPath();
-                this.ctx.moveTo(points[0].x, points[0].y);
-                this.ctx.quadraticCurveTo(
-                    controlPoints[0].prev.x, controlPoints[0].prev.y,
-                    points[1].x, points[1].y
-                );
-                this.ctx.stroke();
-                this.ctx.closePath();
-
-                // now draw final quadratic curve, between last and the point before the last.
-                this.ctx.beginPath();
-                this.ctx.moveTo(points[points.length - 1].x, points[points.length - 1].y);
-
-                this.ctx.quadraticCurveTo(
-                    controlPoints[controlPoints.length - 1].next.x,
-                    controlPoints[controlPoints.length - 1].next.y,
-                    points[points.length - 2].x, points[points.length - 2].y
-                );
-                this.ctx.stroke();
-                this.ctx.closePath();
-
-
-            } else {
-                for (let p = 0; p < points.length - 1; p++) {
-                    this.ctx.beginPath();
-                    this.ctx.moveTo(points[p].x, points[p].y);
-                    this.ctx.lineTo(points[p + 1].x, points[p + 1].y);
-                    this.ctx.stroke();
-                    this.ctx.closePath();
-                }
-            }
-
-            // if point annotation is enabled, draw the points.
-            if (this.options.annotatePoints) {
-                points.forEach((point) => {
-                    if ((point.data.x / this.axisManager.xAxisTickStep) % 1 === 0) {
-                        point.draw();
-                    }
-                });
-            }
+            let line = new Line(lineData.data, this, {style, area, colour, interpolation, label});
+            line.draw();
         }
     }
 
