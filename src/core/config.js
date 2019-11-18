@@ -21,10 +21,10 @@ module.exports = {
     gridLineWidth: 1,
 
     /* this is the maximum amount of ticks which are available on the x-axis */
-    xTicks: 20,
+    xTicks: 11,
 
     /* this is the maximum amount of ticks which are available on the y-axis */
-    yTicks: 10,
+    yTicks: 11,
 
     /* This value is used to determine the curvature of cubic interpolation, higher
      * values result in more curved connections and lower values are closer to linear
