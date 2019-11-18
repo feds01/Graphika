@@ -13,9 +13,8 @@
 const arrays = require("../utils/arrays");
 const config = require("./config");
 const utils = require("./../utils");
-const {assert} = require("./../utils/assert");
-
 const {Scale} = require("./scale");
+const {assert} = require("./../utils/assert");
 
 const defaultOptions = {
     minTicks: 10,
@@ -75,15 +74,19 @@ class Axis {
         this.yStart = this.graph.padding.top + this.graph.yLength;
 
         // position the x-axis then in the center of the y-axis, calculate this offset by indexing
-        // where the zero '0' value is and multiplying this by the amount of squares there are between
-        // the zero and the last axis value.
+        // where the zero '0' value in the scale label array (reversed), and multiplying this by the
+        // amount of squares there are between the zero and the last axis value. We need to reverse
+        // the labels because the Axis position is calculated from the top of the graph, where as
+        // the numbers are drawn from the bottom of the graph.
+        // TODO: maybe just change the calculation to compute the position of the x-axis from the
+        //      bottom of the graph.
         if (this.type === AxisType.X_AXIS && this.manager.negativeScale) {
-            let zeroIndex = this.manager.scaleNumbers["y"].indexOf(0);
+            let zeroIndex = this.manager.scaleNumbers.y.reverse().indexOf(0);
 
             // The zero index must not be '-1' or in other words, not found.
-            assert(zeroIndex !== -1, `couldn't find the '0' tick position in Axis{${this.type}}`);
+            assert(zeroIndex !== -1, `couldn't find the '0' scale position in Axis{${this.type}}`);
 
-            this.yStart = this.graph.lengths.y_begin + (this.graph.gridRectSize.y * this.manager.scaleNumbers.y.indexOf(0));
+            this.yStart = this.graph.lengths.y_begin + (this.graph.gridRectSize.y * zeroIndex);
         }
     }
 
@@ -195,6 +198,14 @@ class Axis {
             }
         } else {
             this.graph.drawer.horizontalLine(this.graph.lengths.x_begin, this.yStart, this.graph.xLength);
+
+            // We also need to draw a horizontal line at the bottom of the graph
+            // if it includes a negative quadrant. We can check this by accessing the
+            // manager.negativeScale constant, if so draw the horizontal line at the
+            // bottom of the graph.
+            if (this.manager.negativeScale && this.graph.gridOptions.gridded) {
+                this.graph.drawer.horizontalLine(this.graph.lengths.x_begin, this.graph.yLength + this.graph.padding.top, this.graph.xLength);
+            }
 
             for (let number of this.scaleNumbers) {
                 // if sharedAxisZero isn't enabled and the number isn't zero, draw the number label

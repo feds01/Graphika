@@ -207,8 +207,8 @@ class BasicGraph {
 
                 this.drawer.verticalLine(
                     this.lengths.x_begin + x_offset,
-                    this.lengths.y_begin,
-                    y_len
+                    this.yLength + this.padding.top + 9,
+                    -y_len
                 );
             }
             // The Y-Axis drawing
