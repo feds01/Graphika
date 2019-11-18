@@ -203,7 +203,7 @@ class Axis {
             // if it includes a negative quadrant. We can check this by accessing the
             // manager.negativeScale constant, if so draw the horizontal line at the
             // bottom of the graph.
-            if (this.manager.negativeScale && this.graph.gridOptions.gridded) {
+            if (this.manager.negativeScale && !this.graph.gridOptions.gridded) {
                 this.graph.drawer.horizontalLine(this.graph.lengths.x_begin, this.graph.yLength + this.graph.padding.top, this.graph.xLength);
             }
 
