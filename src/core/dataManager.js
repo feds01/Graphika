@@ -1,5 +1,5 @@
 /**
- * Module description: src/core/data.js
+ * Module description: src/core/dataManager.js
  *
  * This module holds the utility and CRUD methods for a graph
  * data object. Sorting data, joining and getting basic statistical
@@ -61,19 +61,6 @@ class DataManager {
 
     labels() {
         return this.data.map(x => x.label);
-    }
-
-    toPos() {
-        for (let entry = 0; entry < this.data.length; entry++) {
-            this.data[entry].pos_data = [];
-
-            for (let idx = 0; idx < this.data[entry].data.length; idx++) {
-                this.data[entry].pos_data.push({
-                    x: idx,
-                    y: this.data[entry].data[idx]
-                });
-            }
-        }
     }
 }
 
