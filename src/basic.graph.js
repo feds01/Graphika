@@ -81,7 +81,7 @@ class BasicGraph {
         const {canvas} = utils.findObjectElements(this.HtmlElementId, this.options);
 
         this.canvas = canvas;
-        this.ctx = this.canvas.getContext("2d");
+        this.ctx = utils.setupCanvas(canvas);
 
         this.drawer = new Drawer(this.canvas, this.ctx);
         this.drawer.toTextMode(16, this.options.axisColour);
@@ -358,6 +358,7 @@ class BasicGraph {
         this.ctx.clearRect(0, 0, this.drawer.width, this.drawer.height);
         this.ctx.strokeStyle = config.axisColour;
         this.ctx.fillStyle = colours.BLACK;
+        this.ctx.translate(0.5, 0.5);
 
         /* optimise x-square-size if float */
         if (this.gridOptions.optimiseSquareSize && this.gridRectSize.x % 1 !== 0) {
@@ -403,6 +404,8 @@ class BasicGraph {
 
         /* Draw the data sets on the graph, using the provided dataset configurations  */
         this._drawData();
+
+        this.ctx.translate(-0.5, -0.5);
     }
 }
 
