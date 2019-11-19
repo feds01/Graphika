@@ -11,7 +11,7 @@ To create a new graph you must import the minified or combined version into the 
 Once you have done this, to create a new graph you must initialise a graph object by providing it a ``<div>`` element id, where the graph object should insert the given tittle and canvas (if no canvas exists within the element). To this, simply create a new variable and associate a 'new' graph object like so:
 ```html
  <div id="graph">
-        <div class="tittle"></div>
+        <div class="title"></div>
         <canvas width="800" height="600"></canvas>
     </div>
 ```
@@ -21,7 +21,7 @@ Once you have done this, to create a new graph you must initialise a graph objec
 // where elementId is the given id of the div you wish for the graph to use
 
 let graph = new Graph("elementId", {
-  tittle: "A new graph!",
+  title: "A new graph!",
   x_label: "X-Axis",
   y_label: "Y-Axis"
 });
@@ -36,8 +36,13 @@ Creating a simple graph with some data sets:
  let graph = new Graph('g', {
             x_label: 'X-Label',
             y_label: 'Y-Label',
-            tittle_pos: 'top-center',
-            gridded: true
+            title_pos: 'top-center',
+            gridOptions: {
+                gridded: true,
+
+                // Share zero between x & y axis' if applicable.
+                sharedAxisZero: true
+            },   
         },
         [
             {
@@ -71,7 +76,9 @@ The library also supports data sets which include negative numbers:
             y_label: "Y-Label",
             title_pos: "top-center",
             title: "Graph with negative scale",
-            gridded: true
+            gridOptions: {
+                gridded: true,
+            },
         },
         [
             {
