@@ -404,8 +404,6 @@ class BasicGraph {
 
         /* Draw the data sets on the graph, using the provided dataset configurations  */
         this._drawData();
-
-        this.ctx.translate(-0.5, -0.5);
     }
 }
 
