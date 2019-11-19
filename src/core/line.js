@@ -75,6 +75,12 @@ class Line {
     _drawFillerSegment() {
         const context = this.graph.drawer.context;
 
+        if (!utils.isUndefOrNull(this.options.area.colour)) {
+            context.fillStyle = this.options.area.colour;
+        } else {
+            context.fillStyle = this.options.colour;
+        }
+
         let f1 = new Point({x: 0, y: 0}, this.graph);
         let f2 = new Point({x: 1, y: 0}, this.graph);
 
@@ -91,6 +97,7 @@ class Line {
 
         // -----------------------------------------------------------------------
         for (let i = 1; i < this.points.length - 2; i++) {
+
 
             // Initiate critical points on X-Axis
             const x1 = new Point({x: i, y: 0}, this.graph);
