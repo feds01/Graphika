@@ -72,14 +72,26 @@ class Line {
         }
     }
 
-    _drawFillerSegment() {
+    _drawLineFill() {
         const context = this.graph.drawer.context;
 
-        if (!utils.isUndefOrNull(this.options.area.colour)) {
-            context.fillStyle = this.options.area.colour;
-        } else {
-            context.fillStyle = this.options.colour;
+        for (let i = 0; i < this.points.length - 1; i++) {
+            // Initiate critical points on X-Axis
+            const x1 = new Point({x: i, y: 0}, this.graph);
+            const x2 = new Point({x: i + 1, y: 0}, this.graph);
+
+            context.beginPath();
+            context.moveTo(this.points[i].x, this.points[i].y);
+            context.lineTo(this.points[i + 1].x, this.points[i + 1].y);
+            context.lineTo(x2.x, x2.y);
+            context.lineTo(x1.x, x1.y);
+            context.closePath();
+            context.fill();
         }
+    }
+
+    _drawLineFillForCubic() {
+        const context = this.graph.drawer.context;
 
         let f1 = new Point({x: 0, y: 0}, this.graph);
         let f2 = new Point({x: 1, y: 0}, this.graph);
@@ -97,8 +109,6 @@ class Line {
 
         // -----------------------------------------------------------------------
         for (let i = 1; i < this.points.length - 2; i++) {
-
-
             // Initiate critical points on X-Axis
             const x1 = new Point({x: i, y: 0}, this.graph);
             const x2 = new Point({x: i + 1, y: 0}, this.graph);
@@ -139,19 +149,33 @@ class Line {
     draw() {
         const context = this.graph.drawer.context;
 
+        // @Experiment: let's outline the first 'section' of filling element.
+        // set the 'global' alpha to 0.6
+        if (this.options.area.fill) {
+            context.globalAlpha = 0.6;
+
+            // Apply area colour setting if one is present, if not default to using
+            // the general colour of the line.
+            if (!utils.isUndefOrNull(this.options.area.colour)) {
+                context.fillStyle = this.options.area.colour;
+            } else {
+                context.fillStyle = this.options.colour;
+            }
+
+            if (this.options.interpolation === "cubic") {
+                this._drawLineFillForCubic();
+            } else if (this.options.interpolation === "linear") {
+                this._drawLineFill();
+            }
+            context.globalAlpha = 1;
+        }
+
+        // setup canvas context for drawing.
         context.lineJoin = "round";
         context.lineWidth = config.lineWidth;
         context.fillStyle = utils.rgba(this.options.colour, 100);
         context.strokeStyle = utils.rgba(this.options.colour, 40);
         context.setLineDash(this.options.style === "dashed" ? [5, 5] : []);
-
-
-        // @Experiment: let's outline the first 'section' of filling element.
-        context.beginPath();
-        context.globalAlpha = 0.6;
-        this._drawFillerSegment();
-        context.globalAlpha = 1;
-        context.closePath();
 
         if (this.options.interpolation === "cubic") {
             // draw the cubic spline curves
