@@ -60,11 +60,17 @@ class BasicGraph {
          * */
         this.labelFontSize = 0;
 
+        // TODO: make a method to apply an object merge onto default values
+        //      and passed options into current object. Obviously, options that are
+        //      passed have priority over defaults.
         /**
          * @since v0.0.1 This is the grid options data store class, it stores all options which are related with a
          * graphics griding options such as using a sharedAxisZero or using strict mode to determine the grid.
          * */
-        this.gridOptions = new GridOptions(options["gridOptions"]);
+        this.gridOptions = new GridOptions(options.gridOptions);
+
+        /* Pass onto scale options into the general object */
+        this.scaleOptions = options.scaleOptions;
 
         // Loop through provided options, and overwrite default options if the user provided
         // options contain a value

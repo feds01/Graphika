@@ -1,11 +1,15 @@
 /**
- * Module description:   /options.js
+ * Module description:   src/options.js
+ *
+ * This module holds methods for graph objects to merge default values
+ * for configuration and options that are passed to the actial object.
  *
  * Created on 12/03/2019
  * @author Alexander. E. Fedotov
  * @email <alexander.fedotov.uk@gmail.com>
  */
 
+// defaults
 const utils = require("./utils");
 
 class GridOptions {
