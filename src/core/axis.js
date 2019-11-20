@@ -11,6 +11,7 @@
  */
 
 const arrays = require("../utils/arrays");
+const conversions = require("../utils/conversions");
 const config = require("./config");
 const utils = require("./../utils");
 const {Scale} = require("./scale");
@@ -176,12 +177,22 @@ class Axis {
         this.graph.ctx.lineWidth = config.gridLineWidth;
         this.graph.ctx.strokeStyle = utils.rgba(this.options.axisColour, 60);
 
+        // Apply numerical conversion magic.
+        // TODO: add configuration for exactly which axis' should use these conversions.
+        let scaleNumericsToDraw = this.scaleNumbers;
+
+        if (this.graph.scaleOptions.shorthandNumerics) {
+            scaleNumericsToDraw = scaleNumericsToDraw.map((numeric) => {
+                return conversions.convertFromNumerical(numeric);
+            });
+        }
+
         // Y-Axis Drawing !
         if (this.type === AxisType.Y_AXIS) {
             this.graph.drawer.verticalLine(this.graph.lengths.x_begin, this.graph.lengths.y_begin, this.graph.yLength + 9);
             this.graph.ctx.textBaseline = "middle";
 
-            for (let number of this.scaleNumbers) {
+            for (let number of scaleNumericsToDraw) {
                 if (!(this.manager.sharedAxisZero && number === 0)) {
                     let y_offset = offset * this.graph.gridRectSize.y;
                     let scale_offset = Math.ceil(this.graph.ctx.measureText(number).width / 1.5);
