@@ -183,9 +183,19 @@ class Axis {
 
         if (this.graph.scaleOptions.shorthandNumerics) {
             scaleNumericsToDraw = scaleNumericsToDraw.map((numeric) => {
+
+                // correct for floating point precision errors
+                if (Math.log10(this.scaleStep) < 0) {
+                    let precision = Math.abs(Math.log10(this.scaleStep));
+
+                    return conversions.convertFromNumerical(numeric.toPrecision(precision));
+                }
+
                 return conversions.convertFromNumerical(numeric);
             });
         }
+
+        console.log(scaleNumericsToDraw);
 
         // Y-Axis Drawing !
         if (this.type === AxisType.Y_AXIS) {
@@ -218,7 +228,7 @@ class Axis {
                 this.graph.drawer.horizontalLine(this.graph.lengths.x_begin, this.graph.yLength + this.graph.padding.top, this.graph.xLength);
             }
 
-            for (let number of this.scaleNumbers) {
+            for (let number of scaleNumericsToDraw) {
                 // if sharedAxisZero isn't enabled and the number isn't zero, draw the number label
                 if (!(this.manager.sharedAxisZero && number === 0)) {
                     let x_offset = offset * this.graph.gridRectSize.x;
