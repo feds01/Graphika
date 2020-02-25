@@ -13,6 +13,18 @@
  */
 
 module.exports = {
+    /**
+     * Function converts a number into a smart numerical with a prefix with a
+     * shortening for 
+     *
+     *
+     * @param numerical {number} If the scale labels should be returned as what they truly
+     * are. This is because the scale does not handle negative numbers and thus masks them
+     * as positive numbers. The natural parameter will return them as negatives, if this scale
+     * is a negative scale.
+     *
+     * @returns {String} the scale labels.
+     * */
     convertFromNumerical(numerical) {
         let exponent = Math.log10(numerical);
 
@@ -23,5 +35,9 @@ module.exports = {
         }
 
         return numerical;
+    },
+
+    convertFromNumericalToK(numerical) {
+
     }
 };
