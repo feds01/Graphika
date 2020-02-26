@@ -355,7 +355,7 @@ class BasicGraph {
 
         // Set the config font size of axis labels, and then we can effectively 'measure' the width of the text
         this.drawer.toTextMode(config.axisLabelFontSize, config.axisColour);
-        this.padding.left = Math.ceil(this.options.padding + this.ctx.measureText(longestItem).width + this.labelFontSize);
+        this.padding.left = Math.ceil(this.options.padding + this.ctx.measureText(longestItem).width);
         this.padding.bottom = Math.ceil(this.options.padding + this.labelFontSize + this.fontSize());
     }
 
