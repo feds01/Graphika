@@ -156,7 +156,10 @@ class Axis {
                 this.scaleLabels = this.negativeScale.getScaleLabels(true, true);
 
                 // check if 0 & -0 exist, if so remove the negative 0
-                if (this.scaleLabels[this.scaleLabels.length - 1] === "0") this.scaleLabels.pop();
+                if (this.scaleLabels[this.scaleLabels.length - 1] === "0" &&
+                    this.positveScale.getScaleLabels().includes("0")) {
+                    this.scaleLabels.pop();
+                }
 
                 this.scaleLabels = [...this.scaleLabels, ...this.positveScale.getScaleLabels()];
             } else {
