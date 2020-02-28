@@ -30,7 +30,7 @@ module.exports = {
      * values result in more curved connections and lower values are closer to linear
      * interpolation
      * */
-    tension: 0.5,
+    tension: 0.4,
 
     /* font size of X-Axis & Y-Axis labels */
     axisLabelFontSize: 14,
