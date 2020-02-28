@@ -77,8 +77,9 @@ class Line {
 
         for (let i = 0; i < this.points.length - 1; i++) {
             // Initiate critical points on X-Axis
-            const x1 = new Point({x: i, y: 0}, this.graph);
-            const x2 = new Point({x: i + 1, y: 0}, this.graph);
+
+            const x1 = new Point({x: i, y: this.graph.axisManager.yAxis.start}, this.graph);
+            const x2 = new Point({x: i + 1, y: this.graph.axisManager.yAxis.start}, this.graph);
 
             context.beginPath();
             context.moveTo(this.points[i].x, this.points[i].y);
@@ -93,8 +94,8 @@ class Line {
     _drawLineFillForCubic() {
         const context = this.graph.drawer.context;
 
-        let f1 = new Point({x: 0, y: 0}, this.graph);
-        let f2 = new Point({x: 1, y: 0}, this.graph);
+        let f1 = new Point({x: 0, y: this.graph.axisManager.yAxis.start}, this.graph);
+        let f2 = new Point({x: 1, y: this.graph.axisManager.yAxis.start}, this.graph);
 
         context.beginPath();
         context.moveTo(this.points[0].x, this.points[0].y);
@@ -110,8 +111,8 @@ class Line {
         // -----------------------------------------------------------------------
         for (let i = 1; i < this.points.length - 2; i++) {
             // Initiate critical points on X-Axis
-            const x1 = new Point({x: i, y: 0}, this.graph);
-            const x2 = new Point({x: i + 1, y: 0}, this.graph);
+            const x1 = new Point({x: i, y: this.graph.axisManager.yAxis.start}, this.graph);
+            const x2 = new Point({x: i + 1, y: this.graph.axisManager.yAxis.start}, this.graph);
 
             context.beginPath();
             context.moveTo(this.points[i].x, this.points[i].y);
@@ -127,8 +128,8 @@ class Line {
         }
 
         // -----------------------------------------------------------------------
-        let f3 = new Point({x: this.points.length - 2, y: 0}, this.graph);
-        let f4 = new Point({x: this.points.length - 1, y: 0}, this.graph);
+        let f3 = new Point({x: this.points.length - 2, y: this.graph.axisManager.yAxis.start}, this.graph);
+        let f4 = new Point({x: this.points.length - 1, y: this.graph.axisManager.yAxis.start}, this.graph);
 
         const precursorPoint = this.points[this.points.length - 1];
 
@@ -151,7 +152,7 @@ class Line {
 
         // @Experiment: let's outline the first 'section' of filling element.
         // set the 'global' alpha to 0.6
-        if (this.options.area.fill) {
+        if (!utils.isUndefOrNull(this.options.area) && this.options.area.fill) {
             context.globalAlpha = 0.6;
 
             // Apply area colour setting if one is present, if not default to using
