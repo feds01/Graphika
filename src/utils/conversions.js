@@ -18,7 +18,7 @@ module.exports = {
      * shortening for 
      *
      *
-     * @param numerical {number} If the scale labels should be returned as what they truly
+     * @param numerical {number,string} If the scale labels should be returned as what they truly
      * are. This is because the scale does not handle negative numbers and thus masks them
      * as positive numbers. The natural parameter will return them as negatives, if this scale
      * is a negative scale.
@@ -26,6 +26,10 @@ module.exports = {
      * @returns {String} the scale labels.
      * */
     convertFromNumerical(numerical) {
+        if (typeof numerical === "string") {
+            numerical = parseFloat(numerical);
+        }
+
         let exponent = Math.log10(numerical);
 
         if (exponent > 2) {

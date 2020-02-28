@@ -29,8 +29,8 @@ class AxisManager {
 
         // The scale numbers of the x-axis & y-axis in object
         this.scaleNumbers = {
-            x: this.xAxis.scaleNumbers,
-            y: this.yAxis.scaleNumbers
+            x: this.xAxis.scaleLabels,
+            y: this.yAxis.scaleLabels
         };
 
         /* Work out if we should do a 'zeroScale', where the 'X' & 'Y' axis' share a zero */
@@ -38,8 +38,8 @@ class AxisManager {
         // (excluding negative scales), don't draw the 0 on the first tick and remove it from
         // scaleNumbers for the time being.
         if (this.graph.gridOptions.sharedAxisZero &&
-            this.scaleNumbers.x.indexOf(0) === 0 &&
-            this.scaleNumbers.y.indexOf(0) === 0) {
+            this.scaleNumbers.x.indexOf("0") === 0 &&
+            this.scaleNumbers.y.indexOf("0") === 0) {
             this.sharedAxisZero = true;
         }
     }
@@ -77,11 +77,11 @@ class AxisManager {
     }
 
     get yAxisScaleNumbers() {
-        return this.yAxis.scaleNumbers;
+        return this.yAxis.scaleLabels;
     }
 
     get xAxisScaleNumbers() {
-        return this.xAxis.scaleNumbers;
+        return this.xAxis.scaleLabels;
     }
 
     get joinedScaleNumbers() {
