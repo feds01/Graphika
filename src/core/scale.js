@@ -14,6 +14,12 @@ const utils = require("./../utils");
 const arrays = require("./../utils/arrays");
 const assert = require("./../utils/assert").assert;
 
+function round(num, dp) {
+    assert(Number.isInteger(dp), "round function accepts only integer decimal places");
+
+    return Math.round((num + Number.EPSILON) * Math.pow(10, dp)) / Math.pow(10, dp);
+}
+
 class Scale {
     constructor(options) {
         /**
@@ -39,7 +45,7 @@ class Scale {
 
         /*
         * Target number of ticks on the axis which will be displayed. * */
-        this.maxTicks = options.maxTicks;
+        this.tickCount = options.tickCount;
         this.isNegativeScale = options.isNegativeScale ? options.isNegativeScale : false;
         this.scaleLabels = [];
         this.scaleStep = 0;
@@ -47,45 +53,69 @@ class Scale {
         this.calculate();
 
         // recalculate to get proper tick range
-        while (this.scaleStep * this.maxTicks < this.range) {
-            this.maxTicks--;
-
-            this.calculate();
+        while (this.scaleStep * this.tickCount > this.range) {
+            this.tickCount -= 1;
         }
+        this.calculate();
+
+        // reduction by checking if data is present within the 'tick' area. If not, we simply reduce
+        // the tick count until it reaches a tick that's in use. We don't re-calculate every single
+        // time because this will change the 'scaleStep' value and therefore lead to an infinite reduction loop.
+        let precision = Math.ceil(Math.abs(Math.log10(this.scaleStep)));
+
+        while (round(this.max - this.min, precision) < round(this.scaleStep * (this.tickCount - 1), precision)) {
+            this.tickCount -= 1;
+        }
+        this.generateScaleLabels();
     }
 
     calculate() {
         this.range = Scale.niceNum(this.max - this.min, false);
-        this.scaleStep = Scale.niceNum(this.range / (this.maxTicks - 1), true);
+        this.scaleStep = Scale.niceNum(this.range / (this.tickCount - 1), true);
+        this.roundedMinimum = Math.floor(this.min / this.scaleStep) * this.scaleStep;
 
-        // this.niceMin = Math.floor(this.min / this.tickStep) * this.tickStep;
-        // this.niceMax = Math.ceil(this.max / this.tickStep) * this.tickStep;
-
-        this.generateTickValues();
+        this.generateScaleLabels();
     }
 
-    generateTickValues() {
+    generateScaleLabels() {
+        const logarithmicScaleStep = Math.log((this.scaleStep));
+        const precision = Math.floor(Math.abs(logarithmicScaleStep));
+
         // fill array with labels.
-        this.scaleLabels = arrays.fillRange(this.maxTicks + 1)
-            .map(x => (x * this.scaleStep));
+        this.scaleLabels = arrays.fillRange(this.tickCount + 1).map(x => {
+            let scaleLabel  = this.roundedMinimum + (x * this.scaleStep);
+
+            // pass the zero, so we don't convert say '0' to '0.00'
+            if (logarithmicScaleStep < 0 && scaleLabel !== 0) {
+
+                // TODO: unhandled case where we have a float that is larger than log(n) > 1
+                if (Math.log10(this.roundedMinimum) > 0) {
+                    return scaleLabel.toFixed(precision);
+                }
+
+                return scaleLabel.toPrecision(precision).slice(0, 2 + precision);
+            }
+
+            return scaleLabel;
+        });
     }
 
-    setMaxTicks(val) {
+    setTickCount(val) {
         assert(!isNaN(val) && val > 0, "Cannot have negative ticks / non-numerical tick max for Scale");
 
-        this.maxTicks = val;
+        this.tickCount = val;
         this.calculate();
     }
 
     setTickStep(val) {
         this.scaleStep = val;
-        this.maxTicks = Math.ceil(this.max / val);
+        this.tickCount = Math.ceil(this.max / val);
 
-        this.generateTickValues();
+        this.generateScaleLabels(this.tickCount);
     }
 
-    getMaxTicks() {
-        return this.maxTicks;
+    getTickCount() {
+        return this.tickCount;
     }
 
     /**
@@ -101,15 +131,14 @@ class Scale {
      * @param rtl {boolean} If the numbers should be returned from Right-To-Left (largest to
      * smallest) or else.
      *
-     * @returns {Array<number>} the scale labels.
+     * @returns {string[]} the scale labels.
      * */
     getScaleLabels(natural = true, rtl = false) {
         let scaleLabels = this.scaleLabels;
 
         if (natural && this.isNegativeScale) scaleLabels = scaleLabels.map((x) => -x);
         if (rtl) scaleLabels = scaleLabels.reverse();
-
-        return scaleLabels;
+        return scaleLabels.map(x => x.toString());
     }
 
     getScaleStep() {
