@@ -6,13 +6,19 @@
  * @email <alexander.fedotov.uk@gmail.com>
  */
 
+const config = require("./../config");
+
 module.exports = {
     assert: function (condition, message) {
+        const assertMessage = `Assertion failed: ${message}`;
+
         if (!condition) {
-            throw new Error(`Assertion failed: ${message}`);
+            if (config.bypassOutOfBoundsDrawing) { // warn instead of throwing an error
+                console.warn(assertMessage);
+            } else {
+                throw new Error(`Assertion failed: ${message}`);
+            }
         }
     }
-
-    // TODO: maybe add an assert_warn function which does not throw error, but a warning.
 };
 

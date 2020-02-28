@@ -78,11 +78,12 @@ class Axis {
         // where the zero '0' value in the scale label array (reversed), and multiplying this by the
         // amount of squares there are between the zero and the last axis value. We need to reverse
         // the labels because the Axis position is calculated from the top of the graph, where as
+        // the labels because the Axis position is calculated from the top of e graph, where as
         // the numbers are drawn from the bottom of the graph.
         // TODO: maybe just change the calculation to compute the position of the x-axis from the
         //      bottom of the graph.
         if (this.type === AxisType.X_AXIS && this.manager.negativeScale) {
-            let zeroIndex = this.manager.scaleNumbers.y.reverse().indexOf(0);
+            let zeroIndex = this.manager.scaleNumbers.y.reverse().indexOf("0");
 
             // The zero index must not be '-1' or in other words, not found.
             assert(zeroIndex !== -1, `couldn't find the '0' scale position in Axis{${this.type}}`);
@@ -98,7 +99,7 @@ class Axis {
             this.positveScale = new Scale({
                 min: 0,
                 max: this.graph.dataManager.maxLen() - 1,
-                maxTicks: this.options.maxTicks
+                tickCount: this.options.maxTicks
             });
 
             this.scaleStep = this.positveScale.getScaleStep();
@@ -111,7 +112,7 @@ class Axis {
                 this.negativeScale = new Scale({
                     min: Math.min(...negativeDataSet),
                     max: Math.max(...negativeDataSet),
-                    maxTicks: this.options.maxTicks / 2,
+                    tickCount: this.options.maxTicks / 2,
                     isNegativeScale: true,
                 });
             }
@@ -119,7 +120,7 @@ class Axis {
             this.positveScale = new Scale({
                 min: Math.min(...positiveValues),
                 max: Math.max(...positiveValues),
-                maxTicks: this.manager.negativeScale ? this.options.maxTicks / 2 : this.options.maxTicks,
+                tickCount: this.manager.negativeScale ? this.options.maxTicks / 2 : this.options.maxTicks,
             });
 
             /*
@@ -132,9 +133,11 @@ class Axis {
 
                 this.positveScale.setTickStep(this.scaleStep);
                 this.negativeScale.setTickStep(this.scaleStep);
+                this.start = 0;
 
             } else {
                 this.scaleStep = this.positveScale.getScaleStep();
+                this.start = this.positveScale.roundedMinimum;
             }
         } else {
             throw Error(`graph.js: Unrecognised Axis type '${this.type}'`);
@@ -142,22 +145,22 @@ class Axis {
     }
 
     generateScaleNumbers() {
-        this.scaleNumbers = [];
+        this.scaleLabels = [];
 
         if (this.type === AxisType.X_AXIS) {
-            this.scaleNumbers = arrays.fillRange(this.options.maxTicks).map(
-                x => this.positveScale.scaleStep * x
+            this.scaleLabels = arrays.fillRange(this.options.maxTicks).map(
+                x => (this.positveScale.scaleStep * x).toString()
             );
         } else {
             if (this.manager.negativeScale) {
-                this.scaleNumbers = this.negativeScale.getScaleLabels(true, true);
+                this.scaleLabels = this.negativeScale.getScaleLabels(true, true);
 
                 // check if 0 & -0 exist, if so remove the negative 0
-                if (this.scaleNumbers[this.scaleNumbers.length - 1] === 0) this.scaleNumbers.pop();
+                if (this.scaleLabels[this.scaleLabels.length - 1] === "0") this.scaleLabels.pop();
 
-                this.scaleNumbers = [...this.scaleNumbers, ...this.positveScale.getScaleLabels()];
+                this.scaleLabels = [...this.scaleLabels, ...this.positveScale.getScaleLabels()];
             } else {
-                this.scaleNumbers = this.positveScale.getScaleLabels();
+                this.scaleLabels = this.positveScale.getScaleLabels();
             }
         }
     }
@@ -179,23 +182,19 @@ class Axis {
 
         // Apply numerical conversion magic.
         // TODO: add configuration for exactly which axis' should use these conversions.
-        let scaleNumericsToDraw = this.scaleNumbers;
+        let scaleNumericsToDraw = this.scaleLabels;
 
         if (this.graph.scaleOptions.shorthandNumerics) {
             scaleNumericsToDraw = scaleNumericsToDraw.map((numeric) => {
 
-                // correct for floating point precision errors
-                if (Math.log10(this.scaleStep) < 0) {
-                    let precision = Math.abs(Math.log10(this.scaleStep));
-
-                    return conversions.convertFromNumerical(numeric.toPrecision(precision));
+                // TODO: unhandled case where we have a float that is larger than log(n) > 1
+                if (Number.isInteger(parseFloat(numeric))) {
+                    return conversions.convertFromNumerical(numeric);
+                } else {
+                    return numeric;
                 }
-
-                return conversions.convertFromNumerical(numeric);
             });
         }
-
-        console.log(scaleNumericsToDraw);
 
         // Y-Axis Drawing !
         if (this.type === AxisType.Y_AXIS) {
@@ -203,7 +202,7 @@ class Axis {
             this.graph.ctx.textBaseline = "middle";
 
             for (let number of scaleNumericsToDraw) {
-                if (!(this.manager.sharedAxisZero && number === 0)) {
+                if (!(this.manager.sharedAxisZero && number === "0")) {
                     let y_offset = offset * this.graph.gridRectSize.y;
                     let scale_offset = Math.ceil(this.graph.ctx.measureText(number).width / 1.5);
 
@@ -230,7 +229,7 @@ class Axis {
 
             for (let number of scaleNumericsToDraw) {
                 // if sharedAxisZero isn't enabled and the number isn't zero, draw the number label
-                if (!(this.manager.sharedAxisZero && number === 0)) {
+                if (!(this.manager.sharedAxisZero && number === "0")) {
                     let x_offset = offset * this.graph.gridRectSize.x;
                     let scale_offset = this.graph.padding.top + this.graph.fontSize();
 
