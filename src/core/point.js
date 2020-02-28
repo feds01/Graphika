@@ -58,7 +58,6 @@ class Point {
         // is not always at the 'y' beelining of the graph, this is due to the graph possibly containing negative
         // numbers, and therefore the graph must adjust the position of the Y-Axis.
         */
-
         this.y = this.manager.xAxis.yStartingPosition - (yScalar * graph.gridRectSize.y);
     }
 
