@@ -110,7 +110,7 @@ class Axis {
                 let negativeDataSet = arrays.negativeValues(this.data).map(x => Math.abs(x));
                 // divide the max ticks by two since negative and positive are sharing the scale.
                 this.negativeScale = new Scale({
-                    min: Math.min(...negativeDataSet),
+                    min: 0,
                     max: Math.max(...negativeDataSet),
                     tickCount: this.options.maxTicks / 2,
                     isNegativeScale: true,

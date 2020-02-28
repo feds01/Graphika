@@ -236,7 +236,6 @@ class BasicGraph {
         for (let lineData of this.dataManager.get()) {
             const {style, area, colour, interpolation, label, annotatePoints} = lineData;
 
-            console.log(lineData);
             let line = new Line(lineData.data, this, {style, area, colour, interpolation, label, annotatePoints});
             line.draw();
         }
