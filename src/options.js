@@ -2,7 +2,7 @@
  * Module description:   src/options.js
  *
  * This module holds methods for graph objects to merge default values
- * for configuration and options that are passed to the actial object.
+ * for configuration and options that are passed to the actual object.
  *
  * Created on 12/03/2019
  * @author Alexander. E. Fedotov
