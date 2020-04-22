@@ -24,7 +24,7 @@
     "gulp-size": "^3.0.0",
     "gulp-terser": "^1.2.0",
     "gulp-util": "^3.0.0",
-    "rollup": "2.3.4",
+    "rollup": "2.7.1",
     "rollup-plugin-commonjs": "10.1.0",
     "rollup-plugin-istanbul": "^2.0.1",
     "rollup-plugin-node-resolve": "5.2.0",
