@@ -71,7 +71,7 @@ class BasicGraph {
         this.gridOptions = new GridOptions(options.gridOptions);
 
         /* Pass onto scale options into the general object */
-        this.scaleOptions = options.scaleOptions;
+        this.scaleOptions = options.scaleOptions ?? {};
 
         // Loop through provided options, and overwrite default options if the user provided
         // options contain a value

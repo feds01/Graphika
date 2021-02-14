@@ -64,3 +64,5 @@ dist/
 
 # webstorm IDE working files
 .idea/*
+
+/index.html
