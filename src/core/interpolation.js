@@ -21,8 +21,8 @@ module.exports = {
         //  t is the 'tension' which controls how far the control points spread.
 
         //  Scaling factors: distances from this knot to the previous and following knots.
-        let d01 = Math.sqrt(Math.pow(current.data.x - prev.data.x, 2) + Math.pow(current.data.y - prev.data.y, 2));
-        let d12 = Math.sqrt(Math.pow(next.data.x - current.data.x, 2) + Math.pow(next.data.y - current.data.y, 2));
+        let d01 = Math.sqrt((current.data.x - prev.data.x) ** 2 + (current.data.y - prev.data.y) ** 2);
+        let d12 = Math.sqrt((next.data.x - current.data.x) ** 2 + (next.data.y - current.data.y) ** 2);
 
         let fa = t * d01 / (d01 + d12);
         let fb = t - fa;

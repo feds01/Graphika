@@ -17,7 +17,7 @@ const assert = require("./../utils/assert").assert;
 function round(num, dp) {
     assert(Number.isInteger(dp), "round function accepts only integer decimal places");
 
-    return Math.round((num + Number.EPSILON) * Math.pow(10, dp)) / Math.pow(10, dp);
+    return Math.round((num + Number.EPSILON) * (10 ** dp) / (10 ** dp));
 }
 
 class Scale {
@@ -147,7 +147,7 @@ class Scale {
 
     static niceNum(range, round) {
         let exponent = Math.floor(Math.log10(range));
-        let fraction = range / Math.pow(10, exponent);
+        let fraction = range / (10 ** exponent);
         let niceFraction;
 
         if (round) {
@@ -161,7 +161,7 @@ class Scale {
             else if (fraction <= 5) niceFraction = 5;
             else niceFraction = 10;
         }
-        return niceFraction * Math.pow(10, exponent);
+        return niceFraction * (10 ** exponent);
     }
 }
 

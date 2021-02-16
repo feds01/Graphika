@@ -78,8 +78,8 @@ class Axis {
         // where the zero '0' value in the scale label array (reversed), and multiplying this by the
         // amount of squares there are between the zero and the last axis value. We need to reverse
         // the labels because the Axis position is calculated from the top of the graph, where as
-        // the labels because the Axis position is calculated from the top of e graph, where as
         // the numbers are drawn from the bottom of the graph.
+
         // TODO: maybe just change the calculation to compute the position of the x-axis from the
         //      bottom of the graph.
         if (this.type === AxisType.X_AXIS && this.manager.negativeScale) {
@@ -205,7 +205,7 @@ class Axis {
             this.graph.ctx.textBaseline = "middle";
 
             for (let number of scaleNumericsToDraw) {
-                if (!(this.manager.sharedAxisZero && number === '0')) {
+                if (!(this.manager.sharedAxisZero && number.toString() === '0')) {
                     let y_offset = offset * this.graph.gridRectSize.y;
                     let scale_offset = Math.ceil(this.graph.ctx.measureText(number).width / 1.5);
 
@@ -232,7 +232,7 @@ class Axis {
 
             for (let number of scaleNumericsToDraw) {
                 // if sharedAxisZero isn't enabled and the number isn't zero, draw the number label
-                if (!(this.manager.sharedAxisZero && number === '0')) {
+                if (!(this.manager.sharedAxisZero && number.toString() === '0')) {
                     let x_offset = offset * this.graph.gridRectSize.x;
                     let scale_offset = this.graph.padding.top + this.graph.fontSize();
 

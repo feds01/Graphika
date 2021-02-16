@@ -51,7 +51,7 @@ class BasicGraph {
         this.options = defaultConfig;
 
         /**
-         * @since v0.0.1 DataManager() object which contains the data for the lines the graph should
+         * @since v0.0.1 DataManager object which contains the data for the lines the graph should
          * plot, the object also contains various utility functions to fetch stats on the data. * */
         this.dataManager = new DataManager(data);
 
@@ -72,7 +72,7 @@ class BasicGraph {
 
         // TODO: Validate scaleOptions object and verify all the options are valid, if not
         //       report this to the user.
-        
+
         /* Pass onto scale options into the general object */
         this.scaleOptions = options.scaleOptions ?? {};
 
