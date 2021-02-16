@@ -23,7 +23,7 @@ class Line {
         this.graph = graph;
         this.options = options;
 
-        assert(Array.isArray(data) && data.length !== 0, "data must be a non-empty array.");
+        assert(data.constructor === Float64Array && data.length !== 0, "data must be a non-empty array.");
 
         this._convertDataToPoints();
     }
@@ -180,9 +180,10 @@ class Line {
 
         if (this.options.interpolation === "cubic") {
             // draw the cubic spline curves
+
+            context.beginPath();
             for (let i = 1; i < this.points.length - 2; i++) {
                 // begin current trajectory, by moving to starting point
-                context.beginPath();
                 context.moveTo(this.points[i].x, this.points[i].y);
 
                 // create bezier curve using the next control point of previous entry
@@ -193,10 +194,10 @@ class Line {
                     this.controlPoints[i].prev.x, this.controlPoints[i].prev.y,
                     this.points[i + 1].x, this.points[i + 1].y
                 );
-                context.stroke();
-
-                context.closePath();
             }
+
+            context.stroke();
+            context.closePath();
 
             // now draw the starting quadratic between first and second curve
             context.beginPath();
@@ -221,14 +222,16 @@ class Line {
             context.closePath();
 
 
-        } else {
+        } else {    
+        
+            context.beginPath();
             for (let p = 0; p < this.points.length - 1; p++) {
-                context.beginPath();
                 context.moveTo(this.points[p].x, this.points[p].y);
                 context.lineTo(this.points[p + 1].x, this.points[p + 1].y);
-                context.stroke();
-                context.closePath();
             }
+
+            context.stroke();
+            context.closePath();
         }
 
         // if point annotation is enabled, draw the points.

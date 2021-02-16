@@ -40,6 +40,7 @@ class Scale {
         this.isNegativeScale = false;
 
         if (utils.isUndefOrNaN(this.min) || utils.isUndefOrNaN(this.max)) {
+            console.log(options);
             throw ("Min/Max value of scale cannot be NaN or undefined.");
         }
 
