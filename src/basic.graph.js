@@ -240,6 +240,7 @@ class BasicGraph {
             const {style, area, colour, interpolation, label, annotatePoints} = lineData;
 
             let line = new Line(lineData.data, this, {style, area, colour, interpolation, label, annotatePoints});
+    
             line.draw();
         }
     }

@@ -1,3 +1,3 @@
 module.exports = {
-    bypassOutOfBoundsDrawing: true,
+    warnOnFailedAssert: true,
 };

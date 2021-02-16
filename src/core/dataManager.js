@@ -24,6 +24,10 @@ class DataManager {
         // Ensure that the provided data can be accessed and is not empty data, this is simple sanitization
         for (let entry of this.data) {
             assert(Array.isArray(entry.data) && entry.data.length !== 0, "data must be a non-empty array.");
+            
+            // convert the actual entry data into a Float64Array
+            entry.data = new Float64Array(entry.data);
+
         }
     }
 
@@ -32,7 +36,7 @@ class DataManager {
     }
 
     join() {
-        return [].concat.apply([], this.data.map(x => x.data));
+        return new Float64Array(this.data.map(x => [...new Float64Array(x.data.buffer)]).flat());
     }
 
     lengths() {
@@ -47,13 +51,13 @@ class DataManager {
         return Math.min(...this.data.map(x => x.data.length));
     }
 
-    max() {
-        return Math.max(...[].concat.apply([], this.data.map(x => x.data)));
-    }
+    // max() {
+    //     return arrays.getMax(new Float64Array([]).push.apply([], this.data.map(x => x.data)));
+    // }
 
-    min() {
-        return Math.min(...[].concat.apply([], this.data.map(x => x.data)));
-    }
+    // min() {
+    //     return arrays.getMin([].push.apply([], this.data.map(x => x.data)));
+    // }
 
     colourList() {
         return this.data.map(x => x.colour);
