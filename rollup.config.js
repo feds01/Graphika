@@ -9,21 +9,20 @@
 const commonjs = require("rollup-plugin-commonjs");
 const resolve = require("rollup-plugin-node-resolve");
 const terser = require("rollup-plugin-terser").terser;
-// const compiler = require('@ampproject/rollup-plugin-closure-compiler');
 
 const pkg = require("./package.json");
 
-const input = "src/graph.js";
+const input = "src/graphika.js";
 const banner = `/*!
- * graph.js v${pkg.version} 
+ * graphika.js v${pkg.version} 
  * ${pkg.homepage}
- * (c) ${new Date().getFullYear()} Wasabi & Co.
+ * (c) ${new Date().getFullYear()} Alexander. E. Fedotov.
  */`;
 
 module.exports = [
     // UMD builds (including moment)
-    // dist/graph.min.js
-    // dist/graph.js
+    // dist/graphika.min.js
+    // dist/graphika.js
     {
         input: input,
         plugins: [
@@ -32,7 +31,7 @@ module.exports = [
         ],
         output: {
             name: "Graph",
-            file: "dist/graph.js",
+            file: "dist/graphika.js",
             banner: banner,
             format: "umd",
             indent: false
@@ -57,7 +56,7 @@ module.exports = [
         ],
         output: {
             name: "Graph",
-            file: "dist/graph.min.js",
+            file: "dist/graphika.min.js",
             format: "umd",
             indent: false
         }

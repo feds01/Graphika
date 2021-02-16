@@ -48,7 +48,7 @@ function buildTask() {
 }
 
 function librarySizeTask() {
-    return gulp.src("dist/graph.min.js")
+    return gulp.src("dist/graphika.min.js")
         .pipe(size({
             gzip: true
         }));
