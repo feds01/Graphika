@@ -205,7 +205,7 @@ class Axis {
             this.graph.ctx.textBaseline = "middle";
 
             for (let number of scaleNumericsToDraw) {
-                if (!(this.manager.sharedAxisZero && number === 0)) {
+                if (!(this.manager.sharedAxisZero && number === '0')) {
                     let y_offset = offset * this.graph.gridRectSize.y;
                     let scale_offset = Math.ceil(this.graph.ctx.measureText(number).width / 1.5);
 
@@ -232,7 +232,7 @@ class Axis {
 
             for (let number of scaleNumericsToDraw) {
                 // if sharedAxisZero isn't enabled and the number isn't zero, draw the number label
-                if (!(this.manager.sharedAxisZero && number === 0)) {
+                if (!(this.manager.sharedAxisZero && number === '0')) {
                     let x_offset = offset * this.graph.gridRectSize.x;
                     let scale_offset = this.graph.padding.top + this.graph.fontSize();
 

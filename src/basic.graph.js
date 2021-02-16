@@ -70,6 +70,9 @@ class BasicGraph {
          * */
         this.gridOptions = new GridOptions(options.gridOptions);
 
+        // TODO: Validate scaleOptions object and verify all the options are valid, if not
+        //       report this to the user.
+        
         /* Pass onto scale options into the general object */
         this.scaleOptions = options.scaleOptions ?? {};
 
