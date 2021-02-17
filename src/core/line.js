@@ -220,8 +220,6 @@ class Line {
             );
             context.stroke();
             context.closePath();
-
-
         } else {    
         
             context.beginPath();

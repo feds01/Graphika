@@ -80,7 +80,7 @@ class BasicGraph {
         // options contain a value
         if (!utils.isUndefOrNull(options)) {
             Object.keys(options).forEach((option) => {
-                // let's move away from this approach
+                // TODO: let's move away from this approach
                 if (defaultConfig.hasOwnProperty(option)) {
                     this.options[option] = options[option];
                 }

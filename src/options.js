@@ -20,7 +20,7 @@ class GridOptions {
         /* In the case of both axis' beginning with zero, it will replace it with a single centralised zero */
         this.sharedAxisZero = !utils.isUndefOrNull(options.sharedZero) ? options.sharedZero : true;
 
-        /* This will ensure that the X-Axis gris square length is an integer. */
+        /* This will ensure that the X-Axis grid square length is an integer. */
         this.optimiseSquareSize = !utils.isUndefOrNull(options.optimiseSquareSize) ? options.sharedZero : true;
     }
 }
