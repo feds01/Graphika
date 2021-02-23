@@ -53,7 +53,7 @@ export function findObjectElements(id, options) {
     elementMap.title.innerHTML = options.title;
   } else {
     throw Error(
-      `Graph Container with id: '${this.HtmlElementId}' doesn't contain 'title' element.`
+      `Graph Container with id: '${id}' doesn't contain 'title' element.`
     );
   }
   return elementMap;
