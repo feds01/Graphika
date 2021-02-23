@@ -9,7 +9,7 @@
  * @email <alexander.fedotov.uk@gmail.com>
  */
 
-module.exports = {
+export default {
     schemes: {
         s1: ["#7fc97f", "#beaed4", "#fdc086"],
         s2: ["#1b9e77", "#d95f02", "#7570b3"],

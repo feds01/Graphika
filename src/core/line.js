@@ -10,12 +10,12 @@
  * @email <alexander.fedotov.uk@gmail.com>
  */
 
-const {Point} = require("./point");
-const interpolation = require("./interpolation");
-const utils = require("./../utils");
-const arrays = require("./../utils/arrays");
-const config = require("./config");
-const {assert} = require("./../utils/assert");
+import Point from "./point";
+import config from "./config";
+import * as utils from "../general";
+import {assert} from "./../utils/assert";
+import {splineCurve} from "./interpolation";
+import * as arrays from "./../utils/arrays";
 
 class Line {
     constructor(data, graph, options) {
@@ -52,7 +52,7 @@ class Line {
         // start from point 1 and not point 0, as point one and last point will
         // be quadratic curves and not splines
         for (let k = 1; k < this.points.length - 1; k++) {
-            this.controlPoints.push(interpolation.splineCurve(
+            this.controlPoints.push(splineCurve(
                 arrays.getPrevious(k, this.points),
                 this.points[k], arrays.getNext(k, this.points),
                 config.tension, this.graph
@@ -243,6 +243,4 @@ class Line {
     }
 }
 
-module.exports = {
-    Line: Line,
-};
+export default Line;

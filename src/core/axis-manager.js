@@ -4,12 +4,12 @@
  * Created on 23/12/2018
  * @author Alexander. E. Fedotov
  * @email <alexander.fedotov.uk@gmail.com>
- */
-
-const config = require("./config");
-const utils = require("../utils");
-const arrays = require("../utils/arrays");
-const {Axis, AxisType} = require("./axis");
+ *
+ * */
+import config from "./config"
+import * as utils from "../general"
+import * as arrays from "../utils/arrays"
+import Axis, {AxisType} from "./axis"
 
 class AxisManager {
     constructor(graph) {
@@ -89,6 +89,4 @@ class AxisManager {
     }
 }
 
-module.exports = {
-    AxisManager: AxisManager
-};
+export default AxisManager;

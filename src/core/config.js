@@ -9,7 +9,7 @@
  * @email <alexander.fedotov.uk@gmail.com>
  */
 
-module.exports = {
+export default {
     /* this value is the default data-line width for a graph.
      * It may change depending on if there are more data points than
      * the default value of ticks on the x-axis. */

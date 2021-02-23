@@ -10,7 +10,9 @@
  * @email <alexander.fedotov.uk@gmail.com>
  */
 
-const assert = require("./../utils/assert").assert;
+import {assert} from "./../utils/assert";
+
+
 const TWO_PI = Math.PI * 2;
 
 class Drawer {
@@ -77,6 +79,4 @@ class Drawer {
     get height() { return this.canvas.height; }
 }
 
-module.exports = {
-    Drawer: Drawer
-};
+export default Drawer;
