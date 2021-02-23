@@ -10,9 +10,9 @@
  * @email <alexander.fedotov.uk@gmail.com>
  */
 
-const utils = require("./../utils");
-const arrays = require("./../utils/arrays");
-const assert = require("./../utils/assert").assert;
+import * as utils from "../general";
+import * as arrays from "./../utils/arrays";
+import {assert} from "./../utils/assert";
 
 function round(num, dp) {
     assert(Number.isInteger(dp), "round function accepts only integer decimal places");
@@ -166,6 +166,4 @@ class Scale {
     }
 }
 
-module.exports = {
-    Scale: Scale
-};
+export default Scale;

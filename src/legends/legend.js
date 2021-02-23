@@ -6,7 +6,7 @@
  * @email <alexander.fedotov.uk@gmail.com>
  */
 
-const assert = require("./../utils/assert").assert;
+import {assert} from "./../utils/assert";
 
 
 const LegendPosition = {

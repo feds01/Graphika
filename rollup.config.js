@@ -6,9 +6,9 @@
  * @email <alexander.fedotov.uk@gmail.com>
  */
 
-const commonjs = require("rollup-plugin-commonjs");
+const commonjs = require("@rollup/plugin-commonjs");
 const resolve = require("rollup-plugin-node-resolve");
-const terser = require("rollup-plugin-terser").terser;
+const {terser} = require("rollup-plugin-terser");
 
 const pkg = require("./package.json");
 
@@ -52,7 +52,6 @@ module.exports = [
                 keep_classnames: false,
                 keep_fnames: false,
             })
-            // compiler(),
         ],
         output: {
             name: "Graph",

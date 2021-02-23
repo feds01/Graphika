@@ -30,8 +30,8 @@
  * @email <alexander.fedotov.uk@gmail.com>
  */
 
-const config = require("./config");
-const assert = require("./../utils/assert").assert;
+import config from "./config";
+import {assert} from "./../utils/assert";
 
 class Point {
     constructor(data, graph) {
@@ -69,6 +69,4 @@ class Point {
     }
 }
 
-module.exports = {
-    Point: Point
-};
+export default Point;
