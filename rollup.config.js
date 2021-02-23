@@ -47,10 +47,15 @@ module.exports = [
                     preamble: banner
                 },
                 compress: {
-                    warnings: true
+                    warnings: true,
+                    keep_fnames: false,
+                    keep_classnames: false,
                 },
-                keep_classnames: false,
-                keep_fnames: false,
+                mangle: {
+                    keep_classnames: false,
+                    keep_fnames: false,
+                    reserved: ["Graph"]
+                }
             })
         ],
         output: {
