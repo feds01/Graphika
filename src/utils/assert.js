@@ -6,20 +6,18 @@
  * @email <alexander.fedotov.uk@gmail.com>
  */
 
-const config = require("./../config");
+import config from "./../config";
 
-module.exports = {
-    assert: function (condition, message) {
-        if (!condition) {            
-            const assertMessage = `Assertion failed: ${message}`;
+export function assert(condition, message) {
+  if (!condition) {
+    const assertMessage = `Assertion failed: ${message}`;
 
-            if (config.warnOnFailedAssert) { // warn instead of throwing an error
-                console.warn(assertMessage);
-                console.trace(assertMessage);
-            } else {
-                throw new Error(assertMessage);
-            }
-        }
+    if (config.warnOnFailedAssert) {
+      // warn instead of throwing an error
+      console.warn(assertMessage);
+      console.trace(assertMessage);
+    } else {
+      throw new Error(assertMessage);
     }
-};
-
+  }
+}

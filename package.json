@@ -1,35 +1,37 @@
 {
-  "name": "graph.js",
+  "name": "Graphika",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "A fast JavaScript library to draw elegant graphs ",
+  "main": "dist/graphika.js",
   "scripts": {
-    "build": "gulp build",
-    "watch": "gulp build --watch",
-    "size": "gulp size"
+    "build": "rollup -c",
+    "watch": "rollup -c -w"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/feds01/graph-js.git"
+    "url": "git+https://github.com/feds01/Graphika.git"
   },
+  "keywords": [
+    "graphing",
+    "fast",
+    "canvas",
+    "charts"
+  ],
   "author": "Alexander Fedotov",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/feds01/graph-js/issues"
+    "url": "https://github.com/feds01/Graphika/issues"
   },
-  "homepage": "https://github.com/feds01/graph-js#readme",
+  "homepage": "https://github.com/feds01/Graphika#readme",
   "devDependencies": {
+    "@rollup/plugin-commonjs": "^17.1.0",
     "eslint": "7.20.0",
-    "gulp": "^4.0.2",
-    "gulp-size": "3.0.0",
-    "gulp-terser": "2.0.1",
-    "gulp-util": "3.0.8",
     "rollup": "2.39.0",
-    "rollup-plugin-commonjs": "10.1.0",
     "rollup-plugin-istanbul": "3.0.0",
     "rollup-plugin-node-resolve": "5.2.0",
-    "rollup-plugin-terser": "7.0.2",
-    "watchify": "4.0.0",
-    "yargs": "16.2.0"
+    "rollup-plugin-terser": "7.0.2"
+  },
+  "dependencies": {
+    "@rollup/plugin-node-resolve": "^11.2.0"
   }
 }

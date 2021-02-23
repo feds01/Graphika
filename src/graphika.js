@@ -1,7 +1,11 @@
-let Graph = require("./basic.graph")();
+import Graph from "./basic.graph";
+import Colours from "./utils/colours";
 
-Graph.Colours = require("./utils/colours");
 
-Graph.GridOptions = require("./options");
+// Export colours with graph object!
+Graph.Graph   = Graph;
+Graph.Colours = Colours;
 
-module.exports = Graph;
+
+// Export!
+export default Graph;
