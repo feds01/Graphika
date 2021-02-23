@@ -10,12 +10,13 @@
  * @email <alexander.fedotov.uk@gmail.com>
  */
 
-const arrays = require("../utils/arrays");
-const assert = require("./../utils/assert").assert;
+import {assert} from "../utils/assert";
+import * as arrays from "../utils/arrays"
 
 class DataManager {
     constructor(data) {
         this.data = data;
+        
         // Assert that each data 'label' is unique
         // TODO: show/display the conflicting labels. Could probably done by using a 'reduce'
         assert(arrays.uniqueValues(this.labels()).size === this.labels().length,
@@ -68,6 +69,4 @@ class DataManager {
     }
 }
 
-module.exports = {
-    DataManager: DataManager
-};
+export default DataManager;

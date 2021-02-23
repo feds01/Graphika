@@ -1,16 +1,14 @@
+import * as utils from "./general";
+import config from "./core/config";
+import colours from "./utils/colours";
+import {assert} from "./utils/assert";
+import * as arrays from"./utils/arrays";
 
-
-const utils = require("./utils");
-const arrays = require("./utils/arrays");
-const config = require("./core/config");
-const colours = require("./utils/colours");
-const {assert} = require("./utils/assert");
-
-const {Line} = require("./core/line");
-const {Drawer} = require("./core/drawing");
-const {GridOptions} = require("./options");
-const {AxisManager} = require("./core/axis-manager");
-const {DataManager} = require("./core/dataManager");
+import Line from "./core/line";
+import Drawer from "./core/drawing";
+import GridOptions from "./options";
+import AxisManager from "./core/axis-manager";
+import DataManager from "./core/data-manager";
 
 
 /**
@@ -322,12 +320,16 @@ class BasicGraph {
     }
 }
 
-module.exports = function () {
-    let Graph = function (id, config, data) {
-        return new BasicGraph(id, config, data);
-    };
 
-    Graph.Graph = Graph;
 
-    return Graph;
-};
+export default BasicGraph;
+
+// module.exports = function () {
+//     let Graph = function (id, config, data) {
+//         return new BasicGraph(id, config, data);
+//     };
+
+//     Graph.Graph = Graph;
+
+//     return Graph;
+// };

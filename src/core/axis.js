@@ -10,12 +10,12 @@
  * @email <alexander.fedotov.uk@gmail.com>
  */
 
-const arrays = require("../utils/arrays");
-const conversions = require("../utils/conversions");
-const config = require("./config");
-const utils = require("./../utils");
-const { Scale } = require("./scale");
-const { assert } = require("./../utils/assert");
+import Scale from "./scale";
+import config from "./config";
+import * as utils from "../general";
+import * as arrays from "../utils/arrays";
+import { assert } from "./../utils/assert";
+import conversions from "../utils/conversions";
 
 const defaultOptions = {
   minTicks: 10,
@@ -25,7 +25,7 @@ const defaultOptions = {
   startAtZero: true,
 };
 
-const AxisType = {
+export const AxisType = {
   X_AXIS: "x-axis",
   Y_AXIS: "y-axis",
 };
@@ -97,7 +97,7 @@ class Axis {
 
   _computeAxisScale() {
     if (this.type === AxisType.X_AXIS) {
-        // TODO: at runtime we should be able to eat away some ticks that aren't utilised
+      // TODO: at runtime we should be able to eat away some ticks that aren't utilised
       this.options.maxTicks = Math.min(
         this.graph.dataManager.maxLen(),
         config.xTicks
@@ -280,7 +280,5 @@ class Axis {
   }
 }
 
-module.exports = {
-  Axis: Axis,
-  AxisType: AxisType,
-};
+
+export default Axis;
