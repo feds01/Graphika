@@ -17,8 +17,15 @@ import {assert} from "./../utils/assert";
 function round(num, dp) {
     assert(Number.isInteger(dp), "round function accepts only integer decimal places");
 
-    return Math.round((num + Number.EPSILON) * (10 ** dp) / (10 ** dp));
+    return Math.round((num / dp) + Number.EPSILON) * dp;
 }
+
+function floor(num, dp) {
+    assert(Number.isInteger(dp), "round function accepts only integer decimal places");
+
+    return Math.floor((num / dp) + Number.EPSILON) * dp;
+}
+
 
 class Scale {
     constructor(options) {
@@ -62,9 +69,11 @@ class Scale {
         // reduction by checking if data is present within the 'tick' area. If not, we simply reduce
         // the tick count until it reaches a tick that's in use. We don't re-calculate every single
         // time because this will change the 'scaleStep' value and therefore lead to an infinite reduction loop.
-        let precision = Math.ceil(Math.abs(Math.log10(this.scaleStep)));
+        const precision = Math.ceil(Math.abs(Math.log10(this.scaleStep)));
+        const range = round(this.max - this.min / 10 ** precision, precision);
+        const initialTick = floor(this.min , this.scaleStep);
 
-        while (round(this.max - this.min, precision) < round(this.scaleStep * (this.tickCount - 1), precision)) {
+        while (range < round(this.scaleStep * (this.tickCount - 1) + initialTick, precision)) {
             this.tickCount -= 1;
         }
         this.generateScaleLabels();

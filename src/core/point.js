@@ -65,7 +65,7 @@ class Point {
      * @since v0.0.1 This function is a simple draw function which will just draw a circle at the calculated x & y
      * points, this saves higher level functions from accessing x, y and drawing circles. */
     draw() {
-        this.graph.drawer.circle(this.x, this.y, config.lineWidth);
+        this.graph.drawer.circle(this.x, this.y, config.lineWidth + 0.5);
     }
 }
 
