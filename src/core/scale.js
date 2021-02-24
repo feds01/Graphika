@@ -13,19 +13,7 @@
 import * as utils from "../general";
 import * as arrays from "./../utils/arrays";
 import {assert} from "./../utils/assert";
-
-function round(num, dp) {
-    assert(Number.isInteger(dp), "round function accepts only integer decimal places");
-
-    return Math.round((num / dp) + Number.EPSILON) * dp;
-}
-
-function floor(num, dp) {
-    assert(Number.isInteger(dp), "round function accepts only integer decimal places");
-
-    return Math.floor((num / dp) + Number.EPSILON) * dp;
-}
-
+import {floor, round} from "./../utils/number";
 
 class Scale {
     constructor(options) {
