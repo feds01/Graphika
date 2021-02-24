@@ -133,11 +133,16 @@ class Axis {
           : this.options.maxTicks,
       });
 
+
+      // set the axis min and max
+      this.min = 0
+      this.max = this.positveScale.range;
+
       /*
-            // Get the largest tick step of the two and set the other scale tick step to the same one. This is
-            // because the tick steps must be consistent for both negative and positive scales. Synchronise the
-            // tickSteps basically.
-            */
+      // Get the largest tick step of the two and set the other scale tick step to the same one. This is
+      // because the tick steps must be consistent for both negative and positive scales. Synchronise the
+      // tickSteps basically.
+      */
       if (this.manager.negativeScale) {
         this.scaleStep = Math.max(
           this.positveScale.getScaleStep(),
@@ -147,10 +152,16 @@ class Axis {
         this.positveScale.setTickStep(this.scaleStep);
         this.negativeScale.setTickStep(this.scaleStep);
         this.start = 0;
+
+        // we'll need to overwrite the 'min' tick for this axis since in positive it will be 0
+        this.min = -this.negativeScale.range;
+
       } else {
         this.scaleStep = this.positveScale.getScaleStep();
         this.start = this.positveScale.roundedMinimum;
       }
+
+
     } else {
       throw Error(`Graphika: Unrecognised Axis type '${this.type}'`);
     }
