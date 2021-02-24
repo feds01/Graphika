@@ -1,3 +1,5 @@
+import {assert} from "./assert";
+
 /**
  * Returns a number whose value is limited to the given range.
  *
