@@ -87,9 +87,8 @@ export function getMinMax(arr) {
   return { min, max };
 }
 
-/*
-    // Get all only positive and zero values from a given array.
-    */
+
+// Get all only positive and zero values from a given array.
 export function positiveAndZeroValues(array) {
   return array.filter((value) => value >= 0);
 }

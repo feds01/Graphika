@@ -13,7 +13,6 @@
 import Point from "./point";
 import config from "./config";
 import * as utils from "../general";
-import {assert} from "./../utils/assert";
 import {splineCurve} from "./interpolation";
 import * as arrays from "./../utils/arrays";
 
@@ -22,8 +21,6 @@ class Line {
         this.data = data;
         this.graph = graph;
         this.options = options;
-
-        assert(data.constructor === Float64Array && data.length !== 0, "data must be a non-empty array.");
 
         this._convertDataToPoints();
     }

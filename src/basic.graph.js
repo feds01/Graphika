@@ -237,9 +237,12 @@ class BasicGraph {
         for (let lineData of this.dataManager.get()) {
             const {style, area, colour, interpolation, label, annotatePoints} = lineData;
 
-            let line = new Line(lineData.data, this, {style, area, colour, interpolation, label, annotatePoints});
-    
-            line.draw();
+            // don't even init the line if no data is supplied
+            if (lineData.data.constructor === Float64Array && lineData.data.length > 0) {
+                let line = new Line(lineData.data, this, {style, area, colour, interpolation, label, annotatePoints});
+
+                line.draw();
+            }
         }
     }
 
@@ -320,16 +323,4 @@ class BasicGraph {
     }
 }
 
-
-
 export default BasicGraph;
-
-// module.exports = function () {
-//     let Graph = function (id, config, data) {
-//         return new BasicGraph(id, config, data);
-//     };
-
-//     Graph.Graph = Graph;
-
-//     return Graph;
-// };
