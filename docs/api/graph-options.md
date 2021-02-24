@@ -36,6 +36,8 @@ Here's a table of all the options that are provided for general options on chart
 
 If you want to customise specific parts of a chart like the grid, or a line, check out the docs:
 
-- To read about customising grid options go [here](docs/api/grid-options.md)
-- To read about customising line options go [here](docs/api/line-options.md)
+- To read about customising grid options go [here](grid-options.md)
+- To read about customising line options go [here](line-options.md)
+- To read about customising scale options go [here](scale-options.md)
+- To read about customising legend options go [here](legend-options.md) (WIP)
 - More documentation is available in the docs folder
