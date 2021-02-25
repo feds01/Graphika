@@ -10,10 +10,10 @@ From this sample, it's easy to see how someone could configure the scale options
 ```javascript
  let graph = new Graph('g', {
             ...
-            scaleOptions: {
+            scale: {
                 shorthandNumerics: false,
-                x: {...},
-                y: {...}
+                x: {...}, // Not Implemented yet
+                y: {...}  // Not Implemented yet
             }
         },
         [ ... ]

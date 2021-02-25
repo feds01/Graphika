@@ -12,9 +12,10 @@
 
 import Point from "./point";
 import config from "./config";
-import * as utils from "../general";
+import {rgba} from "./../utils/colours";
 import {splineCurve} from "./interpolation";
 import * as arrays from "./../utils/arrays";
+import { isUndefOrNull } from "../utils/object";
 
 class Line {
     constructor(data, graph, options) {
@@ -149,12 +150,12 @@ class Line {
 
         // @Experiment: let's outline the first 'section' of filling element.
         // set the 'global' alpha to 0.6
-        if (!utils.isUndefOrNull(this.options.area) && this.options.area.fill) {
+        if (!isUndefOrNull(this.options.area) && this.options.area.fill) {
             context.globalAlpha = 0.6;
 
             // Apply area colour setting if one is present, if not default to using
             // the general colour of the line.
-            if (!utils.isUndefOrNull(this.options.area.colour)) {
+            if (!isUndefOrNull(this.options.area.colour)) {
                 context.fillStyle = this.options.area.colour;
             } else {
                 context.fillStyle = this.options.colour;
@@ -171,8 +172,8 @@ class Line {
         // setup canvas context for drawing.
         context.lineJoin = "round";
         context.lineWidth = config.lineWidth;
-        context.fillStyle = utils.rgba(this.options.colour, 100);
-        context.strokeStyle = utils.rgba(this.options.colour, 40);
+        context.fillStyle = rgba(this.options.colour, 100);
+        context.strokeStyle = rgba(this.options.colour, 40);
         context.setLineDash(this.options.style === "dashed" ? [5, 5] : []);
 
         if (this.options.interpolation === "cubic") {
