@@ -3,7 +3,7 @@
  * @param {Object} target The initial object that will be used as a based to merge 
  * @param {Object} source The object that will be merged into target
  * 
- * @return A merged object
+ * @return {Object} A merged object from target and source
  *  */ 
 export function merge(target, source) {
     for (const key of Object.keys(source)) {
@@ -22,5 +22,5 @@ export function isUndefOrNull(o) {
 
 
 export function isUndefOrNaN(o) {
-    return isNaN(o) || typeof o === "undefined";
+    return Number.isNaN(o) || typeof o === "undefined";
 }

@@ -59,11 +59,17 @@ class Drawer {
     }
 
     /**
+     * @since v0.0.1 
      * This simply switches the canvas context to be text mode ready,
      * set the font size and style, set text alignment to middle, and
      * change stroke colour to the axis' colour.
-     *
-     * @since v0.0.1 * */
+     * 
+     * @param {Number} size The font size of the text
+     * @param {String} colour RGBA style colour string
+     * @param {String} alignment One of the specified alignments for text
+     * 
+     * @returns nothing, just changes the drawing context
+     * */
     toTextMode(size, colour, alignment) {
         this.context.strokeStyle = colour;
         this.context.textAlign = alignment;
