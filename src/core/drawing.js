@@ -41,7 +41,9 @@ class Drawer {
         assert((x + len) >= 0 && (x + len) <= this.canvas.width);
 
         this.context.beginPath();
-        this.context.strokeRect(x, y, len, 1);
+        this.context.moveTo(x, y);
+        this.context.lineTo(x + len, y);
+        this.context.stroke();
         this.context.closePath();
     }
 
@@ -50,7 +52,9 @@ class Drawer {
         assert((y + len) >= 0 && (y + len) <= this.canvas.width);
 
         this.context.beginPath();
-        this.context.strokeRect(x, y, 1, len);
+        this.context.moveTo(x, y);
+        this.context.lineTo(x, y + len);
+        this.context.stroke();
         this.context.closePath();
     }
 
@@ -60,17 +64,22 @@ class Drawer {
      * change stroke colour to the axis' colour.
      *
      * @since v0.0.1 * */
-    toTextMode(size, colour) {
+    toTextMode(size, colour, alignment) {
         this.context.strokeStyle = colour;
-        this.context.textAlign = "center";
+        this.context.textAlign = alignment;
         this.context.font = `${size}px "Robot Mono", monospace`;
     }
 
-    text(text, x, y, size, colour) {
+    text(text, x, y, size, colour, alignment = "center") {
         this._coordinateSafetyCheck(x, y);
 
-        this.toTextMode(size, colour);
+        const oldColour = this.context.strokeStyle;
+
+        this.toTextMode(size, colour, alignment);
         this.context.fillText(text, x, y);
+
+        // restore old colour
+        this.context.strokeStyle = oldColour;
 
     }
 

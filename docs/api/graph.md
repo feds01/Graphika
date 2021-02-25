@@ -13,10 +13,10 @@ From this sample, it's easy to see how someone could configure general options f
             x_label: "X-Axis",
             y_label: "Y-Axis",
             title_pos: "top-center",
-            ...
+            ... // scale, grid, legend options...
             }
         },
-        [ ... ]
+        [ ... ]  // lines
 }
 
 ```
