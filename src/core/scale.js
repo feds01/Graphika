@@ -10,7 +10,7 @@
  * @email <alexander.fedotov.uk@gmail.com>
  */
 
-import * as utils from "../general";
+import {isUndefOrNaN} from "./../utils/object";
 import * as arrays from "./../utils/arrays";
 import {assert} from "./../utils/assert";
 import {floor, round} from "./../utils/number";
@@ -34,7 +34,7 @@ class Scale {
          * */
         this.isNegativeScale = false;
 
-        if (utils.isUndefOrNaN(this.min) || utils.isUndefOrNaN(this.max)) {
+        if (isUndefOrNaN(this.min) || isUndefOrNaN(this.max)) {
             console.log(options);
             throw ("Min/Max value of scale cannot be NaN or undefined.");
         }

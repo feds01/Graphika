@@ -9,7 +9,7 @@ From this sample, it's easy to see how someone could configure the line options 
 
 ```javascript
  let graph = new Graph('g', {
-            ...
+            ... // options
         },
         [
             {
