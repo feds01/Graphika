@@ -10,7 +10,7 @@ From this sample, it's easy to see how someone could configure the grid options 
  let graph = new Graph('g', {
             ...
             // This the generic grid options
-            gridOptions: {
+            grid: {
                 gridded: true,
                 sharedAxisZero: true
                 ...
@@ -26,9 +26,11 @@ From this sample, it's easy to see how someone could configure the grid options 
 
 Here's a table of all the options that are provided for grids, what they mean and what are the defaults:
 
-| Name               | Type      | Default | Description                                                                                                          |
-| ------------------ | --------- | ------- | -------------------------------------------------------------------------------------------------------------------- |
-| gridded            | `boolean` | `true`  | Whether or not the graph should draw a grid where the data is drawn.                                                 |
-| optimiseSquareSize | `boolean` | `true`  | Ensure that the grid square size are rounded to integers. This could impact the sharpness of the drawn grid content. |
-| sharedAxisZero     | `boolean` | `true`  | If both the X & Y Axis' start at 0, they can share the zero rather than painting two zeroes                          |
-| strict             | `boolean` | `false` | This mode enforces the drawn grid to be as close as possible to using squares as grid cells.                         |
+| Name               | Type            | Default | Description                                                                                                              |
+| ------------------ | --------------- | ------- | ------------------------------------------------------------------------------------------------------------------------ |
+| gridded            | `boolean`       | `true`  | Whether or not the graph should draw a grid where the data is drawn.                                                     |
+| gridLineStyle      | `solid|dashed`  | `solid` | This is an option to specify whether the grid lines should be drawn using the 'solid' or 'dashed' line style.            |
+| optimiseSquareSize | `boolean`       | `true`  | Ensure that the grid square size are rounded to integers. This could impact the sharpness of the drawn grid content.     |
+| sharedAxisZero     | `boolean`       | `true`  | If both the X & Y Axis' start at 0, they can share the zero rather than painting two zeroes                              |
+| strict             | `boolean`       | `false` | This mode enforces the drawn grid to be as close as possible to using squares as grid cells.                             |
+    

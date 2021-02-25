@@ -9,6 +9,10 @@
  * @email <alexander.fedotov.uk@gmail.com>
  */
 
+export function rgba(hex, opacity) {
+    return hex.replace(")", `,${parseFloat((opacity / 100).toFixed(2))})`);
+}
+
 export default {
     schemes: {
         s1: ["#7fc97f", "#beaed4", "#fdc086"],

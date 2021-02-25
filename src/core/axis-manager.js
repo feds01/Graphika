@@ -7,7 +7,7 @@
  *
  * */
 import config from "./config"
-import * as utils from "../general"
+import {rgba} from "./../utils/colours";
 import * as arrays from "../utils/arrays"
 import Axis, {AxisType} from "./axis"
 
@@ -37,7 +37,7 @@ class AxisManager {
         // if the graph has a zero scale setting, and the y-scale first element is a 0
         // (excluding negative scales), don't draw the 0 on the first tick and remove it from
         // scaleNumbers for the time being.
-        if (this.graph.gridOptions.sharedAxisZero &&
+        if (this.graph.options.grid.sharedAxisZero &&
             this.scaleNumbers.x.indexOf("0") === 0 &&
             this.scaleNumbers.y.indexOf("0") === 0) {
             this.sharedAxisZero = true;
@@ -57,7 +57,7 @@ class AxisManager {
         }
 
         // get the context ready to draw
-        this.graph.ctx.strokeStyle = utils.rgba(this.options.axisColour, 60);
+        this.graph.ctx.strokeStyle = rgba(this.options.axisColour, 60);
         this.graph.ctx.lineWidth = config.gridLineWidth;
 
         this.yAxis.draw();

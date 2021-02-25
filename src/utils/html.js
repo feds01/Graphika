@@ -1,10 +1,5 @@
-export function isUndefOrNull(o) {
-  return typeof o === "undefined" || o === null;
-}
+import {isUndefOrNull} from "./object";
 
-export function rgba(hex, opacity) {
-  return hex.replace(")", `,${parseFloat((opacity / 100).toFixed(2))})`);
-}
 
 export function findObjectElements(id, options) {
   let element = document.getElementById(id);
@@ -57,10 +52,6 @@ export function findObjectElements(id, options) {
     );
   }
   return elementMap;
-}
-
-export function isUndefOrNaN(o) {
-  return isNaN(o) || typeof o === "undefined";
 }
 
 export function setupCanvas(canvas) {

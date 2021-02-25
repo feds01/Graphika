@@ -12,7 +12,7 @@
 
 import Scale from "./scale";
 import config from "./config";
-import * as utils from "../general";
+import { rgba } from "./../utils/colours";
 import * as arrays from "../utils/arrays";
 import { assert } from "./../utils/assert";
 import conversions from "../utils/conversions";
@@ -133,9 +133,8 @@ class Axis {
           : this.options.maxTicks,
       });
 
-
       // set the axis min and max
-      this.min = 0
+      this.min = 0;
       this.max = this.positveScale.range;
 
       /*
@@ -155,13 +154,10 @@ class Axis {
 
         // we'll need to overwrite the 'min' tick for this axis since in positive it will be 0
         this.min = -this.negativeScale.range;
-
       } else {
         this.scaleStep = this.positveScale.getScaleStep();
         this.start = this.positveScale.roundedMinimum;
       }
-
-
     } else {
       throw Error(`Graphika: Unrecognised Axis type '${this.type}'`);
     }
@@ -209,13 +205,13 @@ class Axis {
 
     // get the context ready to draw
     this.graph.ctx.lineWidth = config.gridLineWidth;
-    this.graph.ctx.strokeStyle = utils.rgba(this.options.axisColour, 60);
+    this.graph.ctx.strokeStyle = rgba(this.options.axisColour, 60);
 
     // Apply numerical conversion magic.
     // TODO: add configuration for exactly which axis' should use these conversions.
     let scaleNumericsToDraw = this.scaleLabels;
 
-    if (this.graph.scaleOptions.shorthandNumerics) {
+    if (this.graph.options.scale.shorthandNumerics) {
       scaleNumericsToDraw = scaleNumericsToDraw.map((numeric) => {
         // TODO: unhandled case where we have a float that is larger than log(n) > 1
         if (Number.isInteger(parseFloat(numeric))) {
@@ -238,32 +234,42 @@ class Axis {
       for (let number of scaleNumericsToDraw) {
         if (!(this.manager.sharedAxisZero && number.toString() === "0")) {
           let y_offset = offset * this.graph.gridRectSize.y;
-          let scale_offset = Math.ceil(
-            this.graph.ctx.measureText(number).width / 1.5
+
+          // let scale_offset = Math.ceil(
+          //   this.graph.ctx.measureText(number).width / 2
+          // );
+
+          // tick drawing
+          this.graph.drawer.horizontalLine(
+            this.graph.lengths.x_begin - 9,
+            this.graph.lengths.y_begin + y_offset,
+            9
           );
 
+          // draw the text
           this.graph.drawer.text(
             number,
-            this.graph.lengths.x_begin - 9 - scale_offset,
+            this.graph.lengths.x_begin - 9 - this.graph.padding.textPadding,
             this.graph.padding.top + this.graph.yLength - y_offset,
             config.scaleLabelFontSize,
-            this.options.axisColour
+            this.options.axisColour,
+            "right"
           );
           offset++;
         }
       }
     } else {
       this.graph.drawer.horizontalLine(
-        this.graph.lengths.x_begin,
+        this.graph.lengths.x_begin - 9,
         this.yStart,
-        this.graph.xLength
+        this.graph.xLength + 9
       );
 
       // We also need to draw a horizontal line at the bottom of the graph
       // if it includes a negative quadrant. We can check this by accessing the
       // manager.negativeScale constant, if so draw the horizontal line at the
       // bottom of the graph.
-      if (this.manager.negativeScale && !this.graph.gridOptions.gridded) {
+      if (this.manager.negativeScale && !this.graph.options.grid.gridded) {
         this.graph.drawer.horizontalLine(
           this.graph.lengths.x_begin,
           this.graph.yLength + this.graph.padding.top,
@@ -271,18 +277,27 @@ class Axis {
         );
       }
 
+      const scale_offset = this.graph.padding.textPadding + (this.graph.fontSize() / 2);
+
       for (let number of scaleNumericsToDraw) {
         // if sharedAxisZero isn't enabled and the number isn't zero, draw the number label
         if (!(this.manager.sharedAxisZero && number.toString() === "0")) {
           let x_offset = offset * this.graph.gridRectSize.x;
-          let scale_offset = this.graph.padding.top + this.graph.fontSize();
+
+          // draw the tick
+          this.graph.drawer.verticalLine(
+            this.graph.lengths.x_begin + x_offset,
+            this.graph.yLength + this.graph.padding.top,
+            9
+          );
 
           this.graph.drawer.text(
             number,
             this.graph.lengths.x_begin + x_offset,
-            this.graph.yLength + 9 + scale_offset,
+            this.graph.yLength + 9 + this.graph.padding.top + scale_offset,
             config.scaleLabelFontSize,
-            this.options.axisColour
+            this.options.axisColour,
+            "center"
           );
           offset++;
         }
@@ -290,6 +305,5 @@ class Axis {
     }
   }
 }
-
 
 export default Axis;
