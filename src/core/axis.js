@@ -97,7 +97,6 @@ class Axis {
 
   _computeAxisScale() {
     if (this.type === AxisType.X_AXIS) {
-      // TODO: at runtime we should be able to eat away some ticks that aren't utilised
       this.options.maxTicks = Math.min(
         this.graph.dataManager.maxLen(),
         config.xTicks
@@ -110,6 +109,7 @@ class Axis {
       });
 
       this.scaleStep = this.positveScale.getScaleStep();
+
     } else if (this.type === AxisType.Y_AXIS) {
       let positiveValues = arrays.positiveAndZeroValues(this.data);
 
@@ -168,7 +168,7 @@ class Axis {
 
     if (this.type === AxisType.X_AXIS) {
       this.scaleLabels = arrays
-        .fillRange(this.options.maxTicks)
+        .fillRange(this.positveScale.getTickCount() + 1)
         .map((x) => (this.positveScale.scaleStep * x).toString());
     } else {
       if (this.manager.negativeScale) {

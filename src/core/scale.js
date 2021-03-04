@@ -13,7 +13,7 @@
 import {isUndefOrNaN} from "./../utils/object";
 import * as arrays from "./../utils/arrays";
 import {assert} from "./../utils/assert";
-import {floor, round} from "./../utils/number";
+import {floor, round, clamp} from "./../utils/number";
 
 class Scale {
     constructor(options) {
@@ -64,6 +64,10 @@ class Scale {
         while (range < round(this.scaleStep * (this.tickCount - 1) + initialTick, precision)) {
             this.tickCount -= 1;
         }
+
+        console.log(this.tickCount);
+
+
         this.generateScaleLabels();
     }
 
@@ -71,14 +75,14 @@ class Scale {
         this.range = Scale.niceNum(this.max - this.min, false);
         this.scaleStep = Scale.niceNum(this.range / (this.tickCount - 1), true);
         this.roundedMinimum = Math.floor(this.min / this.scaleStep) * this.scaleStep;
-
         this.generateScaleLabels();
     }
 
     generateScaleLabels() {
         const logarithmicScaleStep = Math.log((this.scaleStep));
-        const precision = Math.floor(Math.abs(logarithmicScaleStep));
+        const precision = Math.abs(Math.floor(logarithmicScaleStep));
 
+      
         // fill array with labels.
         this.scaleLabels = arrays.fillRange(this.tickCount + 1).map(x => {
             let scaleLabel  = this.roundedMinimum + (x * this.scaleStep);
@@ -91,7 +95,7 @@ class Scale {
                     return scaleLabel.toFixed(precision);
                 }
 
-                return scaleLabel.toPrecision(precision).slice(0, 2 + precision);
+                return scaleLabel; //.toPrecision(precision); //.slice(0, 2 + precision);
             }
 
             return scaleLabel;
