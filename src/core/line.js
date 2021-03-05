@@ -9,7 +9,7 @@
  */
 
 import Point from "./point";
-import config from "./config";
+import config from "./../config"
 import { rgba } from "./../utils/colours";
 import { splineCurve } from "./interpolation";
 import * as arrays from "./../utils/arrays";

@@ -25,17 +25,18 @@ module.exports = [
     // dist/graphika.js
     {
         input: input,
-        plugins: [
-            resolve(),
-            commonjs()
-        ],
         output: {
             name: "Graph",
             file: "dist/graphika.js",
             banner: banner,
             format: "umd",
-            indent: false
-        }
+            indent: false,
+            sourcemap: true,
+        },
+        plugins: [
+            resolve(),
+            commonjs()
+        ],
     },
     {
         input: input,
