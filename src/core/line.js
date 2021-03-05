@@ -297,8 +297,11 @@ class Line {
 
     // if point annotation is enabled, draw the points.
     if (this.options.annotatePoints) {
-      this.points.forEach((point) => {
-        if ((point.data.x / this.graph.axisManager.xAxisTickStep) % 1 === 0) {
+      this.points.forEach((point, index) => {
+        if (
+          index == this.points.length - 1 ||
+          (point.data.x / this.graph.axisManager.xAxisTickStep) % 1 === 0) 
+        {
           point.draw();
         }
       });

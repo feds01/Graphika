@@ -85,8 +85,13 @@ class Axis {
       this.positveScale = new Scale({
         min: 0,
         max: this.graph.dataManager.maxLen() - 1,
-        tickCount: this.options.ticks,
+
+        // Subtract one here since we are counting the axis as a tick as well
+        tickCount: this.options.ticks - 1,
+
+        // bound the minimum step to one!
         minimumScaleStep: 1,
+      
         optimiseTicks: this.options.optimiseTicks,
       });
 
