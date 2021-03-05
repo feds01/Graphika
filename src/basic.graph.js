@@ -9,17 +9,21 @@ import Line from "./core/line";
 import Drawer from "./core/drawing";
 import AxisManager from "./core/axis-manager";
 import DataManager from "./core/data-manager";
+import LegendManager from "./legends/manager";
 
 /**
  * @since v0.0.1 Default values for options within the object, however this will
  * soon be phased out in favour of core/config * */
 const defaultConfig = {
+  
+  // general graph settings
   x_label: "",
   y_label: "",
   title: "Graph",
   title_pos: "top-center",
   padding: 14,
 
+  // default grid settings
   grid: {
     gridded: true,
     gridLineStyle: "solid",
@@ -27,6 +31,8 @@ const defaultConfig = {
     sharedAxisZero: true,
     strict: false,
   },
+
+  // default scale settings
   scale: {
     shorthandNumerics: false,
     x: {
@@ -46,33 +52,52 @@ const defaultConfig = {
       axisColour: config.axisColour
     },
   },
+
+  // default legend settings
+  legend: {
+    draw: false,
+    position: "top",
+    alignment: "center"
+  }
+
 }; // TODO: create a validation schema function
 
 /**
  * Class that represent the basis graph drawing option
  */
 class BasicGraph {
-  constructor(id, options, data) {
-    /**
+   /**
      * @since v0.0.1 The id of the html container that the graph should
      * be drawn within * */
-    this.id = id;
+    id;
 
     /**
      * @since v0.0.1 Graph options, this contain x-labels, y-label, tittle, legends, points
      * style, gridded, etc. More on graph options can be read in the documentation * */
-    this.options = defaultConfig;
+    options;
 
     /**
      * @since v0.0.1 DataManager object which contains the data for the lines the graph should
      * plot, the object also contains various utility functions to fetch stats on the data. * */
-    this.dataManager = new DataManager(data);
+    dataManager;
 
-    /**
-     *  @since v0.0.1 This is the font size of the labels, initially it is set to 0, later on it is set if
+     /*
+     * This is the font size of the labels, initially it is set to 0, later on it is set if
      * the labels are not empty strings or null.
      * */
-    this.labelFontSize = 0;
+     labelFontSize;
+
+     /*
+     * @since v0.0.1 AxisManager object is a manager class for the Axis objects of this Graph object,
+     * The AxisManager contains the xAxis & yAxis objects, it also handles the synchronisation of scales &
+     * negative axis modes.
+     * */
+    axisManager;
+
+ 
+  constructor(id, options, data) {
+    this.id = id;
+    this.dataManager = new DataManager(data);
 
     // This is the global 'options' object for the whole settings range including grid, scale and
     // general settings.
@@ -88,19 +113,26 @@ class BasicGraph {
     this.drawer = new Drawer(this.canvas, this.ctx);
     this.drawer.toTextMode(16, this.options.axisColour);
 
+
+    this.labelFontSize = 0;
+
     // if no labels provided, they are disabled as in no room is provided
     // for them to be drawn.
     if (this.options.y_label !== "" && this.options.x_label !== "") {
       this.labelFontSize = this.fontSize();
     }
 
-    /**
-     * @since v0.0.1 AxisManager object is a manager class for the Axis objects of this Graph object,
-     * The AxisManager contains the xAxis & yAxis objects, it also handles the synchronisation of scales &
-     * negative axis modes.
-     * */
     this.axisManager = new AxisManager(this);
 
+
+    // check if we need to draw the legend for this graph.
+    if (this.options.legend.draw) {
+      this.legendManager = new LegendManager(this, this.dataManager.generateLegendInfo(), this.options.legend);
+    } else {
+      this.legendManager = null;
+    }
+
+    // initial padding configuration
     this.padding = {
       top: this.options.padding,
       left: null,
@@ -205,7 +237,7 @@ class BasicGraph {
     this.ctx.lineWidth = config.gridLineWidth;
     this.ctx.strokeStyle = rgba(config.axisColour, 40);
 
-    this.ctx.setLineDash(this.options.grid.gridLineStyle === "dashed" ? [5, 5] : []); // TODO: Assert fail if line style is not dashed 
+    this.ctx.setLineDash(this.options.grid.gridLineStyle === "dashed" ? [5, 5] : []);
     
     // get the number of ticks on the axis
     const xTicks = this.axisManager.xAxisTickCount;
@@ -318,6 +350,11 @@ class BasicGraph {
     );
   }
 
+
+  /**
+   * Method that draws the whole graph, computing all pre-requisites and then invoking
+   * draw on children components.
+   *  */
   draw() {
     // clear the rectangle and reset colour
     this.ctx.clearRect(0, 0, this.drawer.width, this.drawer.height);
@@ -370,6 +407,9 @@ class BasicGraph {
 
     /* Draw the Grid on the Graph lines & axis ticks, if enabled */
     this._drawAxisGrid();
+
+    /* Draw the legend if it is enabled */
+    this.legendManager?.draw();
 
     /* Draw the data sets on the graph, using the provided dataset configurations  */
     this._drawData();

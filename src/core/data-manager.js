@@ -52,13 +52,18 @@ class DataManager {
         return Math.min(...this.data.map(x => x.data.length));
     }
 
-    // max() {
-    //     return arrays.getMax(new Float64Array([]).push.apply([], this.data.map(x => x.data)));
-    // }
-
-    // min() {
-    //     return arrays.getMin([].push.apply([], this.data.map(x => x.data)));
-    // }
+    /**
+     *  Generate legend data from the provided line configurations
+     * 
+     * @return {{style: string, colour: string, label: string}[]} An array representing 
+     *  */
+    generateLegendInfo() {
+        return this.data.map((item) => ({
+            label: item.label,
+            colour: item.colour,
+            style: item.style ?? "solid",
+        }));
+    }
 
     colourList() {
         return this.data.map(x => x.colour);
