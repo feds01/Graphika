@@ -77,6 +77,7 @@ class BasicGraph {
     // general settings.
     this.options = merge(defaultConfig, options);
 
+
     // find canvas element and tittle element.
     const { canvas } = utils.findObjectElements(this.id, this.options);
 

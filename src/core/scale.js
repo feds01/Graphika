@@ -47,13 +47,20 @@ class Scale {
         // initial calculation before tick optimisations
         this.calculate();
 
-        // recalculate to get proper tick range
-        while (this.scaleStep * this.tickCount > this.range) {
+         // recalculate to get proper tick range if there is an underflow
+         while (this.scaleStep * this.tickCount > this.range) {
             this.tickCount -= 1;
         }
+
+        // avoid too little ticks if the user didn't strictly specify so many ticks.
+        while (this.scaleStep * this.tickCount < (this.max - this.min)) {
+            this.tickCount += 1;
+        }
+
         this.calculate();
 
         if (this.optimiseTicks) {
+    
             // reduction by checking if data is present within the 'tick' area. If not, we simply reduce
             // the tick count until it reaches a tick that's in use. We don't re-calculate every single
             // time because this will change the 'scaleStep' value and therefore lead to an infinite reduction loop.
