@@ -11,19 +11,11 @@
  */
 
 import Scale from "./scale";
-import config from "./config";
+import config from "./../config";
 import { rgba } from "./../utils/colours";
 import * as arrays from "../utils/arrays";
 import { assert } from "./../utils/assert";
 import conversions from "../utils/conversions";
-
-const defaultOptions = {
-  minTicks: 10,
-  maxTicks: 20,
-  drawNotches: true,
-  drawNumbers: true,
-  startAtZero: true,
-};
 
 export const AxisType = {
   X_AXIS: "x-axis",
@@ -46,19 +38,9 @@ class Axis {
     this.positveScale = null;
     this.negativeScale = null;
 
-    // fill in missing option values with default values
-    for (let option of Object.keys(defaultOptions)) {
-      if (this.options[option] === undefined) {
-        this.options[option] = defaultOptions[option];
-      }
-    }
-
     // Ensure that minTicks & maxTicks don't overflow and aren't negative, otherwise they would cause a
     // DivisionByZero or Infinity issues
-    assert(
-      this.options.maxTicks > 0 && this.options.minTicks > 0,
-      "Max/Min ticks cannot be 0 or negative"
-    );
+    assert(this.options.ticks > 0, `${this.type} cannot have zero or negative tick count`);
 
     this._computeAxisScale();
     this.generateScaleNumbers();
@@ -87,7 +69,7 @@ class Axis {
       // The zero index must not be '-1' or in other words, not found.
       assert(
         zeroIndex !== -1,
-        `couldn't find the '0' scale position in Axis{${this.type}}`
+        `couldn't find the '0' scale position on the {${this.type}}`
       );
 
       this.yStart =
@@ -97,19 +79,24 @@ class Axis {
 
   _computeAxisScale() {
     if (this.type === AxisType.X_AXIS) {
-      // TODO: at runtime we should be able to eat away some ticks that aren't utilised
-      this.options.maxTicks = Math.min(
-        this.graph.dataManager.maxLen(),
-        config.xTicks
-      );
 
+      // we want to set the minimum scale step to 1 since we don't care about numerics on this
+      // axis scale.
       this.positveScale = new Scale({
         min: 0,
         max: this.graph.dataManager.maxLen() - 1,
-        tickCount: this.options.maxTicks,
+
+        // Subtract one here since we are counting the axis as a tick as well
+        tickCount: this.options.ticks - 1,
+
+        // bound the minimum step to one!
+        minimumScaleStep: 1,
+      
+        optimiseTicks: this.options.optimiseTicks,
       });
 
       this.scaleStep = this.positveScale.getScaleStep();
+
     } else if (this.type === AxisType.Y_AXIS) {
       let positiveValues = arrays.positiveAndZeroValues(this.data);
 
@@ -118,10 +105,11 @@ class Axis {
           .negativeValues(this.data)
           .map((x) => Math.abs(x));
         // divide the max ticks by two since negative and positive are sharing the scale.
+        
         this.negativeScale = new Scale({
           min: 0,
           max: arrays.getMax(negativeDataSet),
-          tickCount: this.options.maxTicks / 2,
+          tickCount: this.options.ticks / 2,
           isNegativeScale: true,
         });
       }
@@ -129,8 +117,8 @@ class Axis {
       this.positveScale = new Scale({
         ...arrays.getMinMax(positiveValues),
         tickCount: this.manager.negativeScale
-          ? this.options.maxTicks / 2
-          : this.options.maxTicks,
+          ? this.options.ticks / 2
+          : this.options.ticks,
       });
 
       // set the axis min and max
@@ -167,9 +155,23 @@ class Axis {
     this.scaleLabels = [];
 
     if (this.type === AxisType.X_AXIS) {
-      this.scaleLabels = arrays
-        .fillRange(this.options.maxTicks)
-        .map((x) => (this.positveScale.scaleStep * x).toString());
+
+
+      // if the user has provided custom labels to use instead of the auto
+      // generated ones, we use those instead. In the event that the user 
+      // provides less labels than the number of ticks, we will just fill
+      // it in by copying in the provided labels.
+      if (Array.isArray(this.options.tickLabels) && this.options.drawLabels) {
+        assert(this.options.tickLabels.length > 0);
+
+        this.scaleLabels = this.positveScale.getScaleLabels().map((_, index) => {
+            return this.options.tickLabels[index % this.options.tickLabels.length];
+        });
+      } else {
+        this.scaleLabels = arrays
+          .fillRange(this.positveScale.getTickCount() + 1)
+          .map((x) => (this.positveScale.scaleStep * x).toString());
+      }
     } else {
       if (this.manager.negativeScale) {
         this.scaleLabels = this.negativeScale.getScaleLabels(true, true);
@@ -234,10 +236,6 @@ class Axis {
       for (let number of scaleNumericsToDraw) {
         if (!(this.manager.sharedAxisZero && number.toString() === "0")) {
           let y_offset = offset * this.graph.gridRectSize.y;
-
-          // let scale_offset = Math.ceil(
-          //   this.graph.ctx.measureText(number).width / 2
-          // );
 
           // tick drawing
           this.graph.drawer.horizontalLine(
