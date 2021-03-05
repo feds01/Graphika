@@ -30,7 +30,7 @@ class Scale {
         this.range = 0;
 
         /* flag to denote if scale is working with negatives. */
-        this.isNegativeScale = false;
+        this.isNegativeScale = options.isNegativeScale ?? false;
 
         /* Target number of ticks on the axis which will be displayed. * */
         this.tickCount = options.tickCount;
@@ -38,7 +38,6 @@ class Scale {
         /* Boolean flag to denote whether or not to optimise tick count */
         this.optimiseTicks = options.optimiseTicks ?? true;
 
-        this.isNegativeScale = options.isNegativeScale ? options.isNegativeScale : false;
         this.scaleLabels = [];
         this.scaleStep = 0;
 
