@@ -30,7 +30,7 @@
  * @email <alexander.fedotov.uk@gmail.com>
  */
 
-import config from "./config";
+ import config from "./../config"
 import {assert} from "./../utils/assert";
 
 class Point {
