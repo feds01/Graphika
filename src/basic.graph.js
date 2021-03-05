@@ -1,4 +1,4 @@
-import config from "./core/config";
+import config from "./config";
 import { merge } from "./utils/object";
 import colours, { rgba } from "./utils/colours";
 import { assert } from "./utils/assert";
@@ -29,6 +29,22 @@ const defaultConfig = {
   },
   scale: {
     shorthandNumerics: false,
+    x: {
+      ticks: 10,
+      optimiseTicks: true,
+      drawTicks: true,
+      drawLabels: true,
+      labelDirection: "horizontal",
+      axisColour: config.axisColour,
+      tickLabels: null,
+    },
+    y: {
+      ticks: 10,
+      drawTicks: true,
+      drawLabels: true,
+      startAtZero: false,
+      axisColour: config.axisColour
+    },
   },
 }; // TODO: create a validation schema function
 
@@ -61,6 +77,7 @@ class BasicGraph {
     // This is the global 'options' object for the whole settings range including grid, scale and
     // general settings.
     this.options = merge(defaultConfig, options);
+
 
     // find canvas element and tittle element.
     const { canvas } = utils.findObjectElements(this.id, this.options);
@@ -190,16 +207,19 @@ class BasicGraph {
 
     this.ctx.setLineDash(this.options.grid.gridLineStyle === "dashed" ? [5, 5] : []); // TODO: Assert fail if line style is not dashed 
     
-    // grid drawing
-    const xMaxTicks = Math.min(this.dataManager.maxLen(), config.xTicks);
+    // get the number of ticks on the axis
+    const xTicks = this.axisManager.xAxisTickCount;
+    const yTicks = this.axisManager.yAxisTickCount;
+
+    // TODO: are we drawing the ticks?
     const y_len = this.options.grid.gridded ? 9 + this.yLength : 9;
     const x_len = this.options.grid.gridded ? 9 + this.xLength : 9;
 
     let offset = 0;
 
-    while (offset <= Math.max(this.axisManager.yAxisScaleNumbers.length - 1, xMaxTicks)) {
+    while (offset <= Math.max(yTicks - 1, xTicks)) {
       // The X-Axis drawing
-      if (offset < xMaxTicks) {
+      if (offset < xTicks) {
         let x_offset = offset * this.gridRectSize.x;
 
         this.drawer.verticalLine(
@@ -273,13 +293,26 @@ class BasicGraph {
   }
 
   calculatePadding() {
-    let longestItem = arrays.longest(this.axisManager.joinedScaleNumbers);
+    const longestItem = arrays.longest(this.axisManager.joinedScaleNumbers);
 
     // Set the config font size of axis labels, and then we can effectively 'measure' the width of the text
     this.drawer.toTextMode(config.axisLabelFontSize, config.axisColour);
     this.padding.left = Math.ceil(
       this.options.padding + this.ctx.measureText(longestItem).width
     );
+
+    
+    // get last label on x-axis
+    const lastItemOnXAxis = this.axisManager.xAxis.scaleLabels[this.axisManager.xAxis.scaleLabels.length - 1];
+
+    this.padding.right = Math.ceil(
+      this.options.padding + this.ctx.measureText(lastItemOnXAxis).width
+    );
+
+
+    // measure the right padding to determine if we need to add padding to
+    // fit in the last scale label if it goes out of bounds.
+
     this.padding.bottom = Math.ceil(
       this.options.padding + this.labelFontSize + this.fontSize()
     );
@@ -327,8 +360,7 @@ class BasicGraph {
     this.calculateLengths();
 
     // TODO: this should be used as a general form for the Y-Axis length of the graph.
-    this.yLength =
-      (this.axisManager.yAxisScaleNumbers.length - 1) * this.gridRectSize.y;
+    this.yLength = (this.axisManager.yAxisScaleNumbers.length - 1) * this.gridRectSize.y;
 
     /* Draw our Axis', including negative scales & scale labels */
     this.axisManager.draw();

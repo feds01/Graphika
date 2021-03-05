@@ -23,6 +23,7 @@ export function clamp(num, min, max) {
  */
 export function round(num, bound) {
     assert(Number.isInteger(bound), "round function accepts only integer decimal places");
+    assert(bound > 0, "Round boundary must be non-zero positive.");
 
     return Math.round((num / bound) + Number.EPSILON) * bound;
 }
