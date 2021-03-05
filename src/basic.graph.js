@@ -32,16 +32,17 @@ const defaultConfig = {
     x: {
       ticks: 10,
       optimiseTicks: true,
-      drawNotches: true,
+      drawTicks: true,
       drawLabels: true,
-      direction: "horizontal",
-      axisColour: config.axisColour
+      labelDirection: "horizontal",
+      axisColour: config.axisColour,
+      tickLabels: null,
     },
     y: {
       ticks: 10,
-      drawNotches: true,
+      drawTicks: true,
       drawLabels: true,
-      startAtZero: true,
+      startAtZero: false,
       axisColour: config.axisColour
     },
   },
