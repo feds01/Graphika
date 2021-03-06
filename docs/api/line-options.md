@@ -15,7 +15,7 @@ From this sample, it's easy to see how someone could configure the line options 
             {
                 label: 'student_1',
                 data: getRandomArray(11, 0, 20),
-                colour: Graph.Colours.FLAMINGO_PINK
+                colour: Graph.Colours.FLAMINGO_RED
                 ...
             },
             ...
