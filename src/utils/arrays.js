@@ -1,13 +1,20 @@
-/*
- * fills an empty array from 0 to max with integers and then returns the new array.
+/**
+ * fills an empty array from 0 to size with integers and then returns the new array.
+ * 
+ * @param {number} size Fill the array up to the given size
+ * @returns array with numbers 0 up to size
  * */
-export function fillRange(max) {
-  return Array.from(Array(max).keys());
+export function fillRange(size) {
+  return Array.from(Array(size).keys());
 }
 
-/*
+/**
  * Returns the longest string within a given array. It does not return the actual length
  * of the longest item, just the longest item.
+ * 
+ * @param {Array<string>} arr Array of strings to find the longest item
+ * 
+ * @returns Longest string from the array
  * */
 export function longest(arr) {
   return arr.reduce((a, b) => {
@@ -15,41 +22,65 @@ export function longest(arr) {
   });
 }
 
-/*
+/**
  * Get the previous element of an array, this method is created for safety, if the
  * given index is zero or less than zero, the function will return the element at zero
- * rather than undefined. * */
+ * rather than undefined. 
+ * 
+ * @param {Number} index Current position in the array
+ * @param {Array<*>} data The array to index for the previous item
+ * 
+ * @returns the previous item from the array, the same one if the index is 0
+ * */
 export function getPrevious(index, data) {
   return index <= 0 ? data[0] : data[index - 1];
 }
 
-/*
+/**
  * Get the next element of an array, this method is also a safety wrapper function, if the
  * given index is equal to the length of the array - 1, or larger, return the last element
- * of the array, rather than undefined. * */
-export function getNext(index, data) {
-  return index >= data.length - 1 ? data[data.length - 1] : data[index + 1];
+ * of the array, rather than undefined. 
+ * 
+ * @param {Number} index Current position in the array
+ * @param {Array<*>} arr The array to index for the next item
+ * 
+ * @returns the previous item from the array, the same one if the index is length of the array
+ * */
+export function getNext(index, arr) {
+  return arr[index >= arr.length - 1 ? arr.length - 1 : index + 1];
 }
 
-/*
+/**
  * Get all only negative values from a given array.
+ * 
+ * @param {Array<Number>} arr The array to filter out positive and zero values from.
+ * 
+ * @returns Negative only items
  * */
-export function negativeValues(array) {
-  return array.filter(function (value) {
+export function negativeValues(arr) {
+  return arr.filter(function (value) {
     return value < 0;
   });
 }
 
-/*
-    // Get all unique values from a given array.
-    */
-export function uniqueValues(array) {
-  return new Set(array);
+/**
+ * Get all unique values from a given array.
+ * 
+ * @param {Array<*>} arr The array to convert into a set
+ * 
+ * @returns the set of the array
+ */
+export function uniqueValues(arr) {
+  return new Set(arr);
 }
 
 /**
  * Function to get maximum element within array, we don't want to
  * use Math.max if it is a large array
+ * 
+ * @param {Array<Number>} arr Source array
+ * 
+ * @returns largest number in the array
  */
 export function getMax(arr) {
   let len = arr.length;
@@ -64,6 +95,10 @@ export function getMax(arr) {
 /**
  * Function to get maximum element within array, we don't want to
  * use Math.max if it is a large array
+ * 
+ * @param {Array<Number>} arr Source array
+ * 
+ * @returns smallest number in the array
  */
 export function getMin(arr) {
   let len = arr.length;
@@ -75,6 +110,15 @@ export function getMin(arr) {
   return min;
 }
 
+/**
+ * Function to get maximum and minimum element within array, this will get both elements
+ * within a single iteration of the array instead of calling both min and max and doing
+ * double the work.
+ * 
+ * @param {Array<Number>} arr Source array
+ * 
+ * @returns smallest and largest numbers within the array
+ */
 export function getMinMax(arr) {
   let min = arr[0];
   let max = arr[0];
@@ -87,8 +131,23 @@ export function getMinMax(arr) {
   return { min, max };
 }
 
+/**
+ * Array sum function
+ * 
+ * @param {Array<Number>} arr Number array to be summed.
+ * @returns sum of the array
+ */
+export function sum(arr) {
+  return arr.reduce((a, b) => a + b, 0);
+}
 
-// Get all only positive and zero values from a given array.
+/**
+ * Get all only positive and zero values from a given array.
+ * 
+ * @param {Array<Number>} array The array that is to be filtered
+ * 
+ * @returns the array with only natural numbers
+ *  */
 export function positiveAndZeroValues(array) {
   return array.filter((value) => value >= 0);
 }

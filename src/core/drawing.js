@@ -16,9 +16,10 @@ import {assert} from "./../utils/assert";
 const TWO_PI = Math.PI * 2;
 
 class Drawer {
-    constructor(canvas, context) {
+    constructor(canvas, context, options) {
         this.canvas = canvas;
         this.context = context;
+        this.options = options;
     }
 
     _coordinateSafetyCheck(x, y) {
@@ -37,7 +38,7 @@ class Drawer {
     }
 
     horizontalLine(x, y, len) {
-        this._coordinateSafetyCheck(x, y);
+        this._coordinateSafetyCheck(x, y); // @Speed: remove this from production?
         assert((x + len) >= 0 && (x + len) <= this.canvas.width);
 
         this.context.beginPath();
@@ -48,7 +49,7 @@ class Drawer {
     }
 
     verticalLine(x, y, len) {
-        this._coordinateSafetyCheck(x, y);
+        this._coordinateSafetyCheck(x, y); // @Speed: remove this from production?
         assert((y + len) >= 0 && (y + len) <= this.canvas.width);
 
         this.context.beginPath();
@@ -72,10 +73,29 @@ class Drawer {
      * */
     toTextMode(size, colour, alignment) {
         this.context.strokeStyle = colour;
+        this.context.fillStyle = colour;
+
+        // reset global alpha
+        this.context.globalAlpha = 1.0;
+
         this.context.textAlign = alignment;
-        this.context.font = `${size}px "Robot Mono", monospace`;
+        this.context.font = `${size}px ` + this.options.labelFont;
     }
 
+    /**
+     * @since v0.0.1 
+     * Function to draw text on the canvas at a given location with a particular
+     * colour and alignment.
+     * 
+     * @param {string} text the actual label
+     * @param {number} x x-coordinate of where to draw the string
+     * @param {number} y x-coordinate of where to draw the string
+     * @param {Number} size The font size of the text
+     * @param {String} colour RGBA style colour string
+     * @param {String} alignment One of the specified alignments for text
+     * 
+     * @returns nothing, just changes the drawing context
+     * */
     text(text, x, y, size, colour, alignment = "center") {
         this._coordinateSafetyCheck(x, y);
 
@@ -86,7 +106,6 @@ class Drawer {
 
         // restore old colour
         this.context.strokeStyle = oldColour;
-
     }
 
     get width() { return this.canvas.width; }

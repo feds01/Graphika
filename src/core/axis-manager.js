@@ -84,7 +84,7 @@ class AxisManager {
             this.graph.drawer.text("0",
                 this.graph.lengths.x_begin - this.graph.options.padding,
                 this.graph.yLength + this.graph.padding.top + this.graph.fontSize(),
-                14, config.axisColour
+                12, config.axisColour
             );
         }
 
