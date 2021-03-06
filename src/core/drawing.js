@@ -74,6 +74,9 @@ class Drawer {
         this.context.strokeStyle = colour;
         this.context.fillStyle = colour;
 
+        // reset global alpha
+        this.context.globalAlpha = 1;
+
         this.context.textAlign = alignment;
         this.context.font = `${size}px "Robot Mono", monospace`;
     }
