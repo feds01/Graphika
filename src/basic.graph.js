@@ -9,7 +9,7 @@ import Line from "./core/line";
 import Drawer from "./core/drawing";
 import AxisManager from "./core/axis-manager";
 import DataManager from "./core/data-manager";
-import LegendManager from "./legends/manager";
+import LegendManager from "./legend/manager";
 
 /**
  * @since v0.0.1 Default values for options within the object, however this will
@@ -220,12 +220,12 @@ class BasicGraph {
 
       // check if we need to offset the x-label
       if (this.options.legend.draw && this.legendManager.position == LegendManager.Pos.BOTTOM) {
-        labelXOffset = this.legendManager.getRequiredSpace();
+        labelXOffset = this.legendManager.requiredSpace;
       }
 
       // check if we need to offset the y-label
       if (this.options.legend.draw && this.legendManager.position == LegendManager.Pos.LEFT) {
-        labelYOffset = this.legendManager.getRequiredSpace();
+        labelYOffset = this.legendManager.requiredSpace;
       }
     
       // add x-axis label
@@ -365,7 +365,7 @@ class BasicGraph {
 
     // apply legened padding if legends are enabled
     if (this.options.legend.draw) {
-      this.padding[this.legendManager.position] += this.legendManager.getRequiredSpace();
+      this.padding[this.legendManager.position] += this.legendManager.requiredSpace;
     }
   }
 

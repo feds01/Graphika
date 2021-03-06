@@ -72,10 +72,26 @@ class Drawer {
      * */
     toTextMode(size, colour, alignment) {
         this.context.strokeStyle = colour;
+        this.context.fillStyle = colour;
+
         this.context.textAlign = alignment;
         this.context.font = `${size}px "Robot Mono", monospace`;
     }
 
+    /**
+     * @since v0.0.1 
+     * Function to draw text on the canvas at a given location with a particular
+     * colour and alignment.
+     * 
+     * @param {string} text the actual label
+     * @param {number} x x-coordinate of where to draw the string
+     * @param {number} y x-coordinate of where to draw the string
+     * @param {Number} size The font size of the text
+     * @param {String} colour RGBA style colour string
+     * @param {String} alignment One of the specified alignments for text
+     * 
+     * @returns nothing, just changes the drawing context
+     * */
     text(text, x, y, size, colour, alignment = "center") {
         this._coordinateSafetyCheck(x, y);
 
