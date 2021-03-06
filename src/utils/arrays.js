@@ -2,7 +2,7 @@
  * fills an empty array from 0 to size with integers and then returns the new array.
  * 
  * @param {number} size Fill the array up to the given size
- * @returns array with numbers 0 up to size
+ * @returns {Array<number>} array with numbers 0 up to size
  * */
 export function fillRange(size) {
   return Array.from(Array(size).keys());
@@ -14,7 +14,7 @@ export function fillRange(size) {
  * 
  * @param {Array<string>} arr Array of strings to find the longest item
  * 
- * @returns Longest string from the array
+ * @returns {string} Longest string from the array
  * */
 export function longest(arr) {
   return arr.reduce((a, b) => {
@@ -27,10 +27,11 @@ export function longest(arr) {
  * given index is zero or less than zero, the function will return the element at zero
  * rather than undefined. 
  * 
+ * @template T
  * @param {Number} index Current position in the array
- * @param {Array<*>} data The array to index for the previous item
+ * @param {Array<T>} data The array to index for the previous item
  * 
- * @returns the previous item from the array, the same one if the index is 0
+ * @returns {T} the previous item from the array, the same one if the index is 0
  * */
 export function getPrevious(index, data) {
   return index <= 0 ? data[0] : data[index - 1];
@@ -41,10 +42,11 @@ export function getPrevious(index, data) {
  * given index is equal to the length of the array - 1, or larger, return the last element
  * of the array, rather than undefined. 
  * 
+ * @template T
  * @param {Number} index Current position in the array
- * @param {Array<*>} arr The array to index for the next item
+ * @param {Array<T>} arr The array to index for the next item
  * 
- * @returns the previous item from the array, the same one if the index is length of the array
+ * @returns {T} the previous item from the array, the same one if the index is length of the array
  * */
 export function getNext(index, arr) {
   return arr[index >= arr.length - 1 ? arr.length - 1 : index + 1];
@@ -53,9 +55,9 @@ export function getNext(index, arr) {
 /**
  * Get all only negative values from a given array.
  * 
- * @param {Array<Number>} arr The array to filter out positive and zero values from.
+ * @param {Array<number>} arr The array to filter out positive and zero values from.
  * 
- * @returns Negative only items
+ * @returns {Array<number>} Negative only items
  * */
 export function negativeValues(arr) {
   return arr.filter(function (value) {
@@ -68,7 +70,7 @@ export function negativeValues(arr) {
  * 
  * @param {Array<*>} arr The array to convert into a set
  * 
- * @returns the set of the array
+ * @returns {Set<*>} the set of the array
  */
 export function uniqueValues(arr) {
   return new Set(arr);
@@ -80,7 +82,7 @@ export function uniqueValues(arr) {
  * 
  * @param {Array<Number>} arr Source array
  * 
- * @returns largest number in the array
+ * @returns {Number} largest number in the array
  */
 export function getMax(arr) {
   let len = arr.length;
@@ -98,7 +100,7 @@ export function getMax(arr) {
  * 
  * @param {Array<Number>} arr Source array
  * 
- * @returns smallest number in the array
+ * @returns {Number} smallest number in the array
  */
 export function getMin(arr) {
   let len = arr.length;
@@ -117,7 +119,7 @@ export function getMin(arr) {
  * 
  * @param {Array<Number>} arr Source array
  * 
- * @returns smallest and largest numbers within the array
+ * @returns {{min: Number, max: Number}} smallest and largest numbers within the array
  */
 export function getMinMax(arr) {
   let min = arr[0];
@@ -135,7 +137,7 @@ export function getMinMax(arr) {
  * Array sum function
  * 
  * @param {Array<Number>} arr Number array to be summed.
- * @returns sum of the array
+ * @returns {Number} sum of the array
  */
 export function sum(arr) {
   return arr.reduce((a, b) => a + b, 0);
@@ -146,7 +148,7 @@ export function sum(arr) {
  * 
  * @param {Array<Number>} array The array that is to be filtered
  * 
- * @returns the array with only natural numbers
+ * @returns {Array<Number>} the array with only natural numbers
  *  */
 export function positiveAndZeroValues(array) {
   return array.filter((value) => value >= 0);
