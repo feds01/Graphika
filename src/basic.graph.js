@@ -15,6 +15,9 @@ import LegendManager from "./legend/manager";
  * @since v0.0.1 Default values for options within the object, however this will
  * soon be phased out in favour of core/config * */
 const defaultConfig = {
+
+  // internal settings
+  debug: false,
   
   // general graph settings
   x_label: "",
@@ -22,6 +25,8 @@ const defaultConfig = {
   title: "Graph",
   title_pos: "top-center",
   padding: 14,
+
+  labelFont: `"Roboto Mono", monospace`,
 
   // default grid settings
   grid: {
@@ -85,7 +90,7 @@ class BasicGraph {
      * This is the font size of the labels, initially it is set to 0, later on it is set if
      * the labels are not empty strings or null.
      * */
-     labelFontSize;
+    labelFontSize;
 
      /*
      * @since v0.0.1 AxisManager object is a manager class for the Axis objects of this Graph object,
@@ -110,7 +115,7 @@ class BasicGraph {
     this.canvas = canvas;
     this.ctx = utils.setupCanvas(canvas);
 
-    this.drawer = new Drawer(this.canvas, this.ctx);
+    this.drawer = new Drawer(this.canvas, this.ctx, {labelFont: this.options.labelFont});
     this.drawer.toTextMode(16, this.options.axisColour);
 
 
@@ -127,7 +132,7 @@ class BasicGraph {
 
     // check if we need to draw the legend for this graph.
     if (this.options.legend.draw) {
-      this.legendManager = new LegendManager(this, this.dataManager.generateLegendInfo(), this.options.legend);
+      this.legendManager = new LegendManager(this, this.dataManager.generateLegendInfo());
     } else {
       this.legendManager = null;
     }
@@ -233,7 +238,6 @@ class BasicGraph {
         this.options.x_label,
         this.lengths.x_center,
         this.drawer.height - ((this.fontSize() / 2) + labelXOffset),
-        this.ctx,
         this.fontSize(),
         config.axisColour
       );
@@ -332,9 +336,9 @@ class BasicGraph {
       x_begin: this.padding.left + this.labelFontSize,
       y_begin: this.padding.top,
       x_end: this.drawer.width - this.padding.right,
-      y_end: this.drawer.height - (this.padding.bottom + this.labelFontSize),
+      y_end: this.drawer.height - this.padding.bottom,
       x_center: this.padding.left + this.labelFontSize + this.xLength / 2,
-      y_center: this.labelFontSize + this.yLength / 2,
+      y_center: this.padding.top + this.labelFontSize / 2 + this.yLength / 2,
     };
   }
 
@@ -408,6 +412,7 @@ class BasicGraph {
       this.padding.right =
         this.canvas.width -
         (this.gridRectSize.x * numberOfSquares + this.lengths.x_begin);
+
       this.xLength =
         this.canvas.width -
         (this.padding.right + this.padding.left + this.labelFontSize);
@@ -432,6 +437,35 @@ class BasicGraph {
 
     /* Draw the data sets on the graph, using the provided dataset configurations  */
     this._drawData();
+
+
+    // draw boundaries over graph if we're in debug view.
+    if (this.options.debug) {
+      this.ctx.setTransform(1, 0, 0, 1, 0, 0); // reset translatation
+
+      this.ctx.lineWidth = 2;
+
+      // draw canvas boundary in red
+      this.ctx.strokeStyle = "red";
+      this.ctx.strokeRect(0, 0, this.canvas.width, this.canvas.height);
+
+      this.ctx.strokeStyle = colours.DEBUG;
+      this.ctx.fillStyle = colours.DEBUG;
+
+      // draw box around graph boundary
+      this.ctx.strokeRect(this.lengths.x_begin, this.lengths.y_begin, this.xLength, this.yLength);
+
+      // draw line at center of the graph
+      this.ctx.beginPath();
+      this.ctx.moveTo(this.lengths.x_begin, this.lengths.y_center);
+      this.ctx.lineTo(this.lengths.x_end, this.lengths.y_center);
+
+      this.ctx.moveTo(this.lengths.x_center, this.lengths.y_begin);
+      this.ctx.lineTo(this.lengths.x_center, this.lengths.y_end);
+
+      this.ctx.stroke();
+      this.ctx.closePath();
+    }
   }
 }
 

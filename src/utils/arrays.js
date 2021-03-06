@@ -1,11 +1,11 @@
-/*
+/**
  * fills an empty array from 0 to max with integers and then returns the new array.
  * */
 export function fillRange(max) {
   return Array.from(Array(max).keys());
 }
 
-/*
+/**
  * Returns the longest string within a given array. It does not return the actual length
  * of the longest item, just the longest item.
  * */
@@ -15,7 +15,7 @@ export function longest(arr) {
   });
 }
 
-/*
+/**
  * Get the previous element of an array, this method is created for safety, if the
  * given index is zero or less than zero, the function will return the element at zero
  * rather than undefined. * */
@@ -23,7 +23,7 @@ export function getPrevious(index, data) {
   return index <= 0 ? data[0] : data[index - 1];
 }
 
-/*
+/**
  * Get the next element of an array, this method is also a safety wrapper function, if the
  * given index is equal to the length of the array - 1, or larger, return the last element
  * of the array, rather than undefined. * */
@@ -31,7 +31,7 @@ export function getNext(index, data) {
   return index >= data.length - 1 ? data[data.length - 1] : data[index + 1];
 }
 
-/*
+/**
  * Get all only negative values from a given array.
  * */
 export function negativeValues(array) {
@@ -40,9 +40,9 @@ export function negativeValues(array) {
   });
 }
 
-/*
-    // Get all unique values from a given array.
-    */
+/**
+ * Get all unique values from a given array.
+ */
 export function uniqueValues(array) {
   return new Set(array);
 }
@@ -87,8 +87,19 @@ export function getMinMax(arr) {
   return { min, max };
 }
 
+/**
+ * Array sum function
+ * 
+ * @param {Array<Number>} arr Number array to be summed.
+ * @returns sum of the array
+ */
+export function sum(arr) {
+  return arr.reduce((a, b) => a + b, 0);
+}
 
-// Get all only positive and zero values from a given array.
+/**
+ * Get all only positive and zero values from a given array.
+ *  */
 export function positiveAndZeroValues(array) {
   return array.filter((value) => value >= 0);
 }
