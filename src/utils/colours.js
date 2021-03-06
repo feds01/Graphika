@@ -25,8 +25,13 @@ export default {
         s8: ["#8dd3c7", "#ffffb3", "#bebada"]
     },
 
-    FLAMINGO_PINK: "#FF6782",
+    FLAMINGO_RED: "#FF6782",
     EMERALD_GREEN: "#008816",
     ELECTRIC_BLUE: "#009FE5",
-    BLACK: "#000000"
+    DEEP_PURPLE: "#3a243b",
+    BLACK: "#000000",
+    PURPLE: "#800080",
+
+    // probably should be put into seperate scope
+    DEBUG: "#00b200"
 };
