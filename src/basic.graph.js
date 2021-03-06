@@ -194,6 +194,7 @@ class BasicGraph {
 
     // re-draw the graph regardless if a line was found found or not
     this.draw();
+
     assert(
       foundLine,
       "No line with label '" + label + "' found on this graph."
@@ -214,12 +215,24 @@ class BasicGraph {
   _drawLabels() {
     if (this.labelFontSize === 0) return;
     
+      let labelXOffset = 0;
+      let labelYOffset = 0;
+
+      // check if we need to offset the x-label
+      if (this.options.legend.draw && this.legendManager.position == LegendManager.Pos.BOTTOM) {
+        labelXOffset = this.legendManager.getRequiredSpace();
+      }
+
+      // check if we need to offset the y-label
+      if (this.options.legend.draw && this.legendManager.position == LegendManager.Pos.LEFT) {
+        labelYOffset = this.legendManager.getRequiredSpace();
+      }
     
       // add x-axis label
       this.drawer.text(
         this.options.x_label,
         this.lengths.x_center,
-        this.drawer.height - this.fontSize() / 2,
+        this.drawer.height - ((this.fontSize() / 2) + labelXOffset),
         this.ctx,
         this.fontSize(),
         config.axisColour
@@ -227,7 +240,7 @@ class BasicGraph {
 
       // add y-axis label
       this.ctx.save();
-      this.ctx.translate(parseInt(this.fontSize(), 10), this.lengths.y_center);
+      this.ctx.translate(this.fontSize() + labelYOffset, this.lengths.y_center);
       this.ctx.rotate(-Math.PI / 2);
       this.ctx.fillText(this.options.y_label, 0, 0);
       this.ctx.restore();
@@ -310,6 +323,7 @@ class BasicGraph {
     this.xLength =
       this.canvas.width -
       (this.padding.right + this.padding.left + this.labelFontSize);
+    
     this.yLength =
       this.canvas.height -
       (this.padding.top + this.padding.bottom + this.labelFontSize);
@@ -348,6 +362,11 @@ class BasicGraph {
     this.padding.bottom = Math.ceil(
       this.options.padding + this.labelFontSize + this.fontSize()
     );
+
+    // apply legened padding if legends are enabled
+    if (this.options.legend.draw) {
+      this.padding[this.legendManager.position] += this.legendManager.getRequiredSpace();
+    }
   }
 
 
