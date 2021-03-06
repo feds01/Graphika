@@ -1,6 +1,6 @@
 # Configuring the Graph grid
 
-When creating a new graph, you can customise the look and feel of rhe grid. The grid customisations are quite rich but aim to not bloat the whole library with meaningless 'features'.
+When creating a new graph, you can customise the look and feel of the grid. The grid customisations are quite rich but aim to not bloat the whole library with meaningless 'features'.
 
 ## Sample
 
@@ -9,7 +9,7 @@ From this sample, it's easy to see how someone could configure the grid options 
 ```javascript
  let graph = new Graph('g', {
             ...
-            // This the generic grid options
+            // generic grid options
             grid: {
                 gridded: true,
                 sharedAxisZero: true
