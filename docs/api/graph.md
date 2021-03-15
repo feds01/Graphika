@@ -28,7 +28,7 @@ Here's a table of all the options that are provided for general options on chart
 | Name      | Type                              | Default      | Description                                                                                      | Required |
 |-----------|-----------------------------------|--------------|--------------------------------------------------------------------------------------------------|----------|
 | title     | `string`                          | `New Graph`  | The title of the graph.                                                                          | `false`  |
-| title_pos | `top-left\|top-center\|top-right` | `top-center` | The alignment and positioning of the graph title                                                 | `false`  |
+| title_pos | `left\|center\|right`             | `top-center` | The alignment and positioning of the graph title                                                 | `false`  |
 | x_label   | `string`                          | ``           | The label that is drawn at the x-axis, typically used to describe what the axis is representing. | `false`  |
 | y_label   | `string`                          | ``           | The label that is drawn at the y-axis, typically used to describe what the axis is representing. | `false`  |
 
