@@ -10,8 +10,7 @@
  * @email <alexander.fedotov.uk@gmail.com>
  */
 
-import {assert} from "./../utils/assert";
-
+import { assert } from "./../utils/assert";
 
 const TWO_PI = Math.PI * 2;
 
@@ -39,7 +38,7 @@ class Drawer {
 
     horizontalLine(x, y, len) {
         this._coordinateSafetyCheck(x, y); // @Speed: remove this from production?
-        assert((x + len) >= 0 && (x + len) <= this.canvas.width);
+        assert(x + len >= 0 && x + len <= this.canvas.width);
 
         this.context.beginPath();
         this.context.moveTo(x, y);
@@ -50,7 +49,7 @@ class Drawer {
 
     verticalLine(x, y, len) {
         this._coordinateSafetyCheck(x, y); // @Speed: remove this from production?
-        assert((y + len) >= 0 && (y + len) <= this.canvas.width);
+        assert(y + len >= 0 && y + len <= this.canvas.width);
 
         this.context.beginPath();
         this.context.moveTo(x, y);
@@ -60,15 +59,15 @@ class Drawer {
     }
 
     /**
-     * @since v0.0.1 
+     * @since v0.0.1
      * This simply switches the canvas context to be text mode ready,
      * set the font size and style, set text alignment to middle, and
      * change stroke colour to the axis' colour.
-     * 
+     *
      * @param {Number} size The font size of the text
      * @param {String} colour RGBA style colour string
      * @param {String} alignment One of the specified alignments for text
-     * 
+     *
      * @returns nothing, just changes the drawing context
      * */
     toTextMode(size, colour, alignment) {
@@ -83,17 +82,17 @@ class Drawer {
     }
 
     /**
-     * @since v0.0.1 
+     * @since v0.0.1
      * Function to draw text on the canvas at a given location with a particular
      * colour and alignment.
-     * 
+     *
      * @param {string} text the actual label
      * @param {number} x x-coordinate of where to draw the string
      * @param {number} y x-coordinate of where to draw the string
      * @param {Number} size The font size of the text
      * @param {String} colour RGBA style colour string
      * @param {String} alignment One of the specified alignments for text
-     * 
+     *
      * @returns nothing, just changes the drawing context
      * */
     text(text, x, y, size, colour, alignment = "center") {
@@ -108,9 +107,13 @@ class Drawer {
         this.context.strokeStyle = oldColour;
     }
 
-    get width() { return this.canvas.width; }
+    get width() {
+        return this.canvas.width;
+    }
 
-    get height() { return this.canvas.height; }
+    get height() {
+        return this.canvas.height;
+    }
 }
 
 export default Drawer;

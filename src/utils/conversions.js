@@ -12,11 +12,9 @@
  * @email <alexander.fedotov.uk@gmail.com>
  */
 
-
-
 /**
  * Function converts a number into a smart numerical with a prefix with a
- * shortening for 
+ * shortening for
  *
  *
  * @param numerical {number,string} If the scale labels should be returned as what they truly
@@ -34,9 +32,9 @@ export function convertFromNumerical(numerical) {
     let exponent = Math.log10(numerical);
 
     if (exponent > 2) {
-        if (exponent >= 3 && exponent < 6) return numerical / 10E2 + "k";
-        if (exponent >= 6 && exponent < 9) return numerical / 10E5 + "m";
-        if (exponent >= 9) return numerical / 10E8 + "b";
+        if (exponent >= 3 && exponent < 6) return numerical / 10e2 + "k";
+        if (exponent >= 6 && exponent < 9) return numerical / 10e5 + "m";
+        if (exponent >= 9) return numerical / 10e8 + "b";
     }
 
     return numerical;
@@ -49,4 +47,4 @@ export function convertFromNumericalToK(numerical) {
 export default {
     convertFromNumerical,
     convertFromNumericalToK,
-}
+};

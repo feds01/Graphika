@@ -10,25 +10,26 @@
  * @email <alexander.fedotov.uk@gmail.com>
  */
 
-import {assert} from "../utils/assert";
-import * as arrays from "../utils/arrays"
+import { assert } from "../utils/assert";
+import * as arrays from "../utils/arrays";
 
 class DataManager {
     constructor(data) {
         this.data = data;
-        
+
         // Assert that each data 'label' is unique
         // TODO: show/display the conflicting labels. Could probably done by using a 'reduce'
-        assert(arrays.uniqueValues(this.labels()).size === this.labels().length,
-            "data must have unique labels for each data set");
+        assert(
+            arrays.uniqueValues(this.labels()).size === this.labels().length,
+            "data must have unique labels for each data set"
+        );
 
         // Ensure that the provided data can be accessed and is not empty data, this is simple sanitization
         for (let entry of this.data) {
             assert(Array.isArray(entry.data) && entry.data.length !== 0, "data must be a non-empty array.");
-            
+
             // convert the actual entry data into a Float64Array
             entry.data = new Float64Array(entry.data);
-
         }
     }
 
@@ -37,25 +38,25 @@ class DataManager {
     }
 
     join() {
-        return new Float64Array(this.data.map(x => [...new Float64Array(x.data.buffer)]).flat());
+        return new Float64Array(this.data.map((x) => [...new Float64Array(x.data.buffer)]).flat());
     }
 
     lengths() {
-        return this.data.map(x => x.data.length);
+        return this.data.map((x) => x.data.length);
     }
 
     maxLen() {
-        return Math.max(...this.data.map(x => x.data.length));
+        return Math.max(...this.data.map((x) => x.data.length));
     }
 
     minLen() {
-        return Math.min(...this.data.map(x => x.data.length));
+        return Math.min(...this.data.map((x) => x.data.length));
     }
 
     /**
      *  Generate legend data from the provided line configurations
-     * 
-     * @return {{style: string, colour: string, label: string}[]} An array representing 
+     *
+     * @return {{style: string, colour: string, label: string}[]} An array representing
      *  */
     generateLegendInfo() {
         return this.data.map((item) => ({
@@ -66,11 +67,11 @@ class DataManager {
     }
 
     colourList() {
-        return this.data.map(x => x.colour);
+        return this.data.map((x) => x.colour);
     }
 
     labels() {
-        return this.data.map(x => x.label);
+        return this.data.map((x) => x.label);
     }
 }
 
