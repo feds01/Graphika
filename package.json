@@ -1,5 +1,5 @@
 {
-  "name": "Graphika",
+  "name": "@feds01/graphika",
   "version": "1.0.0",
   "description": "A fast JavaScript library to draw elegant graphs ",
   "main": "dist/graphika.js",
