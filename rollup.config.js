@@ -6,11 +6,11 @@
  * @email <alexander.fedotov.uk@gmail.com>
  */
 
-const commonjs = require("@rollup/plugin-commonjs");
-const resolve = require("rollup-plugin-node-resolve");
-const {terser} = require("rollup-plugin-terser");
+import commonjs from '@rollup/plugin-commonjs';
+import { nodeResolve } from '@rollup/plugin-node-resolve';
+import terser from '@rollup/plugin-terser';
 
-const pkg = require("./package.json");
+import pkg from './package.json' with { type: "json" };
 
 const input = "src/graphika.js";
 const banner = `/*!
@@ -19,7 +19,7 @@ const banner = `/*!
  * (c) ${new Date().getFullYear()} Alexander. E. Fedotov.
  */`;
 
-module.exports = [
+export default [
     // UMD builds (including moment)
     // dist/graphika.min.js
     // dist/graphika.js
@@ -34,14 +34,14 @@ module.exports = [
             sourcemap: true,
         },
         plugins: [
-            resolve(),
+            nodeResolve(),
             commonjs()
         ],
     },
     {
         input: input,
         plugins: [
-            resolve(),
+            nodeResolve(),
             commonjs(),
             terser({
                 output: {
