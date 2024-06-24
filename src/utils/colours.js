@@ -32,6 +32,6 @@ export default {
     BLACK: "#000000",
     PURPLE: "#800080",
 
-    // probably should be put into seperate scope
+    // probably should be put into separate scope
     DEBUG: "#00b200"
 };

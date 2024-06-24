@@ -86,13 +86,13 @@ class BasicGraph {
      * plot, the object also contains various utility functions to fetch stats on the data. * */
     dataManager;
 
-     /*
+    /**
      * This is the font size of the labels, initially it is set to 0, later on it is set if
      * the labels are not empty strings or null.
      * */
     labelFontSize;
 
-     /*
+    /**
      * @since v0.0.1 AxisManager object is a manager class for the Axis objects of this Graph object,
      * The AxisManager contains the xAxis & yAxis objects, it also handles the synchronisation of scales &
      * negative axis modes.

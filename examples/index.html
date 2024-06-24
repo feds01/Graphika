@@ -26,10 +26,10 @@
   <body>
     <div id="graph">
       <div class="title"></div>
-      <canvas width="800" height="600"></canvas>
+      <canvas width="400" height="300"></canvas>
     </div>
 
-    <script src="dist/graph.min.js"></script>
+    <script src="../dist/graphika.js"></script>
     <script>
         function getRandomInt(min, max) {
         return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -71,10 +71,10 @@
                 label: 'student_1',
                 interpolation: 'cubic',
                 data: dataset[0],
-                colour: Graph.Colours.FLAMINGO_PINK
+                colour: Graph.Colours.FLAMINGO_RED
             },
             {
-                label: 'student_1',
+                label: 'student_2',
                 interpolation: 'cubic',
                 data: dataset[1],
                 colour: Graph.Colours.ELECTRIC_BLUE
