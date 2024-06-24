@@ -24,7 +24,7 @@
   },
   "homepage": "https://github.com/feds01/Graphika#readme",
   "devDependencies": {
-    "@rollup/plugin-commonjs": "^17.1.0",
+    "@rollup/plugin-commonjs": "^26.0.1",
     "eslint": "9.5.0",
     "rollup": "2.50.5",
     "rollup-plugin-istanbul": "3.0.0",
