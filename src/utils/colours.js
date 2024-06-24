@@ -22,7 +22,7 @@ export default {
         s5: ["#b3e2cd", "#fdcdac", "#cbd5e8"],
         s6: ["#e41a1c", "#377eb8", "#4daf4a"],
         s7: ["#66c2a5", "#fc8d62", "#8da0cb"],
-        s8: ["#8dd3c7", "#ffffb3", "#bebada"]
+        s8: ["#8dd3c7", "#ffffb3", "#bebada"],
     },
 
     FLAMINGO_RED: "#FF6782",
@@ -33,5 +33,5 @@ export default {
     PURPLE: "#800080",
 
     // probably should be put into separate scope
-    DEBUG: "#00b200"
+    DEBUG: "#00b200",
 };

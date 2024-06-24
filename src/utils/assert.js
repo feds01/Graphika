@@ -9,15 +9,15 @@
 import config from "./../config";
 
 export function assert(condition, message) {
-  if (!condition) {
-    const assertMessage = `Assertion failed: ${message}`;
+    if (!condition) {
+        const assertMessage = `Assertion failed: ${message}`;
 
-    if (config.warnOnFailedAssert) {
-      // warn instead of throwing an error
-      console.warn(assertMessage);
-      console.trace(assertMessage);
-    } else {
-      throw new Error(assertMessage);
+        if (config.warnOnFailedAssert) {
+            // warn instead of throwing an error
+            console.warn(assertMessage);
+            console.trace(assertMessage);
+        } else {
+            throw new Error(assertMessage);
+        }
     }
-  }
 }
