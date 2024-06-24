@@ -55,16 +55,15 @@ export function findObjectElements(id, options) {
 }
 
 export function setupCanvas(canvas) {
-  // Get the device pixel ratio, falling back to 1.
-  const dpr = window.devicePixelRatio || 1;
+  // Get the device pixel ratio
+  const scale = window.devicePixelRatio || 1;
 
   // Give the canvas pixel dimensions of their CSS and set canvas dimensions to
   // size * the device pixel ratio.
 
   const ctx = canvas.getContext("2d");
-  canvas.width *= dpr;
-  canvas.height *= dpr;
-  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
+  canvas.width = Math.floor(canvas.width * scale);
+  canvas.height = Math.floor(canvas.height * scale);
   return ctx;
 }
