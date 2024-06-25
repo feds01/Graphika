@@ -1,10 +1,11 @@
 /**
- * Module description: src/core/config.js
+ * src/core/config.ts
+ * 
+ * Module description:
  *
  * This module holds the default configuration values and parameters for
  * graph objects.
  *
- * Created on 01/10/2018
  * @author Alexander. E. Fedotov
  * @email <alexander.fedotov.uk@gmail.com>
  */
@@ -12,6 +13,9 @@
 export default {
     /* Whether to error or just warn when an assertion is false */
     warnOnFailedAssert: true,
+
+    /* Debug flag for drawer calls, this will log all instructions the draw module gets */
+    debug_draw: false,
 
     /* this value is the default data-line width for a graph.
      * It may change depending on if there are more data points than
@@ -43,7 +47,4 @@ export default {
 
     /* Default value for the axis colour */
     axisColour: "rgb(94,94,94)",
-
-    /* Debug flag for drawer calls, this will log all instructions the draw module gets */
-    debug_draw: false,
 };

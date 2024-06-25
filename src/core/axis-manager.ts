@@ -1,19 +1,30 @@
 /**
- * Module description:   src/core/axis-manager.js
+ * src/core/axis-manager.ts
  *
- * Created on 23/12/2018
+ * Module description:
+ *
+ * This module is responsible for managing the axis on the graph. The axis manager
+ * is responsible for drawing the axis on the graph and managing the scale numbers.
+ *
  * @author Alexander. E. Fedotov
  * @email <alexander.fedotov.uk@gmail.com>
  *
  * */
-import config from "./../config";
 import * as arrays from "../utils/arrays";
-import Axis, { AxisType } from "./axis";
+import Axis from "./axis";
+import BasicGraph from "../basic.graph";
+import config from "./../config";
 
 class AxisManager {
-    constructor(graph) {
-        this.graph = graph;
+    public xAxis: Axis;
+    public yAxis: Axis;
+    public scaleNumbers: { x: string[]; y: string[] };
 
+    public sharedAxisZero: boolean = false;
+    public negativeScale: boolean = false;
+    public readonly data: Float64Array;
+
+    constructor(public readonly graph: BasicGraph) {
         this.data = graph.dataManager.join();
 
         // Does the data contain any negative values, if so enable negative axis.
@@ -21,8 +32,8 @@ class AxisManager {
         this.negativeScale = arrays.negativeValues(this.data).length > 0;
 
         // initialise the y-axis & x-axis
-        this.yAxis = new Axis(this, AxisType.Y_AXIS, this.graph.options.scale.y);
-        this.xAxis = new Axis(this, AxisType.X_AXIS, this.graph.options.scale.x);
+        this.yAxis = new Axis(this, "y", this.graph.options.scale.y);
+        this.xAxis = new Axis(this, "x", this.graph.options.scale.x);
 
         // The scale numbers of the x-axis & y-axis in object
         this.scaleNumbers = {
@@ -78,10 +89,10 @@ class AxisManager {
     /**
      * Method to draw on axis on the current graph. Takes into account graph settings
      * and then invokes the draw method on the individual drawing methods for each axis.
-     *  */
+     * */
     draw() {
         // check if the sharedAxisZero was detected in y-axis draw method, do the same thing
-        // as for the y-axis and then draw the centered 0.
+        // as for the y-axis and then draw the centred 0.
         if (this.sharedAxisZero) {
             this.graph.drawer.text(
                 "0",

@@ -1,14 +1,17 @@
 /**
- * Module description:   src/helpers/assert.js.js
+ * src/utils/assert.ts
  *
- * Created on 01/01/2019
+ * Module description:
+ *
+ * Extensions and typing helpers.
+ *
  * @author Alexander. E. Fedotov
  * @email <alexander.fedotov.uk@gmail.com>
  */
 
 import config from "./../config";
 
-export function assert(condition, message) {
+export function assert(condition: boolean, message: string): asserts condition {
     if (!condition) {
         const assertMessage = `Assertion failed: ${message}`;
 

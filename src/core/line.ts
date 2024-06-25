@@ -1,9 +1,10 @@
 /**
- * Module description: src/core/line.js
+ * src/core/line.ts
+ *
+ * Module description:
  *
  * Line class which represents a drawable line on a Graph that supports drawing lines.
  *
- * Created on 01/10/2018
  * @author Alexander. E. Fedotov
  * @email <alexander.fedotov.uk@gmail.com>
  */
@@ -14,17 +15,33 @@ import { rgba } from "./../utils/colours";
 import { splineCurve } from "./interpolation";
 import * as arrays from "./../utils/arrays";
 import { isUndefOrNull } from "../utils/object";
+import BasicGraph from "../basic.graph";
+
+export type LineOptions = {
+    colour: string;
+    style: string;
+    interpolation: "linear" | "cubic";
+    area?: {
+        fill: boolean;
+        colour?: string;
+    };
+    label?: string;
+    annotatePoints: boolean;
+};
 
 /**
- * Line class that represent the drawing mechanicsms of each line that is drawn on a
+ * Line class that represent the drawing mechanisms of each line that is drawn on a
  * graph.
  *  */
 class Line {
-    constructor(data, graph, options) {
-        this.data = data;
-        this.graph = graph;
-        this.options = options;
+    private points: Point[] = [];
+    private controlPoints: { prev: Point; next: Point }[] = [];
 
+    constructor(
+        private readonly data: number[] | Float64Array,
+        private readonly graph: BasicGraph,
+        private readonly options: LineOptions
+    ) {
         this._convertDataToPoints();
     }
 
@@ -36,8 +53,6 @@ class Line {
      * drawn.
      * */
     _convertDataToPoints() {
-        this.points = [];
-
         for (let index = 0; index < this.data.length; index++) {
             this.points.push(new Point({ x: index, y: this.data[index] }, this.graph));
         }
@@ -50,7 +65,7 @@ class Line {
     /**
      * @since v1.0.0
      *
-     * Internal function to compute interpoliation points for a line if it has 'cubic' intrtpolation
+     * Internal function to compute interpolation points for a line if it has 'cubic' interpolation
      * enabled.
      * */
     _computeInterpolationControlPoints() {
@@ -88,7 +103,7 @@ class Line {
      * Internal function to draw the line fill for a linearly interpolated line.
      *  */
     _drawLineFill() {
-        const context = this.graph.drawer.context;
+        const context = this.graph.drawer.ctx;
 
         context.beginPath();
 
@@ -113,10 +128,10 @@ class Line {
      * Internal function to draw the line fill for a cubic interpolated line.
      *  */
     _drawLineFillForCubic() {
-        const context = this.graph.drawer.context;
+        const context = this.graph.drawer.ctx;
 
-        let f1 = new Point({ x: 0, y: this.graph.axisManager.yAxis.start }, this.graph);
-        let f2 = new Point({ x: 1, y: this.graph.axisManager.yAxis.start }, this.graph);
+        const f1 = new Point({ x: 0, y: this.graph.axisManager.yAxis.start }, this.graph);
+        const f2 = new Point({ x: 1, y: this.graph.axisManager.yAxis.start }, this.graph);
 
         context.beginPath();
 
@@ -151,8 +166,8 @@ class Line {
             context.lineTo(x1.x, x1.y);
         }
 
-        let f3 = new Point({ x: this.points.length - 2, y: this.graph.axisManager.yAxis.start }, this.graph);
-        let f4 = new Point({ x: this.points.length - 1, y: this.graph.axisManager.yAxis.start }, this.graph);
+        const f3 = new Point({ x: this.points.length - 2, y: this.graph.axisManager.yAxis.start }, this.graph);
+        const f4 = new Point({ x: this.points.length - 1, y: this.graph.axisManager.yAxis.start }, this.graph);
 
         const precursorPoint = this.points[this.points.length - 1];
 
@@ -177,7 +192,7 @@ class Line {
      * style and the line fill (if enabled).
      *  */
     draw() {
-        const context = this.graph.drawer.context;
+        const context = this.graph.drawer.ctx;
 
         if (!isUndefOrNull(this.options.area) && this.options.area.fill) {
             // set the 'global' alpha to 0.6 for lines that are on top of each other to look as if they are 'transparent'
@@ -270,7 +285,7 @@ class Line {
         if (this.options.annotatePoints) {
             this.points.forEach((point, index) => {
                 if (
-                    index == this.points.length - 1 ||
+                    index === this.points.length - 1 ||
                     (point.data.x / this.graph.axisManager.xAxisTickStep) % 1 === 0
                 ) {
                     point.draw();

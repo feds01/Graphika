@@ -1,15 +1,16 @@
 /**
- * utils/colours.js Module description:
+ * src/utils/colours.ts
+ *
+ * Module description:
  *
  * This is file module is used for storing the various colours available
  * for making graphs and charts.
  *
- * Created on 01/10/2018
  * @author Alexander. E. Fedotov
  * @email <alexander.fedotov.uk@gmail.com>
  */
 
-export function rgba(hex, opacity) {
+export function rgba(hex: string, opacity: number): string {
     return hex.replace(")", `,${parseFloat((opacity / 100).toFixed(2))})`);
 }
 
@@ -31,6 +32,7 @@ export default {
     DEEP_PURPLE: "#3a243b",
     BLACK: "#000000",
     PURPLE: "#800080",
+    GREY: "#5e5e5e",
 
     // probably should be put into separate scope
     DEBUG: "#00b200",
