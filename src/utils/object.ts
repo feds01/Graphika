@@ -7,7 +7,7 @@
  *  */
 export function merge<T extends object>(target: T, source: T): T {
     for (const key of Object.keys(source)) {
-        // @ts-ignore
+        // @ts-expect-error - We know that the key exists
         if (source[key] instanceof Object) Object.assign(source[key], merge(target[key], source[key]));
     }
 

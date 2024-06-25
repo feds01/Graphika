@@ -13,7 +13,7 @@ type Elements = {
 
 export function findObjectElements(id: string, options: Config): Elements {
     const element = document.getElementById(id);
-    let elementMap: Elements = {
+    const elementMap: Elements = {
         canvas: undefined,
         title: undefined,
     };

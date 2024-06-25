@@ -89,7 +89,7 @@ class Axis {
         // TODO: maybe just change the calculation to compute the position of the x-axis from the
         //      bottom of the graph.
         if (this.type === "x" && this.manager.negativeScale) {
-            let zeroIndex = this.manager.scaleNumbers.y.reverse().indexOf("0");
+            const zeroIndex = this.manager.scaleNumbers.y.reverse().indexOf("0");
 
             // The zero index must not be '-1' or in other words, not found.
             assert(zeroIndex !== -1, `couldn't find the '0' scale position on the {${this.type}}`);
@@ -117,10 +117,10 @@ class Axis {
 
             this.scaleStep = this.positiveScale.getScaleStep();
         } else if (this.type === "y") {
-            let positiveValues = arrays.positiveAndZeroValues(this.data);
+            const positiveValues = arrays.positiveAndZeroValues(this.data);
 
             if (this.manager.negativeScale) {
-                let negativeDataSet = arrays.negativeValues(this.data).map((x) => Math.abs(x));
+                const negativeDataSet = arrays.negativeValues(this.data).map((x) => Math.abs(x));
                 // divide the max ticks by two since negative and positive are sharing the scale.
 
                 this.negativeScale = new Scale({
@@ -249,9 +249,9 @@ class Axis {
             );
             this.graph.ctx.textBaseline = "middle";
 
-            for (let number of scaleNumericsToDraw) {
+            for (const number of scaleNumericsToDraw) {
                 if (!(this.manager.sharedAxisZero && number.toString() === "0")) {
-                    let y_offset = offset * this.graph.gridRectSize.y;
+                    const y_offset = offset * this.graph.gridRectSize.y;
 
                     // tick drawing
                     this.graph.drawer.horizontalLine(
@@ -289,10 +289,10 @@ class Axis {
 
             const scale_offset = this.graph.padding.textPadding + this.graph.fontSize() / 2;
 
-            for (let number of scaleNumericsToDraw) {
+            for (const number of scaleNumericsToDraw) {
                 // if sharedAxisZero isn't enabled and the number isn't zero, draw the number label
                 if (!(this.manager.sharedAxisZero && number.toString() === "0")) {
-                    let x_offset = offset * this.graph.gridRectSize.x;
+                    const x_offset = offset * this.graph.gridRectSize.x;
 
                     // draw the tick
                     this.graph.drawer.verticalLine(

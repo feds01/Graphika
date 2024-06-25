@@ -112,7 +112,7 @@ class Scale {
 
         // fill array with labels.
         this.scaleLabels = arrays.fillRange(this.tickCount + 1).map((x) => {
-            let scaleLabel = this.roundedMinimum + x * this.scaleStep;
+            const scaleLabel = this.roundedMinimum + x * this.scaleStep;
 
             // pass the zero, so we don't convert say '0' to '0.00'
             if (logarithmicScaleStep < 0 && scaleLabel !== 0) {
@@ -121,7 +121,7 @@ class Scale {
                     return scaleLabel.toFixed(precision);
                 }
 
-                return scaleLabel; //.toPrecision(precision); //.slice(0, 2 + precision);
+                return scaleLabel; // .toPrecision(precision); //.slice(0, 2 + precision);
             }
 
             return scaleLabel;

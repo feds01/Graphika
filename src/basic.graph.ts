@@ -10,7 +10,6 @@ import Drawer from "./core/drawing";
 import AxisManager from "./core/axis-manager";
 import DataManager, { DataSource } from "./core/data-manager";
 import LegendManager, { LegendOptions } from "./legend/manager";
-import { ScaleOptions } from "./core/scale";
 import { AxisOptions } from "./core/axis";
 
 type GridOptions = {
@@ -38,8 +37,6 @@ type BasicGraphOptions = {
     };
     legend: LegendOptions;
 };
-
-type GraphData = {}[];
 
 type GraphPadding = {
     top: number;
@@ -73,7 +70,7 @@ const defaultConfig: BasicGraphOptions = {
     padding: 14,
 
     axisColour: colours.BLACK,
-    labelFont: `"Roboto Mono", monospace`,
+    labelFont: "\"Roboto Mono\", monospace",
 
     // default grid settings
     grid: {
@@ -237,7 +234,7 @@ class BasicGraph {
         // if 'strict' grid mode is enabled, we select the smallest grid size out of x and y
         // and set this to being the grid size lengths
         if (this.options.grid.strict) {
-            let gridRectLength = Math.min(this.gridRectSize.x, this.gridRectSize.y);
+            const gridRectLength = Math.min(this.gridRectSize.x, this.gridRectSize.y);
 
             this.gridRectSize.x = gridRectLength;
             this.gridRectSize.y = gridRectLength;
@@ -293,12 +290,12 @@ class BasicGraph {
 
         // check if we need to offset the x-label
         if (this.legendManager) {
-            if (this.options.legend.draw && this.legendManager.position == "bottom") {
+            if (this.options.legend.draw && this.legendManager.position === "bottom") {
                 labelXOffset = this.legendManager.requiredSpace;
             }
 
             // check if we need to offset the y-label
-            if (this.options.legend.draw && this.legendManager.position == "left") {
+            if (this.options.legend.draw && this.legendManager.position === "left") {
                 labelYOffset = this.legendManager.requiredSpace;
             }
         }
@@ -339,15 +336,13 @@ class BasicGraph {
         while (offset <= Math.max(yTicks - 1, xTicks)) {
             // The X-Axis drawing
             if (offset < xTicks) {
-                let x_offset = offset * this.gridRectSize.x;
-
+                const x_offset = offset * this.gridRectSize.x;
                 this.drawer.verticalLine(this.lengths.x_begin + x_offset, this.yLength + this.padding.top, -y_len + 9);
             }
 
             // The Y-Axis drawing
             if (offset < this.axisManager.yAxisScaleNumbers.length) {
-                let y_offset = offset * this.gridRectSize.y;
-
+                const y_offset = offset * this.gridRectSize.y;
                 this.drawer.horizontalLine(this.lengths.x_begin, this.lengths.y_begin + y_offset, x_len - 9);
             }
             offset++;
@@ -355,12 +350,12 @@ class BasicGraph {
     }
 
     _drawData() {
-        for (let lineData of this.dataManager.get()) {
+        for (const lineData of this.dataManager.get()) {
             const { style, area, colour, interpolation, label, annotatePoints, data } = lineData;
 
             // don't even init the line if no data is supplied
             if (lineData.data.constructor === Float64Array && lineData.data.length > 0) {
-                let line = new Line(data, this, {
+                const line = new Line(data, this, {
                     style,
                     area,
                     colour,
@@ -426,7 +421,7 @@ class BasicGraph {
         // optimise x-square-size if float
         if (this.options.grid.optimiseSquareSize && this.gridRectSize.x % 1 !== 0) {
             let preferredSquareSize = Math.round(this.gridRectSize.x);
-            let numberOfSquares = this.axisManager.xAxisScaleNumbers.length - 1;
+            const numberOfSquares = this.axisManager.xAxisScaleNumbers.length - 1;
 
             // If the square size was some round up, rather than down, we need to check if
             // we can actually apply the 'scale' up with the padding space available to the right

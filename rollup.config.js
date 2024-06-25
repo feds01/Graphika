@@ -6,12 +6,12 @@
  * @email <alexander.fedotov.uk@gmail.com>
  */
 
-import { nodeResolve } from '@rollup/plugin-node-resolve';
-import commonjs from '@rollup/plugin-commonjs';
-import terser from '@rollup/plugin-terser';
-import typescript from '@rollup/plugin-typescript';
+import { nodeResolve } from "@rollup/plugin-node-resolve";
+import commonjs from "@rollup/plugin-commonjs";
+import terser from "@rollup/plugin-terser";
+import typescript from "@rollup/plugin-typescript";
 
-import pkg from './package.json' with { type: "json" };
+import pkg from "./package.json" with { type: "json" };
 
 const input = "src/graphika.ts";
 const banner = `/*!
@@ -34,11 +34,7 @@ export default [
             indent: false,
             sourcemap: true,
         },
-        plugins: [
-            nodeResolve(),
-            typescript(),
-            commonjs()
-        ],
+        plugins: [nodeResolve(), typescript(), commonjs()],
     },
     {
         input: input,
@@ -48,7 +44,7 @@ export default [
             commonjs(),
             terser({
                 output: {
-                    preamble: banner
+                    preamble: banner,
                 },
                 compress: {
                     warnings: true,
@@ -58,15 +54,15 @@ export default [
                 mangle: {
                     keep_classnames: false,
                     keep_fnames: false,
-                    reserved: ["Graph"]
-                }
-            })
+                    reserved: ["Graph"],
+                },
+            }),
         ],
         output: {
             name: "Graph",
             file: "dist/graphika.min.js",
             format: "umd",
-            indent: false
-        }
-    }
+            indent: false,
+        },
+    },
 ];
