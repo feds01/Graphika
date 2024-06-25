@@ -26,7 +26,7 @@
   <body>
     <div id="graph">
       <div class="title"></div>
-      <canvas width="400" height="300"></canvas>
+      <canvas width="800" height="600"></canvas>
     </div>
 
     <script src="../dist/graphika.js"></script>
@@ -71,16 +71,23 @@
                 label: 'student_1',
                 interpolation: 'cubic',
                 data: dataset[0],
-                colour: Graph.Colours.FLAMINGO_RED
+                colour: Graph.Colours.FLAMINGO_RED,
+                area: {
+                    fill: Graph.Colours.FLAMINGO_RED
+                }
             },
             {
                 label: 'student_2',
                 interpolation: 'cubic',
                 data: dataset[1],
-                colour: Graph.Colours.ELECTRIC_BLUE
+                colour: Graph.Colours.ELECTRIC_BLUE,
+                area: {
+                    fill: Graph.Colours.ELECTRIC_BLUE
+                }
             }
         ]
     );
+
     console.time("graph_draw");
     graph.draw();
     console.timeEnd("graph_draw");
