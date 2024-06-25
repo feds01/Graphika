@@ -6,10 +6,10 @@
  * @email <alexander.fedotov.uk@gmail.com>
  *
  * */
-import config from "./../config";
 import * as arrays from "../utils/arrays";
-import Axis, { AxisType } from "./axis";
+import Axis from "./axis";
 import BasicGraph from "../basic.graph";
+import config from "./../config";
 
 class AxisManager {
     public xAxis: Axis;

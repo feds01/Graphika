@@ -11,7 +11,7 @@ import { assert } from "../utils/assert";
 import * as arrays from "../utils/arrays";
 import colours from "../utils/colours";
 import BasicGraph from "../basic.graph";
-import DataManager, { DataSource } from "../core/data-manager";
+import { DataSource } from "../core/data-manager";
 
 export type LegendOptions = {
     draw: boolean;
@@ -59,7 +59,7 @@ class LegendManager {
         // determine the relevant size that the padding needs to increase by based on the position
         // of the legend. If the orientation of the legend is vertical, only the 'max width' matters,
         // and if the orientation is horizontal, only the height of the legend matters.
-        if (this.position == "left" || this.position == "right") {
+        if (this.position === "left" || this.position === "right") {
             // get longest label
             const longestItem = arrays.longest(this.data.map((item) => item.label));
 
@@ -155,21 +155,21 @@ class LegendManager {
         const requiredSpaces = this.data.map((item, index) => {
             const initial = LegendManager.PADDING * 2;
 
-            if (orientation == "horizontal") {
+            if (orientation === "horizontal") {
                 // add padding between each item if it's not the end item
-                const additional = index != this.data.length - 1 ? initial * 2 : 0;
+                const additional = index !== this.data.length - 1 ? initial * 2 : 0;
 
                 return initial + this.getRequiredSpaceFor(item.label) + additional;
             } else {
                 // add padding between each item if it's not the end item
-                const additional = index != this.data.length - 1 ? initial : initial / 2;
+                const additional = index !== this.data.length - 1 ? initial : initial / 2;
 
                 return additional + this.graph.fontSize();
             }
         });
 
         // adjust begin values in correspondence to alignment
-        if (orientation == "horizontal") {
+        if (orientation === "horizontal") {
             switch (this.alignment) {
                 case "start":
                     break; // we don't need to do anything here since we assume that it is the initial condition
@@ -228,7 +228,7 @@ class LegendManager {
             this.drawLegend(item.label, item.colour, item.style, xBegin, yBegin);
 
             // compute new offsets
-            if (orientation == "horizontal") {
+            if (orientation === "horizontal") {
                 xBegin += requiredSpaces[idx];
             } else {
                 // we have to use vertical spacing rather than horizontal spacing.

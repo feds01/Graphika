@@ -29,7 +29,7 @@ export function convertFromNumerical(numerical: string | number): string {
         numerical = parseFloat(numerical);
     }
 
-    let exponent = Math.log10(numerical);
+    const exponent = Math.log10(numerical);
 
     if (exponent > 2) {
         if (exponent >= 3 && exponent < 6) return numerical / 10e2 + "k";

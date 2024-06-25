@@ -129,8 +129,8 @@ class Line {
     _drawLineFillForCubic() {
         const context = this.graph.drawer.ctx;
 
-        let f1 = new Point({ x: 0, y: this.graph.axisManager.yAxis.start }, this.graph);
-        let f2 = new Point({ x: 1, y: this.graph.axisManager.yAxis.start }, this.graph);
+        const f1 = new Point({ x: 0, y: this.graph.axisManager.yAxis.start }, this.graph);
+        const f2 = new Point({ x: 1, y: this.graph.axisManager.yAxis.start }, this.graph);
 
         context.beginPath();
 
@@ -165,8 +165,8 @@ class Line {
             context.lineTo(x1.x, x1.y);
         }
 
-        let f3 = new Point({ x: this.points.length - 2, y: this.graph.axisManager.yAxis.start }, this.graph);
-        let f4 = new Point({ x: this.points.length - 1, y: this.graph.axisManager.yAxis.start }, this.graph);
+        const f3 = new Point({ x: this.points.length - 2, y: this.graph.axisManager.yAxis.start }, this.graph);
+        const f4 = new Point({ x: this.points.length - 1, y: this.graph.axisManager.yAxis.start }, this.graph);
 
         const precursorPoint = this.points[this.points.length - 1];
 
@@ -284,7 +284,7 @@ class Line {
         if (this.options.annotatePoints) {
             this.points.forEach((point, index) => {
                 if (
-                    index == this.points.length - 1 ||
+                    index === this.points.length - 1 ||
                     (point.data.x / this.graph.axisManager.xAxisTickStep) % 1 === 0
                 ) {
                     point.draw();

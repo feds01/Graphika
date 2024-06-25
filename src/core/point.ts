@@ -54,8 +54,8 @@ class Point {
         assert(this.graph !== undefined, "Point class must be provided with the relevant graph.");
 
         // calculate actual graphical coordinates
-        let yScalar = (data.y - manager.yAxis.start) / manager.yAxisTickStep;
-        let xScalar = data.x / manager.xAxisTickStep;
+        const yScalar = (data.y - manager.yAxis.start) / manager.yAxisTickStep;
+        const xScalar = data.x / manager.xAxisTickStep;
 
         /*
         // Work out fraction between the data 'x' and the longest data length. Then multiply it by the available

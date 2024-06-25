@@ -48,7 +48,7 @@ class DataManager {
         );
 
         // Ensure that the provided data can be accessed and is not empty data, this is simple sanitization
-        for (let entry of this.data) {
+        for (const entry of this.data) {
             assert(Array.isArray(entry.data) && entry.data.length !== 0, "data must be a non-empty array.");
 
             // convert the actual entry data into a Float64Array
