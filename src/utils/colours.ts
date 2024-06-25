@@ -31,6 +31,7 @@ export default {
     DEEP_PURPLE: "#3a243b",
     BLACK: "#000000",
     PURPLE: "#800080",
+    GREY: "#5e5e5e",
 
     // probably should be put into separate scope
     DEBUG: "#00b200",

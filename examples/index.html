@@ -1,96 +1,95 @@
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>graph-js</title>
+    <head>
+        <meta charset="UTF-8" />
+        <title>Graphika: Basic example</title>
 
-    <link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet">
-    <style>
-        .graph {
-            padding: 1em;
-            display: block;
-            margin: 0 auto;
-            font-family: "Roboto Mono", monospace;
-        }
-
-        /*.graph canvas {
-            border: 1px black solid;
-        }*/
-
-        .graph > .title {
-            font-size: 28px;
-            padding-bottom: 0.3em;
-            font-family: "Roboto Mono", monospace;
-        }
-    </style>
-</head>
-  <body>
-    <div id="graph">
-      <div class="title"></div>
-      <canvas width="800" height="600"></canvas>
-    </div>
-
-    <script src="../dist/graphika.js"></script>
-    <script>
-        function getRandomInt(min, max) {
-        return Math.floor(Math.random() * (max - min + 1)) + min;
-    }
-
-    function getRandomArray(length, min, max) {
-        let array = [];
-
-        for (let x = 0; x < length; x++) {
-            array.push(getRandomInt(min, max));
-        }
-        return array;
-    }
-
-    const dataset = {
-        0: getRandomArray(20, -100, 100),
-        1: getRandomArray(20, -100, 100),
-        2: getRandomArray(20, -50, 50)
-    };
-
-        let graph = new Graph.Graph('graph', {
-            x_label: 'X-Label',
-            y_label: 'Y-Label',
-            title_pos: 'top-center',
-            grid: {
-                gridded: true,
-                // Share zero between x & y axis' if applicable.
-                sharedZero: true,
-                optimiseSquareSize: true,
-                gridded: true,
-                strict: false
-            },   
-            scaleOptions: {
+        <link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet" />
+        <style>
+            #graph {
+                padding: 1em;
+                display: block;
+                margin: 0 auto;
+                font-family: "Roboto Mono", monospace;
             }
-        },
-        [
-            {
-                style: "dashed",
-                label: 'student_1',
-                interpolation: 'cubic',
-                data: dataset[0],
-                colour: Graph.Colours.FLAMINGO_RED,
-                area: {
-                    fill: Graph.Colours.FLAMINGO_RED
-                }
-            },
-            {
-                label: 'student_2',
-                interpolation: 'cubic',
-                data: dataset[1],
-                colour: Graph.Colours.ELECTRIC_BLUE,
-                area: {
-                    fill: Graph.Colours.ELECTRIC_BLUE
-                }
-            }
-        ]
-    );
 
-    console.time("graph_draw");
-    graph.draw();
-    console.timeEnd("graph_draw");
-    </script>
-  </body>
+            #graph > .title {
+                color: #5e5e5e;
+                font-size: 28px;
+                padding-bottom: 0.3em;
+                font-family: "Roboto Mono", monospace;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="graph">
+            <div class="title"></div>
+            <canvas width="800" height="600"></canvas>
+        </div>
+
+        <script src="../dist/graphika.js"></script>
+        <script>
+            function getRandomInt(min, max) {
+                return Math.floor(Math.random() * (max - min + 1)) + min;
+            }
+
+            function getRandomArray(length, min, max) {
+                let array = [];
+
+                for (let x = 0; x < length; x++) {
+                    array.push(getRandomInt(min, max));
+                }
+                return array;
+            }
+
+            const dataset = {
+                0: getRandomArray(21, -100, 100),
+                1: getRandomArray(21, -100, 100),
+                2: getRandomArray(21, -50, 50),
+            };
+
+            const graph = new Graph.Graph(
+                "graph",
+                {
+                    x_label: "X-Label",
+                    y_label: "Y-Label",
+                    title: "Graphika ✨",
+                    title_pos: "top-center",
+                    grid: {
+                        gridded: true,
+                        // Share zero between x & y axis' if applicable.
+                        sharedZero: true,
+                        optimiseSquareSize: true,
+                        gridded: true,
+                        strict: false,
+                    },
+                    scaleOptions: {},
+                },
+                [
+                    {
+                        style: "dashed",
+                        label: "student_1",
+                        interpolation: "cubic",
+                        data: dataset[0],
+                        colour: Graph.Colours.FLAMINGO_RED,
+                        area: {
+                            fill: Graph.Colours.FLAMINGO_RED,
+                        },
+                    },
+                    {
+                        label: "student_2",
+                        interpolation: "cubic",
+                        data: dataset[1],
+                        colour: Graph.Colours.ELECTRIC_BLUE,
+                        area: {
+                            fill: Graph.Colours.ELECTRIC_BLUE,
+                        },
+                    },
+                ]
+            );
+
+            console.time("graph_draw");
+            graph.draw();
+            console.timeEnd("graph_draw");
+        </script>
+    </body>
 </html>

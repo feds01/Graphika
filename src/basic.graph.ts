@@ -70,7 +70,7 @@ const defaultConfig: BasicGraphOptions = {
     padding: 14,
 
     axisColour: colours.BLACK,
-    labelFont: "\"Roboto Mono\", monospace",
+    labelFont: '"Roboto Mono", monospace',
 
     // default grid settings
     grid: {
