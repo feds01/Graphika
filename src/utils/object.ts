@@ -5,8 +5,9 @@
  *
  * @return {Object} A merged object from target and source
  *  */
-export function merge(target, source) {
+export function merge<T extends object>(target: T, source: T): T {
     for (const key of Object.keys(source)) {
+        // @ts-ignore
         if (source[key] instanceof Object) Object.assign(source[key], merge(target[key], source[key]));
     }
 
@@ -15,10 +16,14 @@ export function merge(target, source) {
     return target;
 }
 
-export function isUndefOrNull(o) {
+export function isUndefOrNull<T>(o: T | null | undefined): o is null | undefined {
     return typeof o === "undefined" || o === null;
 }
 
-export function isUndefOrNaN(o) {
+export function isDef<T>(o: T | null | undefined): o is T {
+    return typeof o !== "undefined" && o !== null;
+}
+
+export function isUndefOrNaN<T>(o: T | undefined | null): o is undefined | null {
     return Number.isNaN(o) || typeof o === "undefined";
 }

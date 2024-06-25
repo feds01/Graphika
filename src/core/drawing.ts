@@ -14,19 +14,26 @@ import { assert } from "./../utils/assert";
 
 const TWO_PI = Math.PI * 2;
 
+type DrawerOptions = {
+    labelFont: string;
+};
+
+/**
+ * Utility class for drawing items on the canvas.
+ */
 class Drawer {
-    constructor(canvas, context, options) {
-        this.canvas = canvas;
-        this.context = context;
-        this.options = options;
+    constructor(
+        private readonly canvas: HTMLCanvasElement,
+        private readonly context: CanvasRenderingContext2D,
+        private readonly options: DrawerOptions
+    ) {}
+
+    _coordinateSafetyCheck(x: number, y: number) {
+        assert(x >= 0 && x <= this.canvas.clientWidth, "Drawer request failed since x-coordinate is out of bounds");
+        assert(y >= 0 && y <= this.canvas.clientHeight, "Drawer request failed since y-coordinate is out of bounds");
     }
 
-    _coordinateSafetyCheck(x, y) {
-        assert(x >= 0 && x <= this.canvas.width, "Drawer request failed since x-coordinate is out of bounds");
-        assert(y >= 0 && y <= this.canvas.height, "Drawer request failed since y-coordinate is out of bounds");
-    }
-
-    circle(x, y, rad) {
+    circle(x: number, y: number, rad: number) {
         this._coordinateSafetyCheck(x, y);
 
         // begin new path, draw circle and then close path.
@@ -36,9 +43,9 @@ class Drawer {
         this.context.closePath();
     }
 
-    horizontalLine(x, y, len) {
+    horizontalLine(x: number, y: number, len: number) {
         this._coordinateSafetyCheck(x, y); // @Speed: remove this from production?
-        assert(x + len >= 0 && x + len <= this.canvas.width);
+        assert(x + len >= 0 && x + len <= this.canvas.width, "Line length is out of bounds.");
 
         this.context.beginPath();
         this.context.moveTo(x, y);
@@ -47,9 +54,9 @@ class Drawer {
         this.context.closePath();
     }
 
-    verticalLine(x, y, len) {
+    verticalLine(x: number, y: number, len: number) {
         this._coordinateSafetyCheck(x, y); // @Speed: remove this from production?
-        assert(y + len >= 0 && y + len <= this.canvas.width);
+        assert(y + len >= 0 && y + len <= this.canvas.width, "Line length is out of bounds.");
 
         this.context.beginPath();
         this.context.moveTo(x, y);
@@ -70,7 +77,7 @@ class Drawer {
      *
      * @returns nothing, just changes the drawing context
      * */
-    toTextMode(size, colour, alignment) {
+    toTextMode(size: number, colour: string, alignment: CanvasTextAlign = "center") {
         this.context.strokeStyle = colour;
         this.context.fillStyle = colour;
 
@@ -95,7 +102,7 @@ class Drawer {
      *
      * @returns nothing, just changes the drawing context
      * */
-    text(text, x, y, size, colour, alignment = "center") {
+    text(text: string, x: number, y: number, size: number, colour: string, alignment: CanvasTextAlign = "center") {
         this._coordinateSafetyCheck(x, y);
 
         const oldColour = this.context.strokeStyle;
@@ -108,11 +115,15 @@ class Drawer {
     }
 
     get width() {
-        return this.canvas.width;
+        return this.canvas.clientWidth;
     }
 
     get height() {
-        return this.canvas.height;
+        return this.canvas.clientHeight;
+    }
+
+    get ctx() {
+        return this.context;
     }
 }
 

@@ -6,13 +6,14 @@
  * @email <alexander.fedotov.uk@gmail.com>
  */
 
-import commonjs from '@rollup/plugin-commonjs';
 import { nodeResolve } from '@rollup/plugin-node-resolve';
+import commonjs from '@rollup/plugin-commonjs';
 import terser from '@rollup/plugin-terser';
+import typescript from '@rollup/plugin-typescript';
 
 import pkg from './package.json' with { type: "json" };
 
-const input = "src/graphika.js";
+const input = "src/graphika.ts";
 const banner = `/*!
  * graphika.js v${pkg.version} 
  * ${pkg.homepage}
@@ -35,6 +36,7 @@ export default [
         },
         plugins: [
             nodeResolve(),
+            typescript(),
             commonjs()
         ],
     },
@@ -42,6 +44,7 @@ export default [
         input: input,
         plugins: [
             nodeResolve(),
+            typescript(),
             commonjs(),
             terser({
                 output: {

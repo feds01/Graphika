@@ -13,6 +13,9 @@ export default {
     /* Whether to error or just warn when an assertion is false */
     warnOnFailedAssert: true,
 
+    /* Debug flag for drawer calls, this will log all instructions the draw module gets */
+    debug_draw: false,
+
     /* this value is the default data-line width for a graph.
      * It may change depending on if there are more data points than
      * the default value of ticks on the x-axis. */
@@ -43,7 +46,4 @@ export default {
 
     /* Default value for the axis colour */
     axisColour: "rgb(94,94,94)",
-
-    /* Debug flag for drawer calls, this will log all instructions the draw module gets */
-    debug_draw: false,
 };

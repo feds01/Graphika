@@ -9,7 +9,7 @@
  * @email <alexander.fedotov.uk@gmail.com>
  */
 
-export function rgba(hex, opacity) {
+export function rgba(hex: string, opacity: number): string {
     return hex.replace(")", `,${parseFloat((opacity / 100).toFixed(2))})`);
 }
 

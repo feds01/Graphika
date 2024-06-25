@@ -15,34 +15,49 @@ import * as arrays from "./../utils/arrays";
 import { floor, round } from "./../utils/number";
 import { isUndefOrNaN } from "./../utils/object";
 
+export type ScaleOptions = {
+    axisColour?: string;
+    drawLabels?: boolean;
+    drawTicks?: boolean;
+    labelDirection?: string;
+    optimiseTicks?: boolean;
+    startAtZero?: boolean;
+    tickLabels?: string[] | null; // @@FIXME
+
+    ticks?: number;
+    /* Minimum data value within the data set.* */
+    min: number;
+    /* Maximum data value within the data set.* */
+    max: number;
+
+    /* Whether or not to optimise the tickCount  */
+    minimumScaleStep?: number;
+
+    /* flag to denote if scale is working with negatives. */
+    isNegativeScale?: boolean;
+
+    /* Target number of ticks on the axis which will be displayed. * */
+    tickCount: number;
+};
+
 class Scale {
-    constructor(options) {
-        /* Minimum data value within the data set.* */
-        this.min = options.min;
+    public range: number;
+    public scaleStep: number;
+    public scaleLabels: (number | string)[]; // @@TODO: make it always a string
+    public roundedMinimum: number = Number.NEGATIVE_INFINITY;
 
-        /* Maximum data value within the data set.* */
-        this.max = options.max;
-
-        /* Whether or not to optimise the tickCount  */
-        this.minimumScaleStep = options.minimumScaleStep;
-
+    constructor(private readonly options: ScaleOptions) {
         /* The range of the values, simply a max - min subtraction */
         this.range = 0;
 
-        /* flag to denote if scale is working with negatives. */
-        this.isNegativeScale = options.isNegativeScale ?? false;
-
-        /* Target number of ticks on the axis which will be displayed. * */
-        this.tickCount = options.tickCount;
-
         /* Boolean flag to denote whether or not to optimise tick count */
-        this.optimiseTicks = options.optimiseTicks ?? true;
+        this.options.optimiseTicks = options.optimiseTicks ?? true;
 
         this.scaleLabels = [];
         this.scaleStep = 0;
 
         assert(
-            !(isUndefOrNaN(this.min) || isUndefOrNaN(this.max)),
+            !(isUndefOrNaN(this.options.min) || isUndefOrNaN(this.options.max)),
             "Min/Max value of scale cannot be NaN or undefined."
         );
 
@@ -50,28 +65,28 @@ class Scale {
         this.calculate();
 
         // recalculate to get proper tick range if there is an underflow
-        while (this.scaleStep * this.tickCount > this.range) {
-            this.tickCount -= 1;
+        while (this.scaleStep * this.options.tickCount > this.range) {
+            this.options.tickCount -= 1;
         }
 
         // avoid too little ticks if the user didn't strictly specify so many ticks.
-        while (this.scaleStep * this.tickCount < this.max - this.min) {
-            this.tickCount += 1;
+        while (this.scaleStep * this.options.tickCount < this.options.max - this.options.min) {
+            this.options.tickCount += 1;
         }
 
         this.calculate();
 
-        if (this.optimiseTicks) {
+        if (this.options.optimiseTicks) {
             // reduction by checking if data is present within the 'tick' area. If not, we simply reduce
             // the tick count until it reaches a tick that's in use. We don't re-calculate every single
             // time because this will change the 'scaleStep' value and therefore lead to an infinite reduction loop.
             const precision = Math.max(1, Math.ceil(Math.abs(Math.log10(this.scaleStep))));
 
-            const range = round(this.max - this.min / 10 ** precision, precision);
-            const initialTick = floor(this.min, this.scaleStep);
+            const range = round(this.options.max - this.options.min / 10 ** precision, precision);
+            const initialTick = floor(this.options.min, this.scaleStep);
 
-            while (range <= round(this.scaleStep * (this.tickCount - 1) + initialTick, precision)) {
-                this.tickCount -= 1;
+            while (range <= round(this.scaleStep * (this.options.tickCount - 1) + initialTick, precision)) {
+                this.options.tickCount -= 1;
             }
         }
 
@@ -79,15 +94,14 @@ class Scale {
     }
 
     calculate() {
-        this.range = Scale.niceNum(this.max - this.min, false);
+        this.range = Scale.niceNum(this.options.max - this.options.min, false);
+        this.scaleStep = Scale.niceNum((this.options.max - this.options.min) / (this.tickCount - 1), true);
 
-        this.scaleStep = Scale.niceNum((this.max - this.min) / (this.tickCount - 1), true);
-
-        if (this.minimumScaleStep) {
-            this.scaleStep = Math.max(this.minimumScaleStep, this.scaleStep);
+        if (this.options.minimumScaleStep) {
+            this.scaleStep = Math.max(this.options.minimumScaleStep, this.scaleStep);
         }
 
-        this.roundedMinimum = Math.floor(this.min / this.scaleStep) * this.scaleStep;
+        this.roundedMinimum = Math.floor(this.options.min / this.scaleStep) * this.scaleStep;
 
         this.generateScaleLabels();
     }
@@ -114,22 +128,25 @@ class Scale {
         });
     }
 
-    setTickCount(val) {
-        assert(!isNaN(val) && val > 0, "Cannot have negative ticks / non-numerical tick max for Scale");
+    get tickCount() {
+        return this.options.tickCount;
+    }
 
-        this.tickCount = val;
+    set tickCount(val: number) {
+        assert(val > 0, "Cannot have negative ticks / non-numerical tick max for Scale");
+
+        this.options.tickCount = val;
         this.calculate();
     }
 
-    setTickStep(val) {
+    set tickStep(val: number) {
         this.scaleStep = val;
-        this.tickCount = Math.ceil(this.max / val);
-
-        this.generateScaleLabels(this.tickCount);
+        this.options.tickCount = Math.ceil(this.options.max / val);
+        this.generateScaleLabels();
     }
 
-    getTickCount() {
-        return this.tickCount;
+    getTickCount(): number {
+        return this.options.tickCount;
     }
 
     /**
@@ -147,10 +164,10 @@ class Scale {
      *
      * @returns {string[]} the scale labels.
      * */
-    getScaleLabels(natural = true, rtl = false) {
+    getScaleLabels(natural = true, rtl = false): string[] {
         let scaleLabels = this.scaleLabels;
 
-        if (natural && this.isNegativeScale) scaleLabels = scaleLabels.map((x) => -x);
+        if (natural && this.options.isNegativeScale) scaleLabels = scaleLabels.map((x) => -x);
         if (rtl) scaleLabels = scaleLabels.reverse();
 
         return scaleLabels.map((x) => x.toString());
@@ -160,9 +177,9 @@ class Scale {
         return this.scaleStep;
     }
 
-    static niceNum(range, round) {
-        let exponent = Math.floor(Math.log10(range));
-        let fraction = range / 10 ** exponent;
+    static niceNum(range: number, round: boolean): number {
+        const exponent = Math.floor(Math.log10(range));
+        const fraction = range / 10 ** exponent;
         let niceFraction;
 
         if (round) {

@@ -1,5 +1,5 @@
 import config from "./config";
-import { merge } from "./utils/object";
+import { isDef, merge } from "./utils/object";
 import colours, { rgba } from "./utils/colours";
 import { assert } from "./utils/assert";
 import * as arrays from "./utils/arrays";
@@ -8,13 +8,60 @@ import * as utils from "./utils/html";
 import Line from "./core/line";
 import Drawer from "./core/drawing";
 import AxisManager from "./core/axis-manager";
-import DataManager from "./core/data-manager";
-import LegendManager from "./legend/manager";
+import DataManager, { DataSource } from "./core/data-manager";
+import LegendManager, { LegendOptions } from "./legend/manager";
+import { ScaleOptions } from "./core/scale";
+import { AxisOptions } from "./core/axis";
+
+type GridOptions = {
+    gridded: boolean;
+    gridLineStyle: string;
+    optimiseSquareSize: boolean;
+    sharedAxisZero: boolean;
+    strict: boolean;
+};
+
+type BasicGraphOptions = {
+    debug: boolean;
+    x_label: string;
+    y_label: string;
+    title: string;
+    title_pos: string;
+    padding: number;
+    labelFont: string;
+    axisColour: string;
+    grid: GridOptions;
+    scale: {
+        shorthandNumerics: boolean;
+        x: AxisOptions;
+        y: AxisOptions;
+    };
+    legend: LegendOptions;
+};
+
+type GraphData = {}[];
+
+type GraphPadding = {
+    top: number;
+    left: number;
+    right: number;
+    bottom: number;
+    textPadding: number;
+};
+
+type GraphLengths = {
+    x_begin: number;
+    y_begin: number;
+    x_end: number;
+    y_end: number;
+    x_center: number;
+    y_center: number;
+};
 
 /**
  * @since v0.0.1 Default values for options within the object, however this will
  * soon be phased out in favour of core/config * */
-const defaultConfig = {
+const defaultConfig: BasicGraphOptions = {
     // internal settings
     debug: false,
 
@@ -25,6 +72,7 @@ const defaultConfig = {
     title_pos: "top-center",
     padding: 14,
 
+    axisColour: colours.BLACK,
     labelFont: `"Roboto Mono", monospace`,
 
     // default grid settings
@@ -46,7 +94,6 @@ const defaultConfig = {
             drawLabels: true,
             labelDirection: "horizontal",
             axisColour: config.axisColour,
-            tickLabels: null,
         },
         y: {
             ticks: 10,
@@ -70,35 +117,71 @@ const defaultConfig = {
  */
 class BasicGraph {
     /**
-     * @since v0.0.1 The id of the html container that the graph should
-     * be drawn within * */
-    id;
-
-    /**
      * @since v0.0.1 Graph options, this contain x-labels, y-label, tittle, legends, points
      * style, gridded, etc. More on graph options can be read in the documentation * */
-    options;
+    public options: BasicGraphOptions;
 
     /**
      * @since v0.0.1 DataManager object which contains the data for the lines the graph should
      * plot, the object also contains various utility functions to fetch stats on the data. * */
-    dataManager;
+    public dataManager: DataManager;
+
+    /**
+     * @since v0.0.1 LegendManager is the interface to use when dealing with the legend on the graph,
+     * it contains the data for the legend and the methods to draw the legend on the graph.
+     */
+    private legendManager?: LegendManager;
 
     /**
      * This is the font size of the labels, initially it is set to 0, later on it is set if
      * the labels are not empty strings or null.
+     *
+     * @@TODO: move this into options?
      * */
-    labelFontSize;
+    labelFontSize: number;
 
     /**
      * @since v0.0.1 AxisManager object is a manager class for the Axis objects of this Graph object,
      * The AxisManager contains the xAxis & yAxis objects, it also handles the synchronisation of scales &
      * negative axis modes.
      * */
-    axisManager;
+    axisManager: AxisManager;
 
-    constructor(id, options, data) {
-        this.id = id;
+    /**
+     * @since v0.0.1 Drawer object is the interface to use when dealing with the drawing of the graph,
+     * it contains the canvas element, the canvas context and the methods to draw on the canvas.
+     */
+    drawer: Drawer;
+
+    /**
+     * @since v0.0.1 A reference to the canvas element.
+     */
+    canvas: HTMLCanvasElement;
+
+    /**
+     * @since v0.0.1 The canvas context object, this is used to draw on the canvas element.
+     */
+    ctx: CanvasRenderingContext2D;
+
+    // @@TODO: move all of this into GraphMeasurements
+    padding: GraphPadding;
+    gridRectSize: { x: number; y: number };
+    xLength: number;
+    yLength: number;
+    lengths: GraphLengths = {
+        x_begin: 0,
+        y_begin: 0,
+        x_end: 0,
+        y_end: 0,
+        x_center: 0,
+        y_center: 0,
+    };
+
+    constructor(
+        private readonly id: string,
+        options: BasicGraphOptions,
+        data: DataSource[]
+    ) {
         this.dataManager = new DataManager(data);
 
         // This is the global 'options' object for the whole settings range including grid, scale and
@@ -107,6 +190,7 @@ class BasicGraph {
 
         // find canvas element and tittle element.
         const { canvas } = utils.findObjectElements(this.id, this.options);
+        assert(isDef(canvas), "Canvas element not found in the graph container.");
 
         this.canvas = canvas;
         this.ctx = utils.setupCanvas(canvas);
@@ -127,24 +211,20 @@ class BasicGraph {
         // check if we need to draw the legend for this graph.
         if (this.options.legend.draw) {
             this.legendManager = new LegendManager(this, this.dataManager.generateLegendInfo());
-        } else {
-            this.legendManager = null;
         }
 
         // initial padding configuration
         this.padding = {
             top: this.options.padding,
-            left: null,
+            left: 0,
             right: this.options.padding,
-            bottom: null,
-
+            bottom: 0,
             textPadding: 4,
         };
 
         this.calculatePadding();
-
-        this.xLength = this.canvas.width - (this.padding.right + this.padding.left + this.labelFontSize);
-        this.yLength = this.canvas.height - (this.padding.top + this.padding.bottom);
+        this.xLength = this.canvas.clientWidth - (this.padding.right + this.padding.left + this.labelFontSize);
+        this.yLength = this.canvas.clientHeight - (this.padding.top + this.padding.bottom);
 
         // Subtract a 1 from each length because we actually don't need to worry about the first
         // iteration. Having an extra pole will make the square size less than it should be, We're
@@ -178,7 +258,7 @@ class BasicGraph {
      * is used as a label instead.
      * */
     // TODO: most likely not random string, just use incremental labeling like 'line_2', 'line_3' etc.
-    removeLineByLabel(label) {
+    removeLineByLabel(label: string) {
         let foundLine = false;
 
         for (let k = 0; k < this.dataManager.data.length; k++) {
@@ -212,13 +292,15 @@ class BasicGraph {
         let labelYOffset = 0;
 
         // check if we need to offset the x-label
-        if (this.options.legend.draw && this.legendManager.position == LegendManager.Pos.BOTTOM) {
-            labelXOffset = this.legendManager.requiredSpace;
-        }
+        if (this.legendManager) {
+            if (this.options.legend.draw && this.legendManager.position == "bottom") {
+                labelXOffset = this.legendManager.requiredSpace;
+            }
 
-        // check if we need to offset the y-label
-        if (this.options.legend.draw && this.legendManager.position == LegendManager.Pos.LEFT) {
-            labelYOffset = this.legendManager.requiredSpace;
+            // check if we need to offset the y-label
+            if (this.options.legend.draw && this.legendManager.position == "left") {
+                labelYOffset = this.legendManager.requiredSpace;
+            }
         }
 
         // add x-axis label
@@ -274,17 +356,17 @@ class BasicGraph {
 
     _drawData() {
         for (let lineData of this.dataManager.get()) {
-            const { style, area, colour, interpolation, label, annotatePoints } = lineData;
+            const { style, area, colour, interpolation, label, annotatePoints, data } = lineData;
 
             // don't even init the line if no data is supplied
             if (lineData.data.constructor === Float64Array && lineData.data.length > 0) {
-                let line = new Line(lineData.data, this, {
+                let line = new Line(data, this, {
                     style,
                     area,
                     colour,
                     interpolation,
                     label,
-                    annotatePoints,
+                    annotatePoints: annotatePoints ?? false,
                 });
 
                 line.draw();
@@ -293,9 +375,9 @@ class BasicGraph {
     }
 
     calculateLengths() {
-        this.xLength = this.canvas.width - (this.padding.right + this.padding.left + this.labelFontSize);
+        this.xLength = this.canvas.clientWidth - (this.padding.right + this.padding.left + this.labelFontSize);
 
-        this.yLength = this.canvas.height - (this.padding.top + this.padding.bottom + this.labelFontSize);
+        this.yLength = this.canvas.clientHeight - (this.padding.top + this.padding.bottom + this.labelFontSize);
 
         this.lengths = {
             x_begin: this.padding.left + this.labelFontSize,
@@ -324,8 +406,8 @@ class BasicGraph {
 
         this.padding.bottom = Math.ceil(this.options.padding + this.labelFontSize + this.fontSize());
 
-        // apply legened padding if legends are enabled
-        if (this.options.legend.draw) {
+        // apply legend padding if legends are enabled
+        if (this.options.legend.draw && isDef(this.legendManager)) {
             this.padding[this.legendManager.position] += this.legendManager.requiredSpace;
         }
     }
@@ -366,9 +448,10 @@ class BasicGraph {
 
             // we need to re-calculate right padding before we can call calculateLengths() as it is dependant on the
             // right padding value, which has now changed.
-            this.padding.right = this.canvas.width - (this.gridRectSize.x * numberOfSquares + this.lengths.x_begin);
+            this.padding.right =
+                this.canvas.clientWidth - (this.gridRectSize.x * numberOfSquares + this.lengths.x_begin);
 
-            this.xLength = this.canvas.width - (this.padding.right + this.padding.left + this.labelFontSize);
+            this.xLength = this.canvas.clientWidth - (this.padding.right + this.padding.left + this.labelFontSize);
         }
 
         this.calculateLengths();
@@ -393,13 +476,13 @@ class BasicGraph {
 
         // draw boundaries over graph if we're in debug view.
         if (this.options.debug) {
-            this.ctx.setTransform(1, 0, 0, 1, 0, 0); // reset translatation
+            this.ctx.setTransform(1, 0, 0, 1, 0, 0); // reset translation
 
             this.ctx.lineWidth = 2;
 
             // draw canvas boundary in red
             this.ctx.strokeStyle = "red";
-            this.ctx.strokeRect(0, 0, this.canvas.width, this.canvas.height);
+            this.ctx.strokeRect(0, 0, this.canvas.clientWidth, this.canvas.clientHeight);
 
             this.ctx.strokeStyle = colours.DEBUG;
             this.ctx.fillStyle = colours.DEBUG;
