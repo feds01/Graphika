@@ -48,15 +48,16 @@ class Axis {
     private negativeScale: Scale | null = null;
 
     constructor(
-        private manager: AxisManager,
+        private readonly manager: AxisManager,
         private readonly type: AxisType,
         private readonly options: AxisOptions
     ) {
-        this.manager = manager;
         this.data = this.manager.data;
         this.graph = this.manager.graph;
-        this.options = options;
-        this.type = type;
+
+        // Ensure that minTicks & maxTicks don't overflow and aren't negative, otherwise they would cause a
+        // DivisionByZero or Infinity issues
+        assert(this.options.ticks > 0, `${this.type} cannot have zero or negative tick count`);
 
         // This is the variable which holds the tick step of the axis.
         this.scaleStep = 0;
@@ -64,12 +65,7 @@ class Axis {
         // we have negative values in the data set and therefore will require two
         // different scales
         this._computeAxisScale();
-
-        // Ensure that minTicks & maxTicks don't overflow and aren't negative, otherwise they would cause a
-        // DivisionByZero or Infinity issues
-        assert(this.options.ticks > 0, `${this.type} cannot have zero or negative tick count`);
-
-        this.generateScaleNumbers();
+        this.scaleLabels = this.generateScaleNumbers();
     }
 
     /**
@@ -77,7 +73,7 @@ class Axis {
      * */
     determineAxisPosition() {
         // Y & X positions which represent the start of the drawing line
-        // @Cleanup: this must be determined here because the graph 'lengths' haven't been
+        // @@Cleanup: this must be determined here because the graph 'lengths' haven't been
         // calculated yet.
         this.yStart = this.graph.padding.top + this.graph.yLength;
 
@@ -87,7 +83,7 @@ class Axis {
         // the labels because the Axis position is calculated from the top of the graph, where as
         // the numbers are drawn from the bottom of the graph.
 
-        // TODO: maybe just change the calculation to compute the position of the x-axis from the
+        // @@TODO: maybe just change the calculation to compute the position of the x-axis from the
         //      bottom of the graph.
         if (this.type === "x" && this.manager.negativeScale) {
             const zeroIndex = this.manager.scaleNumbers.y.reverse().indexOf("0");
@@ -106,13 +102,10 @@ class Axis {
             this.positiveScale = new Scale({
                 min: 0,
                 max: this.graph.dataManager.maxLen() - 1,
-
                 // Subtract one here since we are counting the axis as a tick as well
                 tickCount: this.options.ticks - 1,
-
                 // bound the minimum step to one!
                 minimumScaleStep: 1,
-
                 optimiseTicks: this.options.optimiseTicks,
             });
 
@@ -167,8 +160,6 @@ class Axis {
     }
 
     generateScaleNumbers() {
-        this.scaleLabels = [];
-
         if (this.type === "x") {
             assert(isDef(this.positiveScale), "positive scale must be defined for x-axis");
 
@@ -179,12 +170,12 @@ class Axis {
             if (isDef(this.options.tickLabels) && this.options.drawLabels) {
                 assert(this.options.tickLabels.length > 0, "left over ticks");
 
-                this.scaleLabels = this.positiveScale.getScaleLabels().map((_, index: number) => {
+                return this.positiveScale.getScaleLabels().map((_, index: number) => {
                     assert(isDef(this.options.tickLabels), "tick labels must be defined");
                     return this.options.tickLabels[index % this.options.tickLabels.length];
                 });
             } else {
-                this.scaleLabels = arrays
+                return arrays
                     .fillRange(this.positiveScale.getTickCount() + 1)
                     .map((x) => (this.positiveScale!.scaleStep * x).toString());
             }
@@ -194,27 +185,35 @@ class Axis {
             if (this.manager.negativeScale) {
                 assert(isDef(this.negativeScale), "negative scale must be defined for y-axis");
 
-                this.scaleLabels = this.negativeScale.getScaleLabels(true, true);
+                const scaleLabels = this.negativeScale.getScaleLabels(true, true);
 
                 // check if 0 & -0 exist, if so remove the negative 0
-                if (
-                    this.scaleLabels[this.scaleLabels.length - 1] === "0" &&
-                    this.positiveScale.getScaleLabels().includes("0")
-                ) {
-                    this.scaleLabels.pop();
+                if (scaleLabels[scaleLabels.length - 1] === "0" && this.positiveScale.getScaleLabels().includes("0")) {
+                    scaleLabels.pop();
                 }
 
-                this.scaleLabels = [...this.scaleLabels, ...this.positiveScale.getScaleLabels()];
+                return [...scaleLabels, ...this.positiveScale.getScaleLabels()];
             } else {
-                this.scaleLabels = this.positiveScale.getScaleLabels();
+                return this.positiveScale.getScaleLabels();
             }
         }
     }
 
-    // @Cleanup: There must be some cleaner way to get this value, maybe using
-    // AxisManager store this value.
-    get yStartingPosition() {
-        return this.yStart;
+    getScaleLabels(): string[] {
+        let scaleNumericsToDraw = this.generateScaleNumbers();
+
+        if (this.graph.options.scale.shorthandNumerics) {
+            scaleNumericsToDraw = scaleNumericsToDraw.map((numeric) => {
+                // TODO: unhandled case where we have a float that is larger than log(n) > 1
+                if (Number.isInteger(parseFloat(numeric))) {
+                    return conversions.convertFromNumerical(numeric);
+                } else {
+                    return numeric;
+                }
+            });
+        }
+
+        return scaleNumericsToDraw;
     }
 
     draw() {
@@ -227,19 +226,7 @@ class Axis {
         this.graph.ctx.strokeStyle = rgba(this.options.axisColour, 60);
 
         // Apply numerical conversion magic.
-        // TODO: add configuration for exactly which axis' should use these conversions.
-        let scaleNumericsToDraw = this.scaleLabels;
-
-        if (this.graph.options.scale.shorthandNumerics) {
-            scaleNumericsToDraw = scaleNumericsToDraw.map((numeric) => {
-                // TODO: unhandled case where we have a float that is larger than log(n) > 1
-                if (Number.isInteger(parseFloat(numeric))) {
-                    return conversions.convertFromNumerical(numeric);
-                } else {
-                    return numeric;
-                }
-            });
-        }
+        const scaleNumericsToDraw = this.getScaleLabels();
 
         // Y-Axis Drawing !
         if (this.type === "y") {
