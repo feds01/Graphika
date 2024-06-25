@@ -19,8 +19,7 @@ export default tseslint.config(eslint.configs.recommended, ...tseslint.configs.r
         "use-isnan": "error",
         eqeqeq: "error",
         radix: "warn",
-        quotes: ["warn", "double"],
-        semi: 2,
+        semi: "error",
     },
     languageOptions: {
         globals: {
