@@ -36,7 +36,7 @@
       <p>Select local CSV File:</p>
       <input id="csv" type="file" />
     </div>
-    <script src="../dist/graphika.min.js"></script>
+    <script src="../dist/graphika.js"></script>
     <script>
       var fileInput = document.getElementById("csv"),
         dataset = [],
@@ -50,7 +50,7 @@
             };
 
             console.time("graph_init");
-            let graph = new Graph(
+            let graph = new Graph.Graph(
               "graph",
               {
                 x_label: "X-Axis",
