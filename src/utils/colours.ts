@@ -1,10 +1,11 @@
 /**
- * utils/colours.js Module description:
+ * src/utils/colours.ts
+ *
+ * Module description:
  *
  * This is file module is used for storing the various colours available
  * for making graphs and charts.
  *
- * Created on 01/10/2018
  * @author Alexander. E. Fedotov
  * @email <alexander.fedotov.uk@gmail.com>
  */

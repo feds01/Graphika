@@ -1,4 +1,15 @@
 /**
+ * src/utils/arrays.ts
+ *
+ * Module description:
+ *
+ * Various helpers for working with arrays.
+ *
+ * @author Alexander. E. Fedotov
+ * @email <alexander.fedotov.uk@gmail.com>
+ */
+
+/**
  * fills an empty array from 0 to size with integers and then returns the new array.
  *
  * @param {number} size Fill the array up to the given size

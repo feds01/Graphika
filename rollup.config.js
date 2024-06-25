@@ -13,15 +13,14 @@ import typescript from "@rollup/plugin-typescript";
 
 import pkg from "./package.json" with { type: "json" };
 
-const input = "src/graphika.ts";
-const banner = `/*!
+const input = "src/index.ts";
+const banner = `/**
  * graphika.js v${pkg.version} 
  * ${pkg.homepage}
  * (c) ${new Date().getFullYear()} Alexander. E. Fedotov.
  */`;
 
 export default [
-    // UMD builds (including moment)
     // dist/graphika.min.js
     // dist/graphika.js
     {

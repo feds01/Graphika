@@ -1,9 +1,10 @@
 /**
- * Module description: src/core/line.js
+ * src/core/line.ts
+ *
+ * Module description:
  *
  * Line class which represents a drawable line on a Graph that supports drawing lines.
  *
- * Created on 01/10/2018
  * @author Alexander. E. Fedotov
  * @email <alexander.fedotov.uk@gmail.com>
  */

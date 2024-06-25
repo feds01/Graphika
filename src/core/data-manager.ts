@@ -1,11 +1,12 @@
 /**
- * Module description: src/core/dataManager.js
+ * src/core/data-manager.ts
+ *
+ * Module description:
  *
  * This module holds the utility and CRUD methods for a graph
  * data object. Sorting data, joining and getting basic statistical
  * analysis on the data.
  *
- * Created on 01/10/2018
  * @author Alexander. E. Fedotov
  * @email <alexander.fedotov.uk@gmail.com>
  */

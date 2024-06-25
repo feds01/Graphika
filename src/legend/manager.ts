@@ -1,7 +1,13 @@
 /**
- * Module description:   src/legends/legend.js.js
+ * src/legends/legend.ts
  *
- * Created on 04/01/2019
+ * Module description:
+ *
+ * This module is responsible for drawing the legend on the graph. The legend is a
+ * component that is used to describe the data that is being displayed on the graph.
+ *
+ * Find documentation and examples in the `docs/api/legend-options.md`
+ *
  * @author Alexander. E. Fedotov
  * @email <alexander.fedotov.uk@gmail.com>
  */

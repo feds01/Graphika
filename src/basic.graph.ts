@@ -1,3 +1,14 @@
+/**
+ * src/basic.graph.ts
+ *
+ * Module description:
+ *
+ * The implementation of the `BasicGraph`.
+ *
+ * @author Alexander. E. Fedotov
+ * @email <alexander.fedotov.uk@gmail.com>
+ */
+
 import config from "./config";
 import { isDef, merge } from "./utils/object";
 import colours, { rgba } from "./utils/colours";

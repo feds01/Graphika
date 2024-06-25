@@ -1,7 +1,10 @@
 /**
- * Module description:   src/helpers/assert.js.js
+ * src/utils/assert.ts
  *
- * Created on 01/01/2019
+ * Module description:
+ *
+ * Extensions and typing helpers.
+ *
  * @author Alexander. E. Fedotov
  * @email <alexander.fedotov.uk@gmail.com>
  */

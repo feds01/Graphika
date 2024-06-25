@@ -1,3 +1,14 @@
+/**
+ * src/utils/html.ts
+ *
+ * Module description:
+ *
+ * Various DOM helpers.
+ *
+ * @author Alexander. E. Fedotov
+ * @email <alexander.fedotov.uk@gmail.com>
+ */
+
 import { assert } from "./assert";
 import { isDef, isUndefOrNull } from "./object";
 

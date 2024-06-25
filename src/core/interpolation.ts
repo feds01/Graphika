@@ -1,10 +1,11 @@
 /**
- * Module description: src/core/interpolation.js
+ * src/core/interpolation.ts
+ *
+ * Module description:
  *
  * This module currently holds the mathematical splineCurve() function,
  * used for cubic interpolation.
  *
- * Created on 01/10/2018
  * @author Alexander. E. Fedotov
  * @email <alexander.fedotov.uk@gmail.com>
  */
