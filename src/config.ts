@@ -1,6 +1,6 @@
 /**
  * src/core/config.ts
- * 
+ *
  * Module description:
  *
  * This module holds the default configuration values and parameters for

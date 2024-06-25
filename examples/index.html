@@ -42,8 +42,8 @@
             }
 
             const dataset = {
-                0: getRandomArray(21, -100, 100),
-                1: getRandomArray(21, -100, 100),
+                0: getRandomArray(21, -1000, 1000),
+                1: getRandomArray(21, -1000, 1000),
                 2: getRandomArray(21, -50, 50),
             };
 
@@ -62,7 +62,9 @@
                         gridded: true,
                         strict: false,
                     },
-                    scaleOptions: {},
+                    scale: {
+                        shorthandNumerics: true,
+                    },
                 },
                 [
                     {

@@ -7,7 +7,8 @@
         "build": "rollup -c",
         "watch": "rollup -c -w",
         "fmt": "prettier --write src examples *.js *.json",
-        "lint": "eslint src"
+        "lint": "eslint src",
+        "check": "tsc --noEmit"
     },
     "repository": {
         "type": "git",
