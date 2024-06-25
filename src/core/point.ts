@@ -1,5 +1,7 @@
 /**
- * Module description: src/core/point.js
+ * src/core/point.ts
+ *
+ * Module description:
  *
  * This module contains a simple constructor for a point, which can be assigned with
  * x, y and value. The purpose of the constructor is to also provide 'real' x and y
@@ -25,7 +27,6 @@
  *  also be given as a property of the object.
  *
  *
- * Created on 01/10/2018
  * @author Alexander. E. Fedotov
  * @email <alexander.fedotov.uk@gmail.com>
  */

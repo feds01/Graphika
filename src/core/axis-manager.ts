@@ -1,7 +1,11 @@
 /**
- * Module description:   src/core/axis-manager.js
+ * src/core/axis-manager.ts
  *
- * Created on 23/12/2018
+ * Module description:
+ *
+ * This module is responsible for managing the axis on the graph. The axis manager
+ * is responsible for drawing the axis on the graph and managing the scale numbers.
+ *
  * @author Alexander. E. Fedotov
  * @email <alexander.fedotov.uk@gmail.com>
  *

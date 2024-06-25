@@ -1,11 +1,12 @@
 /**
- * Module description: src/core/drawing.js
+ * src/core/drawing.ts
+ *
+ * Module description:
  *
  * This module holds utility functions to draw various shapes and basic
  * structures. In the future, this will become the API to draw items, rather than
  * directly calling the <canvas> context.
  *
- * Created on 01/10/2018
  * @author Alexander. E. Fedotov
  * @email <alexander.fedotov.uk@gmail.com>
  */

@@ -1,10 +1,11 @@
 /**
- * Module description: src/core/config.js
+ * src/core/config.ts
+ * 
+ * Module description:
  *
  * This module holds the default configuration values and parameters for
  * graph objects.
  *
- * Created on 01/10/2018
  * @author Alexander. E. Fedotov
  * @email <alexander.fedotov.uk@gmail.com>
  */

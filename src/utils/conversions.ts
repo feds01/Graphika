@@ -1,5 +1,7 @@
 /**
- * Module description: src/utils/conversions.js
+ * src/utils/conversions.ts
+ *
+ * Module description:
  *
  * This module holds the Scale tick conversion methods, the scale ticks are used
  * to represent the quantity of data and data itself. It is noted that natural scale
@@ -7,7 +9,6 @@
  * implementation will convert long labels such as '6,000,000' to '6M' to use less space.
  * This module holds methods which enable conversions that are described.
  *
- * Created on 29/06/2018
  * @author Alexander. E. Fedotov
  * @email <alexander.fedotov.uk@gmail.com>
  */
@@ -17,12 +18,12 @@
  * shortening for
  *
  *
- * @param numerical {number,string} If the scale labels should be returned as what they truly
+ * @param numerical If the scale labels should be returned as what they truly
  * are. This is because the scale does not handle negative numbers and thus masks them
  * as positive numbers. The natural parameter will return them as negatives, if this scale
  * is a negative scale.
  *
- * @returns {String} the scale labels.
+ * @returns formatted numeric string.
  * */
 export function convertFromNumerical(numerical: string | number): string {
     if (typeof numerical === "string") {
