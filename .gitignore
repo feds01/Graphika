@@ -64,5 +64,6 @@ dist/
 
 # webstorm IDE working files
 .idea/*
+.vscode
 
 /index.html

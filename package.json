@@ -6,7 +6,7 @@
     "scripts": {
         "build": "rollup -c",
         "watch": "rollup -c -w",
-        "fmt": "prettier --write src *.js *.json",
+        "fmt": "prettier --write src examples *.js *.json",
         "lint": "eslint src"
     },
     "repository": {

@@ -5,13 +5,13 @@ Lightning fast, robust library to draw graphs and charts in the browser. The cur
 
 ## Documentation
 
-Documentation is split into seperate files regarding each sub-system of the drawing library.
+Documentation is split into separate files regarding each sub-system of the drawing library.
 
-- To read about customising grid options go [here](docs/api/grid-options.md)
-- To read about customising line options go [here](docs/api/line-options.md)
-- To read about customising graph legend options, go [here](docs/api/legend-options.md) (WIP)
+-   To read about customising grid options go [here](docs/api/grid-options.md)
+-   To read about customising line options go [here](docs/api/line-options.md)
+-   To read about customising graph legend options, go [here](docs/api/legend-options.md) (WIP)
 
-## Getiting started
+## Getting started
 
 To create a new graph you must import the minified or combined version into the html document by adding this line in the ` <body>` or `<head>` tag. Insert this script tag into the html document:
 
@@ -24,8 +24,8 @@ Once you have done this, to create a new graph you must initialise a graph objec
 
 ```html
 <div id="graph">
-  <div class="title"></div>
-  <canvas width="800" height="600"></canvas>
+    <div class="title"></div>
+    <canvas width="800" height="600"></canvas>
 </div>
 ```
 
@@ -40,38 +40,38 @@ const dataset = [
 ];
 
 // where `graph` is the given id of the div you wish for the graph to use
-let graph = new Graph(
-  "graph",
-  {
-    title: "Graphika!",
-    x_label: "X-Axis",
-    y_label: "Y-Axis",
-  },
-  [
+const graph = new Graph.Graph(
+    "graph",
     {
-      style: "dashed",
-      label: "line-1",
-      interpolation: "cubic",
-      data: dataset[0],
-      annotatePoints: false,
-      colour: Graph.Colours.FLAMINGO_PINK,
-      area: {
-        fill: true,
-        colour: Graph.Colours.FLAMINGO_PINK,
-      },
+        title: "Graphika!",
+        x_label: "X-Axis",
+        y_label: "Y-Axis",
     },
-    {
-      label: "line-2",
-      interpolation: "cubic",
-      data: dataset[1],
-      colour: Graph.Colours.ELECTRIC_BLUE,
-      annotatePoints: true,
-      area: {
-        fill: true,
-        colour: Graph.Colours.ELECTRIC_BLUE,
-      },
-    },
-  ]
+    [
+        {
+            style: "dashed",
+            label: "line-1",
+            interpolation: "cubic",
+            data: dataset[0],
+            annotatePoints: false,
+            colour: Graph.Colours.PURPLE,
+            area: {
+                fill: true,
+                colour: Graph.Colours.PURPLE,
+            },
+        },
+        {
+            label: "line-2",
+            interpolation: "cubic",
+            data: dataset[1],
+            colour: Graph.Colours.EMERALD_GREEN,
+            annotatePoints: true,
+            area: {
+                fill: true,
+                colour: Graph.Colours.EMERALD_GREEN,
+            },
+        },
+    ]
 );
 
 graph.draw(); // let's draw the graph
