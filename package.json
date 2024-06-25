@@ -1,37 +1,46 @@
 {
-  "name": "@feds01/graphika",
-  "version": "1.0.0",
-  "description": "A fast JavaScript library to draw elegant graphs ",
-  "main": "dist/graphika.js",
-  "scripts": {
-    "build": "rollup -c",
-    "watch": "rollup -c -w",
-    "fmt": "prettier --write src/**/*.js"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/feds01/Graphika.git"
-  },
-  "type": "module",
-  "keywords": [
-    "graphing",
-    "fast",
-    "canvas",
-    "charts"
-  ],
-  "author": "Alexander Fedotov",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/feds01/Graphika/issues"
-  },
-  "homepage": "https://github.com/feds01/Graphika#readme",
-  "devDependencies": {
-    "@rollup/plugin-commonjs": "^26.0.1",
-    "@rollup/plugin-node-resolve": "^15.2.3",
-    "@rollup/plugin-terser": "^0.4.4",
-    "eslint": "9.5.0",
-    "eslint-config-prettier": "^9.1.0",
-    "prettier": "3.3.2",
-    "rollup": "4.18.0"
-  }
+    "name": "@feds01/graphika",
+    "version": "1.0.0",
+    "description": "A fast JavaScript library to draw elegant graphs ",
+    "main": "dist/graphika.js",
+    "scripts": {
+        "build": "rollup -c",
+        "watch": "rollup -c -w",
+        "fmt": "prettier --write src examples *.js *.json",
+        "lint": "eslint src"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/feds01/Graphika.git"
+    },
+    "type": "module",
+    "keywords": [
+        "graphing",
+        "fast",
+        "canvas",
+        "charts"
+    ],
+    "author": "Alexander Fedotov",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/feds01/Graphika/issues"
+    },
+    "homepage": "https://github.com/feds01/Graphika#readme",
+    "devDependencies": {
+        "@eslint/js": "^9.5.0",
+        "@rollup/plugin-commonjs": "^26.0.1",
+        "@rollup/plugin-node-resolve": "^15.2.3",
+        "@rollup/plugin-terser": "^0.4.4",
+        "@rollup/plugin-typescript": "^11.1.6",
+        "@types/eslint__js": "^8.42.3",
+        "eslint": "^9.5.0",
+        "eslint-config-prettier": "^9.1.0",
+        "eslint-plugin-prettier": "^5.1.3",
+        "globals": "^15.6.0",
+        "prettier": "3.3.2",
+        "rollup": "4.18.0",
+        "tslib": "^2.6.3",
+        "typescript": "^5.5.2",
+        "typescript-eslint": "^7.14.1"
+    }
 }

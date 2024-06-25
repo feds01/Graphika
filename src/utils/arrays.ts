@@ -1,10 +1,21 @@
 /**
+ * src/utils/arrays.ts
+ *
+ * Module description:
+ *
+ * Various helpers for working with arrays.
+ *
+ * @author Alexander. E. Fedotov
+ * @email <alexander.fedotov.uk@gmail.com>
+ */
+
+/**
  * fills an empty array from 0 to size with integers and then returns the new array.
  *
  * @param {number} size Fill the array up to the given size
  * @returns {Array<number>} array with numbers 0 up to size
  * */
-export function fillRange(size) {
+export function fillRange(size: number): Array<number> {
     return Array.from(Array(size).keys());
 }
 
@@ -16,7 +27,7 @@ export function fillRange(size) {
  *
  * @returns {string} Longest string from the array
  * */
-export function longest(arr) {
+export function longest(arr: string[]): string {
     return arr.reduce((a, b) => {
         return a.toString().length > b.toString().length ? a : b;
     });
@@ -33,7 +44,7 @@ export function longest(arr) {
  *
  * @returns {T} the previous item from the array, the same one if the index is 0
  * */
-export function getPrevious(index, data) {
+export function getPrevious<T>(index: number, data: T[]): T {
     return index <= 0 ? data[0] : data[index - 1];
 }
 
@@ -48,7 +59,7 @@ export function getPrevious(index, data) {
  *
  * @returns {T} the previous item from the array, the same one if the index is length of the array
  * */
-export function getNext(index, arr) {
+export function getNext<T>(index: number, arr: T[]): T {
     return arr[index >= arr.length - 1 ? arr.length - 1 : index + 1];
 }
 
@@ -59,7 +70,7 @@ export function getNext(index, arr) {
  *
  * @returns {Array<number>} Negative only items
  * */
-export function negativeValues(arr) {
+export function negativeValues(arr: number[] | Float64Array): number[] | Float64Array {
     return arr.filter(function (value) {
         return value < 0;
     });
@@ -72,7 +83,7 @@ export function negativeValues(arr) {
  *
  * @returns {Set<*>} the set of the array
  */
-export function uniqueValues(arr) {
+export function uniqueValues<T>(arr: T[]): Set<T> {
     return new Set(arr);
 }
 
@@ -84,7 +95,7 @@ export function uniqueValues(arr) {
  *
  * @returns {Number} largest number in the array
  */
-export function getMax(arr) {
+export function getMax(arr: number[] | Float64Array): number {
     let len = arr.length;
     let max = -Infinity;
 
@@ -102,7 +113,7 @@ export function getMax(arr) {
  *
  * @returns {Number} smallest number in the array
  */
-export function getMin(arr) {
+export function getMin(arr: number[]): number {
     let len = arr.length;
     let min = Infinity;
 
@@ -121,7 +132,7 @@ export function getMin(arr) {
  *
  * @returns {{min: Number, max: Number}} smallest and largest numbers within the array
  */
-export function getMinMax(arr) {
+export function getMinMax(arr: number[] | Float64Array): { min: number; max: number } {
     let min = arr[0];
     let max = arr[0];
     let i = arr.length;
@@ -139,7 +150,7 @@ export function getMinMax(arr) {
  * @param {Array<Number>} arr Number array to be summed.
  * @returns {Number} sum of the array
  */
-export function sum(arr) {
+export function sum(arr: number[]): number {
     return arr.reduce((a, b) => a + b, 0);
 }
 
@@ -150,6 +161,6 @@ export function sum(arr) {
  *
  * @returns {Array<Number>} the array with only natural numbers
  *  */
-export function positiveAndZeroValues(array) {
+export function positiveAndZeroValues(array: number[] | Float64Array): number[] | Float64Array {
     return array.filter((value) => value >= 0);
 }

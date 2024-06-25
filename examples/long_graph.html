@@ -1,94 +1,90 @@
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <title>Graphika</title>
+    <head>
+        <meta charset="UTF-8" />
+        <title>Graphika: Long graph example</title>
 
-    <link
-      href="https://fonts.googleapis.com/css?family=Roboto+Mono"
-      rel="stylesheet"
-    />
-    <style>
-      .graph {
-        padding: 1em;
-        display: block;
-        margin: 0 auto;
-        font-family: "Roboto Mono", monospace;
-      }
+        <link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet" />
+        <style>
+            .graph {
+                padding: 1em;
+                display: block;
+                margin: 0 auto;
+                font-family: "Roboto Mono", monospace;
+            }
 
-      /*.graph canvas {
-            border: 1px black solid;
-        }*/
+            /*
+            #graph canvas {
+                border: 1px black solid;
+            }
+            */
 
-      .graph > .title {
-        font-size: 28px;
-        padding-bottom: 0.3em;
-        font-family: "Roboto Mono", monospace;
-      }
-    </style>
-  </head>
-  <body>
-    <div id="graph">
-      <div class="title"></div>
-      <canvas width="12000" height="600"></canvas>
-    </div>
+            .graph > .title {
+                font-size: 28px;
+                padding-bottom: 0.3em;
+                font-family: "Roboto Mono", monospace;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="graph">
+            <div class="title"></div>
+            <canvas width="12000" height="600"></canvas>
+        </div>
 
-    <div>
-      <p>Select local CSV File:</p>
-      <input id="csv" type="file" />
-    </div>
-    <script src="../dist/graphika.min.js"></script>
-    <script>
-      var fileInput = document.getElementById("csv"),
-        dataset = [],
-        readFile = function () {
-          var reader = new FileReader();
-          reader.onload = function () {
-            const dataset = {
-              0: reader.result
-                .split("\n")
-                .map((item) => parseFloat(item.split(",")[0])),
-            };
+        <div>
+            <p>Select local CSV File:</p>
+            <input id="csv" type="file" />
+        </div>
+        <script src="../dist/graphika.js"></script>
+        <script>
+            var fileInput = document.getElementById("csv"),
+                dataset = [],
+                readFile = function () {
+                    var reader = new FileReader();
+                    reader.onload = function () {
+                        const dataset = {
+                            0: reader.result.split("\n").map((item) => parseFloat(item.split(",")[0])),
+                        };
 
-            console.time("graph_init");
-            let graph = new Graph(
-              "graph",
-              {
-                x_label: "X-Axis",
-                y_label: "Y-Axis",
-                title: "Long graph",
-                title_pos: "top-left",
-                grid: {
-                  gridded: true,
-                  sharedZero: true,
-                },
-                scale: {
-                  shorthandNumerics: true,
-                },
-              },
-              [
-                {
-                  style: "solid",
-                  label: "output",
-                  interpolation: "cubic",
-                  data: dataset[0],
-                  annotatePoints: false,
-                  colour: Graph.Colours.FLAMINGO_PINK,
-                  area: {
-                    fill: false,
-                    colour: Graph.Colours.FLAMINGO_PINK,
-                  },
-                },
-              ]
-            );
+                        console.time("graph_init");
+                        let graph = new Graph.Graph(
+                            "graph",
+                            {
+                                x_label: "X-Axis",
+                                y_label: "Y-Axis",
+                                title: "Long graph",
+                                title_pos: "top-left",
+                                grid: {
+                                    gridded: true,
+                                    sharedZero: true,
+                                },
+                                scale: {
+                                    shorthandNumerics: true,
+                                },
+                            },
+                            [
+                                {
+                                    style: "solid",
+                                    label: "output",
+                                    interpolation: "cubic",
+                                    data: dataset[0],
+                                    annotatePoints: false,
+                                    colour: Graph.Colours.FLAMINGO_PINK,
+                                    area: {
+                                        fill: false,
+                                        colour: Graph.Colours.FLAMINGO_PINK,
+                                    },
+                                },
+                            ]
+                        );
 
-            graph.draw();
-          };
-          // start reading the file. When it is done, calls the onload event defined above.
-          reader.readAsBinaryString(fileInput.files[0]);
-        };
+                        graph.draw();
+                    };
+                    // start reading the file. When it is done, calls the onload event defined above.
+                    reader.readAsBinaryString(fileInput.files[0]);
+                };
 
-      fileInput.addEventListener("change", readFile);
-
-    </script>
-  </body>
+            fileInput.addEventListener("change", readFile);
+        </script>
+    </body>
 </html>

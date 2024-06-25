@@ -1,21 +1,45 @@
 /**
- * Module description: src/core/dataManager.js
+ * src/core/data-manager.ts
+ *
+ * Module description:
  *
  * This module holds the utility and CRUD methods for a graph
  * data object. Sorting data, joining and getting basic statistical
  * analysis on the data.
  *
- * Created on 01/10/2018
  * @author Alexander. E. Fedotov
  * @email <alexander.fedotov.uk@gmail.com>
  */
 
 import { assert } from "../utils/assert";
 import * as arrays from "../utils/arrays";
+import { LegendBoxBorderStyle } from "../legend/manager";
+
+export type DataSource = {
+    data: number[] | Float64Array;
+    label: string;
+    colour: string;
+    style: LegendBoxBorderStyle;
+    area: {
+        fill: boolean;
+        opacity: number;
+    };
+    annotatePoints?: boolean;
+    interpolation: "linear" | "cubic";
+};
+
+type OptionalDataSource = DataSource & {
+    style?: LegendBoxBorderStyle;
+};
 
 class DataManager {
-    constructor(data) {
-        this.data = data;
+    data: DataSource[];
+
+    constructor(public readonly _data: OptionalDataSource[]) {
+        this.data = _data.map((item) => ({
+            ...item,
+            style: item.style ?? "solid",
+        }));
 
         // Assert that each data 'label' is unique
         // TODO: show/display the conflicting labels. Could probably done by using a 'reduce'
@@ -25,7 +49,7 @@ class DataManager {
         );
 
         // Ensure that the provided data can be accessed and is not empty data, this is simple sanitization
-        for (let entry of this.data) {
+        for (const entry of this.data) {
             assert(Array.isArray(entry.data) && entry.data.length !== 0, "data must be a non-empty array.");
 
             // convert the actual entry data into a Float64Array
@@ -38,7 +62,8 @@ class DataManager {
     }
 
     join() {
-        return new Float64Array(this.data.map((x) => [...new Float64Array(x.data.buffer)]).flat());
+        // return new Float64Array(this.data.map((x) => [...new Float64Array(x.data.buffer)]).flat());
+        return new Float64Array(this.data.map((x) => [...x.data]).flat());
     }
 
     lengths() {
@@ -54,16 +79,10 @@ class DataManager {
     }
 
     /**
-     *  Generate legend data from the provided line configurations
-     *
-     * @return {{style: string, colour: string, label: string}[]} An array representing
+     * Generate legend data from the provided line configurations.
      *  */
-    generateLegendInfo() {
-        return this.data.map((item) => ({
-            label: item.label,
-            colour: item.colour,
-            style: item.style ?? "solid",
-        }));
+    generateLegendInfo(): DataSource[] {
+        return this.data;
     }
 
     colourList() {

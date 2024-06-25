@@ -6,21 +6,21 @@
  * @email <alexander.fedotov.uk@gmail.com>
  */
 
-import commonjs from '@rollup/plugin-commonjs';
-import { nodeResolve } from '@rollup/plugin-node-resolve';
-import terser from '@rollup/plugin-terser';
+import { nodeResolve } from "@rollup/plugin-node-resolve";
+import commonjs from "@rollup/plugin-commonjs";
+import terser from "@rollup/plugin-terser";
+import typescript from "@rollup/plugin-typescript";
 
-import pkg from './package.json' with { type: "json" };
+import pkg from "./package.json" with { type: "json" };
 
-const input = "src/graphika.js";
-const banner = `/*!
+const input = "src/index.ts";
+const banner = `/**
  * graphika.js v${pkg.version} 
  * ${pkg.homepage}
  * (c) ${new Date().getFullYear()} Alexander. E. Fedotov.
  */`;
 
 export default [
-    // UMD builds (including moment)
     // dist/graphika.min.js
     // dist/graphika.js
     {
@@ -33,19 +33,17 @@ export default [
             indent: false,
             sourcemap: true,
         },
-        plugins: [
-            nodeResolve(),
-            commonjs()
-        ],
+        plugins: [nodeResolve(), typescript(), commonjs()],
     },
     {
         input: input,
         plugins: [
             nodeResolve(),
+            typescript(),
             commonjs(),
             terser({
                 output: {
-                    preamble: banner
+                    preamble: banner,
                 },
                 compress: {
                     warnings: true,
@@ -55,15 +53,15 @@ export default [
                 mangle: {
                     keep_classnames: false,
                     keep_fnames: false,
-                    reserved: ["Graph"]
-                }
-            })
+                    reserved: ["Graph"],
+                },
+            }),
         ],
         output: {
             name: "Graph",
             file: "dist/graphika.min.js",
             format: "umd",
-            indent: false
-        }
-    }
+            indent: false,
+        },
+    },
 ];

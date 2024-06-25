@@ -1,16 +1,23 @@
 /**
- * Module description: src/core/interpolation.js
+ * src/core/interpolation.ts
+ *
+ * Module description:
  *
  * This module currently holds the mathematical splineCurve() function,
  * used for cubic interpolation.
  *
- * Created on 01/10/2018
  * @author Alexander. E. Fedotov
  * @email <alexander.fedotov.uk@gmail.com>
  */
 
 import Point from "./point";
 import { clamp } from "./../utils/number";
+import BasicGraph from "../basic.graph";
+
+export type ControlPoint = {
+    prev: Point;
+    next: Point;
+};
 
 /**
  *
@@ -27,7 +34,7 @@ import { clamp } from "./../utils/number";
  * @param {Object} graph - graph object
  */
 
-export function splineCurve(prev, current, next, t, graph) {
+export function splineCurve(prev: Point, current: Point, next: Point, t: number, graph: BasicGraph): ControlPoint {
     //  Scaling factors: distances from this knot to the previous and following knots.
     const d01 = Math.sqrt((current.data.x - prev.data.x) ** 2 + (current.data.y - prev.data.y) ** 2);
     const d12 = Math.sqrt((next.data.x - current.data.x) ** 2 + (next.data.y - current.data.y) ** 2);
@@ -35,7 +42,7 @@ export function splineCurve(prev, current, next, t, graph) {
     const fa = (t * d01) / (d01 + d12);
     const fb = t - fa;
 
-    // clamp ys so interopolation doesn't go out of bounds
+    // clamp ys so interpolation doesn't go out of bounds
     const yMin = graph.axisManager.yAxis.min;
     const yMax = graph.axisManager.yAxis.max;
 
