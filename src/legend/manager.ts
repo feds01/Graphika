@@ -10,35 +10,56 @@ import config from "../config";
 import { assert } from "../utils/assert";
 import * as arrays from "../utils/arrays";
 import colours from "../utils/colours";
+import BasicGraph from "../basic.graph";
+import DataManager, { DataSource } from "../core/data-manager";
+
+export type LegendOptions = {
+    draw: boolean;
+    position: LegendPosition;
+    alignment: LegendAlignment;
+};
+
+export type LegendAlignment = "start" | "center" | "end";
+export type LegendPosition = "left" | "right" | "top" | "bottom";
+export type LegendBoxBorderStyle = "solid" | "dashed";
 
 class LegendManager {
-    constructor(graph, data) {
-        assert(data !== null, "Legend data must not be null");
+    private static PADDING = 4;
 
-        this.graph = graph;
+    /**
+     *  @since v0.0.1 The position of where the legend box is drawn on the graph.
+     */
+    public position: LegendPosition;
 
-        /* data is just an array of simple objects containing two fields, a legend label and a colour */
-        this.data = data;
+    /**
+     * @since v0.0.1 The alignment of the legend box on the graph.
+     */
+    public alignment: LegendAlignment;
 
+    /**
+     * @since v0.0.1 The required space for the legend box to be drawn.
+     */
+    public requiredSpace: number;
+
+    /**
+     * Constructor for a legend manager object. This object is responsible for drawing the legend
+     * on the graph.
+     *
+     * @param graph - The graph object that the legend is drawn on
+     * @param data - The data sources that the legend is drawn for
+     */
+    public constructor(
+        private readonly graph: BasicGraph,
+        private readonly data: DataSource[]
+    ) {
         /* Position of the legend container on the graph object */
-        this.position = this.graph.options.legend.position ?? LegendManager.Pos.TOP;
-
-        // check that the position is valid
-        if (!Object.values(LegendManager.Pos).includes(this.position)) {
-            this.position = LegendManager.Pos.TOP;
-        }
-
-        this.alignment = this.graph.options.legend.alignment ?? LegendManager.Alignment.CENTER;
-
-        // check that the alignment is valid
-        if (!Object.values(LegendManager.Alignment).includes(this.alignment)) {
-            this.alignment = LegendManager.Alignment.CENTER;
-        }
+        this.position = this.graph.options.legend.position ?? "top";
+        this.alignment = this.graph.options.legend.alignment ?? "center";
 
         // determine the relevant size that the padding needs to increase by based on the position
         // of the legend. If the orientation of the legend is vertical, only the 'max width' matters,
         // and if the orientation is horizontal, only the height of the legend matters.
-        if (this.position == LegendManager.Pos.LEFT || this.position == LegendManager.Pos.RIGHT) {
+        if (this.position == "left" || this.position == "right") {
             // get longest label
             const longestItem = arrays.longest(this.data.map((item) => item.label));
 
@@ -48,22 +69,7 @@ class LegendManager {
         }
     }
 
-    static PADDING = 4;
-
-    static Pos = {
-        LEFT: "left",
-        RIGHT: "right",
-        TOP: "top",
-        BOTTOM: "bottom",
-    };
-
-    static Alignment = {
-        START: "start",
-        CENTER: "center",
-        END: "end",
-    };
-
-    getRequiredSpaceFor(item) {
+    getRequiredSpaceFor(item: string) {
         // add add 2px padding on top and bottom
         let size = this.graph.fontSize() + LegendManager.PADDING;
 
@@ -81,7 +87,7 @@ class LegendManager {
      * @param {number} x - x coordinate of where to draw the label
      * @param {number} y - y coordinate of where to draw the label
      *  */
-    drawLegend(label, colour, style, x, y) {
+    drawLegend(label: string, colour: string, style: LegendBoxBorderStyle, x: number, y: number) {
         this.graph.ctx.lineWidth = 1;
         this.graph.ctx.strokeStyle = colour;
         this.graph.ctx.fillStyle = colour;
@@ -116,24 +122,23 @@ class LegendManager {
             yBegin = LegendManager.PADDING;
 
         switch (this.position) {
-            case LegendManager.Pos.TOP:
+            case "top":
                 orientation = "horizontal";
-
                 break;
-            case LegendManager.Pos.BOTTOM: {
+            case "bottom": {
                 orientation = "horizontal";
-                yBegin = this.graph.canvas.height - this.requiredSpace;
+                yBegin = this.graph.canvas.clientHeight - this.requiredSpace;
 
                 break;
             }
-            case LegendManager.Pos.LEFT:
+            case "left":
                 orientation = "vertical";
 
                 xBegin = LegendManager.PADDING;
                 yBegin = this.graph.lengths.y_begin;
 
                 break;
-            case LegendManager.Pos.RIGHT: {
+            case "right": {
                 orientation = "vertical";
                 xBegin = this.graph.lengths.x_end + LegendManager.PADDING * 2;
                 yBegin = this.graph.lengths.y_begin;
@@ -141,10 +146,7 @@ class LegendManager {
                 break;
             }
             default: {
-                // if this happens, then something wrong happened and we should avoid
-                // drawing the axis and just set a warning.
                 assert(false, "Invalid legend position");
-
                 return;
             }
         }
@@ -169,34 +171,32 @@ class LegendManager {
         // adjust begin values in correspondence to alignment
         if (orientation == "horizontal") {
             switch (this.alignment) {
-                case LegendManager.Alignment.START:
+                case "start":
                     break; // we don't need to do anything here since we assume that it is the initial condition
-                case LegendManager.Alignment.CENTER: {
+                case "center": {
                     const offset = arrays.sum(requiredSpaces.slice(0, Math.round(requiredSpaces.length / 2)));
 
-                    xBegin = this.graph.lengths.x_center - offset + LegendManager.PADDING; // we add one padding unit to account for the space between each legend
+                    // we add one padding unit to account for the space between each legend
+                    xBegin = this.graph.lengths.x_center - offset + LegendManager.PADDING;
                     break;
                 }
-                case LegendManager.Alignment.END: {
+                case "end": {
                     const offset = arrays.sum(requiredSpaces);
-
                     xBegin = this.graph.lengths.x_end - offset;
                     break;
                 }
             }
         } else {
             switch (this.alignment) {
-                case LegendManager.Alignment.START:
+                case "start":
                     break; // we don't need to do anything here since we assume that it is the initial condition
-                case LegendManager.Alignment.CENTER: {
+                case "center": {
                     const offset = arrays.sum(requiredSpaces.slice(0, Math.round(requiredSpaces.length / 2)));
-
                     yBegin = this.graph.lengths.y_center - offset;
                     break;
                 }
-                case LegendManager.Alignment.END: {
+                case "end": {
                     const offset = arrays.sum(requiredSpaces);
-
                     yBegin = this.graph.lengths.y_begin + this.graph.yLength - offset;
                     break;
                 }

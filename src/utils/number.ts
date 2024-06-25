@@ -8,7 +8,7 @@ import { assert } from "./assert";
  * @param {Number} max The upper boundary of the output range
  * @return {Number} A number in the range [min, max]
  */
-export function clamp(num, min, max) {
+export function clamp(num: number, min: number, max: number): number {
     return Math.min(Math.max(num, min), max);
 }
 
@@ -20,7 +20,7 @@ export function clamp(num, min, max) {
  * @param {Number} num A number that is to be rounded to the nearest number (with the same parity as the specified boundary)
  * @param {Number} bound The specified boundary that the number should be rounded to.
  */
-export function round(num, bound) {
+export function round(num: number, bound: number): number {
     assert(Number.isInteger(bound), "round function accepts only integer decimal places");
     assert(bound > 0, "Round boundary must be non-zero positive.");
 
@@ -36,7 +36,7 @@ export function round(num, bound) {
  *
  * @return {Number} the original number that is floored.
  */
-export function floor(num, dp) {
+export function floor(num: number, dp: number) {
     assert(Number.isInteger(dp), "floor function accepts only integer decimal places");
 
     return Math.floor(num / dp + Number.EPSILON) * dp;

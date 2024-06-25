@@ -24,7 +24,7 @@
  *
  * @returns {String} the scale labels.
  * */
-export function convertFromNumerical(numerical) {
+export function convertFromNumerical(numerical: string | number): string {
     if (typeof numerical === "string") {
         numerical = parseFloat(numerical);
     }
@@ -37,14 +37,9 @@ export function convertFromNumerical(numerical) {
         if (exponent >= 9) return numerical / 10e8 + "b";
     }
 
-    return numerical;
-}
-
-export function convertFromNumericalToK(numerical) {
-    return;
+    return numerical.toString();
 }
 
 export default {
     convertFromNumerical,
-    convertFromNumericalToK,
 };

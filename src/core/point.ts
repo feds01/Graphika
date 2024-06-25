@@ -30,20 +30,32 @@
  * @email <alexander.fedotov.uk@gmail.com>
  */
 
+import BasicGraph from "../basic.graph";
 import config from "./../config";
 import { assert } from "./../utils/assert";
 
 class Point {
-    constructor(data, graph) {
-        this.data = data;
-        this.graph = graph;
-        this.manager = graph.axisManager;
+    /**
+     * @since v0.0.1 This is the 'real' x-coordinate of the point.
+     */
+    x: number;
+
+    /**
+     * @since v0.0.1 This is the 'real' y-coordinate of the point.
+     */
+    y: number;
+
+    constructor(
+        public readonly data: { x: number; y: number },
+        private readonly graph: BasicGraph
+    ) {
+        const manager = graph.axisManager;
 
         assert(this.graph !== undefined, "Point class must be provided with the relevant graph.");
 
         // calculate actual graphical coordinates
-        let yScalar = (data.y - this.manager.yAxis.start) / this.manager.yAxisTickStep;
-        let xScalar = data.x / this.manager.xAxisTickStep;
+        let yScalar = (data.y - manager.yAxis.start) / manager.yAxisTickStep;
+        let xScalar = data.x / manager.xAxisTickStep;
 
         /*
         // Work out fraction between the data 'x' and the longest data length. Then multiply it by the available
@@ -58,7 +70,7 @@ class Point {
         // is not always at the 'y' beelining of the graph, this is due to the graph possibly containing negative
         // numbers, and therefore the graph must adjust the position of the Y-Axis.
         */
-        this.y = this.manager.xAxis.yStartingPosition - yScalar * graph.gridRectSize.y;
+        this.y = manager.xAxis.yStartingPosition - yScalar * graph.gridRectSize.y;
     }
 
     /**

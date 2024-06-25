@@ -8,7 +8,7 @@
 
 import config from "./../config";
 
-export function assert(condition, message) {
+export function assert(condition: boolean, message: string): asserts condition {
     if (!condition) {
         const assertMessage = `Assertion failed: ${message}`;
 
