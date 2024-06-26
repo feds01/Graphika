@@ -125,7 +125,11 @@ class LegendManager {
     draw() {
         let orientation = "",
             xBegin = this.graph.lengths.x_begin,
-            yBegin = LegendManager.PADDING;
+            yBegin =
+                LegendManager.PADDING +
+                (this.graph.options.title.draw
+                    ? this.graph.options.title.fontSize + this.graph.padding.textPadding
+                    : 0);
 
         switch (this.position) {
             case "top":
@@ -133,22 +137,21 @@ class LegendManager {
                 break;
             case "bottom": {
                 orientation = "horizontal";
-                yBegin = this.graph.canvas.clientHeight - this.requiredSpace;
 
+                // offset the requiredSpace by textPadding so we avoid not having any padding
+                // between the legend and the x-axis label.
+                yBegin = this.graph.canvas.height - this.requiredSpace + this.graph.padding.textPadding;
                 break;
             }
             case "left":
                 orientation = "vertical";
-
                 xBegin = LegendManager.PADDING;
                 yBegin = this.graph.lengths.y_begin;
-
                 break;
             case "right": {
                 orientation = "vertical";
                 xBegin = this.graph.lengths.x_end + LegendManager.PADDING * 2;
                 yBegin = this.graph.lengths.y_begin;
-
                 break;
             }
             default: {
