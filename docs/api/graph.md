@@ -9,11 +9,12 @@ From this sample, it's easy to see how someone could configure general options f
 
 ```javascript
  let graph = new Graph('g', {
-            title: "A new graph!",
+            title: {
+                content: "A new graph!",
+            }
             x_label: "X-Axis",
             y_label: "Y-Axis",
-            title_pos: "top-center",
-            ... // scale, grid, legend options...
+            ... // scale, grid, title, legend options...
             }
         },
         [ ... ]  // lines
@@ -27,8 +28,7 @@ Here's a table of all the options that are provided for general options on chart
 
 | Name      | Type                              | Default      | Description                                                                                      | Required |
 |-----------|-----------------------------------|--------------|--------------------------------------------------------------------------------------------------|----------|
-| title     | `string`                          | `New Graph`  | The title of the graph.                                                                          | `false`  |
-| title_pos | `left\|center\|right`             | `top-center` | The alignment and positioning of the graph title                                                 | `false`  |
+| title     | `object`                          | ``  | The title settings of the graph.                                                                          | `false`  |
 | x_label   | `string`                          | ``           | The label that is drawn at the x-axis, typically used to describe what the axis is representing. | `false`  |
 | y_label   | `string`                          | ``           | The label that is drawn at the y-axis, typically used to describe what the axis is representing. | `false`  |
 
@@ -36,6 +36,7 @@ Here's a table of all the options that are provided for general options on chart
 
 If you want to customise specific parts of a chart like the grid, or a line, check out the docs:
 
+- To read about customising title options go [here](title-options.md)
 - To read about customising grid options go [here](grid-options.md)
 - To read about customising line options go [here](line-options.md)
 - To read about customising scale options go [here](scale-options.md)

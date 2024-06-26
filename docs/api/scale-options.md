@@ -8,11 +8,11 @@ the graph.
 From this sample, it's easy to see how someone could configure the scale options for a graph:
 
 ```javascript
- let graph = new Graph('g', {
+ const graph = new Graph('g', {
             ...
             scale: {
                 shorthandNumerics: false,
-                x: {...}, // confgure axis options separately
+                x: {...}, // configure axis options separately
                 y: {...} 
             }
         },

@@ -52,8 +52,10 @@
                 {
                     x_label: "X-Label",
                     y_label: "Y-Label",
-                    title: "Graphika ✨",
-                    title_pos: "top-center",
+                    title: {
+                        content: "Graphika ✨",
+                        position: "top",
+                    },
                     grid: {
                         gridded: true,
                         // Share zero between x & y axis' if applicable.
@@ -64,6 +66,11 @@
                     },
                     scale: {
                         shorthandNumerics: true,
+                    },
+                    legend: {
+                        draw: true,
+                        position: "top",
+                        alignment: "start",
                     },
                 },
                 [

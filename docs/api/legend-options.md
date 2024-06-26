@@ -44,8 +44,10 @@ let graph = new Graph(
         {
           x_label: "Months",
           y_label: "Time procrastinating (hours)",
-          title: "Procastinating statistics",
-          title_pos: "top-center",
+          title: {
+            content: "Procrastinating statistics",
+            alignment: "center"
+          }
 
           scale: {
             x: {

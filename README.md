@@ -43,7 +43,9 @@ const dataset = [
 const graph = new Graph.Graph(
     "graph",
     {
-        title: "Graphika!",
+        title: {
+            content: "Graphika!",
+        }
         x_label: "X-Axis",
         y_label: "Y-Axis",
     },
