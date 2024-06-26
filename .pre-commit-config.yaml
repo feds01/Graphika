@@ -1,0 +1,21 @@
+repos:
+  - repo: local
+    hooks:
+      - id: prettier
+        name: Prettier
+        language: system
+        types: [ts]
+        entry: npm run fmt
+        always_run: false
+      - id: eslint
+        name: ESLint
+        language: system
+        types: [ts]
+        entry: npm run lint
+        always_run: false
+      - id: tsc
+        name: TypeScript Compiler
+        language: system
+        types: [ts]
+        entry: npm run check
+        always_run: false
