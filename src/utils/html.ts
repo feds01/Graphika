@@ -12,41 +12,27 @@
 import { assert } from "./assert";
 import { isDef, isUndefOrNull } from "./object";
 
-type Elements = {
-    canvas: HTMLCanvasElement | undefined;
-    title: HTMLElement | undefined;
-};
-
-export function findObjectElements(id: string): Elements {
+export function findCanvas(id: string): HTMLCanvasElement | undefined {
     const element = document.getElementById(id);
-    const elementMap: Elements = {
-        canvas: undefined,
-        title: undefined,
-    };
+    let canvas = undefined;
 
     assert(isDef(element), `Graph Container with id: '${id}' doesn't exist.`);
 
     for (const childNode of element.childNodes) {
         const tagName = childNode.nodeName.toLowerCase();
         if (tagName === "canvas") {
-            elementMap.canvas = childNode as HTMLCanvasElement;
-        } else if (tagName === "div") {
-            const div = childNode as HTMLDivElement;
-
-            if (div.classList.contains("title")) {
-                elementMap.title = div;
-            }
+            canvas = childNode as HTMLCanvasElement;
         }
     }
 
     // DOM modifications
-    if (!isUndefOrNull(elementMap.canvas)) {
-        element.style.width = elementMap.canvas.width.toString() + "px";
+    if (!isUndefOrNull(canvas)) {
+        element.style.width = canvas.width.toString() + "px";
     } else {
         throw Error(`Graph Container with id: '${id}' doesn't contain <canvas/> element.`);
     }
 
-    return elementMap;
+    return canvas;
 }
 
 export function setupCanvas(canvas: HTMLCanvasElement): CanvasRenderingContext2D {

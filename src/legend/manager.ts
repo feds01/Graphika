@@ -47,6 +47,8 @@ class LegendManager {
      */
     public requiredSpace: number;
 
+    private readonly boxSize: number;
+
     /**
      * Constructor for a legend manager object. This object is responsible for drawing the legend
      * on the graph.
@@ -62,6 +64,9 @@ class LegendManager {
         this.position = this.graph.options.legend.position ?? "top";
         this.alignment = this.graph.options.legend.alignment ?? "center";
 
+        // the actual legend box size
+        this.boxSize = this.graph.options.labelFontSize + 4; // 2px padding each side
+
         // determine the relevant size that the padding needs to increase by based on the position
         // of the legend. If the orientation of the legend is vertical, only the 'max width' matters,
         // and if the orientation is horizontal, only the height of the legend matters.
@@ -75,7 +80,7 @@ class LegendManager {
         }
     }
 
-    getRequiredSpaceFor(item: string) {
+    getRequiredSpaceFor(item: string): number {
         // add add 2px padding on top and bottom
         let size = this.graph.fontSize() + LegendManager.PADDING;
 
@@ -94,29 +99,24 @@ class LegendManager {
      * @param {number} y - y coordinate of where to draw the label
      *  */
     drawLegend(label: string, colour: string, style: LegendBoxBorderStyle, x: number, y: number) {
-        this.graph.ctx.lineWidth = 1;
-        this.graph.ctx.strokeStyle = colour;
-        this.graph.ctx.fillStyle = colour;
+        const labelFontSize = this.graph.options.labelFontSize;
+        const { ctx, drawer } = this.graph;
+
+        // Setup colour and style
+        ctx.lineWidth = 1;
+        ctx.strokeStyle = colour;
+        ctx.fillStyle = colour;
 
         // set the line dash
-        this.graph.ctx.setLineDash(style === "dashed" ? [4, 4] : []);
-        this.graph.ctx.strokeRect(x, y, this.graph.labelFontSize, this.graph.labelFontSize);
+        ctx.setLineDash(style === "dashed" ? [4, 4] : []);
+        ctx.strokeRect(x, y, labelFontSize, labelFontSize);
 
         // reduce the alpha to distinct fill between stroke
-        this.graph.ctx.globalAlpha = 0.6;
-
-        this.graph.ctx.fillRect(x, y, this.graph.labelFontSize, this.graph.labelFontSize);
+        ctx.globalAlpha = 0.6;
+        ctx.fillRect(x, y, labelFontSize, labelFontSize);
 
         // move by the fontSize + 8 as the padding
-        // TODO: convert magic 12 label size to a constant
-        this.graph.drawer.text(
-            label,
-            x + this.graph.labelFontSize + 8,
-            y + this.graph.labelFontSize / 2,
-            12,
-            config.axisColour,
-            "left"
-        );
+        drawer.text(label, x + labelFontSize + 8, y + labelFontSize / 2, labelFontSize, config.axisColour, "left");
     }
 
     /**
@@ -167,13 +167,11 @@ class LegendManager {
             if (orientation === "horizontal") {
                 // add padding between each item if it's not the end item
                 const additional = index !== this.data.length - 1 ? initial * 2 : 0;
-
                 return initial + this.getRequiredSpaceFor(item.label) + additional;
             } else {
                 // add padding between each item if it's not the end item
                 const additional = index !== this.data.length - 1 ? initial : initial / 2;
-
-                return additional + this.graph.fontSize();
+                return additional + this.boxSize;
             }
         });
 
@@ -220,8 +218,10 @@ class LegendManager {
             this.graph.ctx.lineWidth = 2;
             this.graph.ctx.strokeStyle = colours.PURPLE;
 
-            const xLength = orientation === "horizontal" ? arrays.sum(requiredSpaces) : this.requiredSpace;
-            const yLength = orientation === "vertical" ? arrays.sum(requiredSpaces) : this.requiredSpace;
+            const xLength =
+                orientation === "horizontal" ? arrays.sum(requiredSpaces) : this.requiredSpace - LegendManager.PADDING;
+            const yLength =
+                orientation === "vertical" ? arrays.sum(requiredSpaces) : this.requiredSpace - LegendManager.PADDING;
 
             this.graph.ctx.strokeRect(xBegin, yBegin, xLength, yLength);
 

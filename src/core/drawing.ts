@@ -11,6 +11,7 @@
  * @email <alexander.fedotov.uk@gmail.com>
  */
 
+import config from "../config";
 import { assert } from "./../utils/assert";
 
 const TWO_PI = Math.PI * 2;
@@ -80,7 +81,7 @@ class Drawer {
      *
      * @returns nothing, just changes the drawing context
      * */
-    toTextMode(size: number, colour: string, alignment: CanvasTextAlign = "center") {
+    toTextMode(size: number, colour: string = config.axisColour, alignment: CanvasTextAlign = "center") {
         this.context.strokeStyle = colour;
         this.context.fillStyle = colour;
 
