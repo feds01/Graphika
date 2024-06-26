@@ -48,7 +48,5 @@ export function round(num: number, bound: number): number {
  * @return the original number that is floored.
  */
 export function floor(num: number, dp: number): number {
-    assert(Number.isInteger(dp), "floor function accepts only integer decimal places");
-
     return Math.floor(num / dp + Number.EPSILON) * dp;
 }
