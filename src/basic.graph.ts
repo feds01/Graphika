@@ -35,7 +35,6 @@ type BasicGraphOptions = {
     debug: boolean;
     x_label: string;
     y_label: string;
-    title_pos: string;
     padding: number;
     labelFont: string;
     axisColour: string;
@@ -89,7 +88,6 @@ const defaultConfig: BasicGraphOptions = {
     // general graph settings
     x_label: "",
     y_label: "",
-    title_pos: "top-center",
     padding: 14,
 
     title: {
