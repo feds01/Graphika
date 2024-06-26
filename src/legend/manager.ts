@@ -198,7 +198,7 @@ class LegendManager {
                 case "start":
                     break; // we don't need to do anything here since we assume that it is the initial condition
                 case "center": {
-                    const offset = arrays.sum(requiredSpaces.slice(0, Math.round(requiredSpaces.length / 2)));
+                    const offset = arrays.sum(requiredSpaces) / 2;
                     yBegin = this.graph.lengths.y_center - offset;
                     break;
                 }
