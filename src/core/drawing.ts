@@ -19,7 +19,7 @@ type DrawerOptions = {
     labelFont: string;
 };
 
-type CanvasTextAlign = "center" | "end" | "left" | "right" | "start";
+export type CanvasTextAlign = "center" | "end" | "left" | "right" | "start";
 
 /**
  * Utility class for drawing items on the canvas.

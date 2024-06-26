@@ -17,7 +17,7 @@ import * as arrays from "./utils/arrays";
 import * as utils from "./utils/html";
 
 import Line from "./core/line";
-import Drawer from "./core/drawing";
+import Drawer, { CanvasTextAlign } from "./core/drawing";
 import AxisManager from "./core/axis-manager";
 import DataManager, { DataSource } from "./core/data-manager";
 import LegendManager, { LegendOptions } from "./legend/manager";
@@ -35,12 +35,12 @@ type BasicGraphOptions = {
     debug: boolean;
     x_label: string;
     y_label: string;
-    title: string;
     title_pos: string;
     padding: number;
     labelFont: string;
     axisColour: string;
     grid: GridOptions;
+    title: GraphTitleOptions;
     scale: {
         shorthandNumerics: boolean;
         x: AxisOptions;
@@ -48,6 +48,19 @@ type BasicGraphOptions = {
     };
     legend: LegendOptions;
 };
+
+type GraphTitleOptions = {
+    draw: boolean;
+    content: string;
+    position: GraphTitlePosition;
+    alignment: GraphTitleAlignment;
+    fontFamily: string;
+    fontSize: number;
+    colour: string;
+};
+
+type GraphTitlePosition = "top";
+type GraphTitleAlignment = "start" | "center" | "end";
 
 type GraphPadding = {
     top: number;
@@ -76,9 +89,18 @@ const defaultConfig: BasicGraphOptions = {
     // general graph settings
     x_label: "",
     y_label: "",
-    title: "Graph",
     title_pos: "top-center",
     padding: 14,
+
+    title: {
+        draw: true,
+        content: "Graph",
+        position: "top",
+        alignment: "center",
+        fontFamily: "monospace",
+        fontSize: 24,
+        colour: config.axisColour,
+    },
 
     axisColour: colours.BLACK,
     labelFont: '"Roboto Mono", monospace',
@@ -197,7 +219,7 @@ class BasicGraph {
         this.options = merge(defaultConfig, options);
 
         // find canvas element and tittle element.
-        const { canvas } = utils.findObjectElements(this.id, this.options);
+        const { canvas } = utils.findObjectElements(this.id);
         assert(isDef(canvas), "Canvas element not found in the graph container.");
 
         this.canvas = canvas;
@@ -293,7 +315,47 @@ class BasicGraph {
         });
     }
 
-    _drawLabels() {
+    #determinePositionFromSetting(): { offset: number; alignment: CanvasTextAlign } {
+        const { alignment, position } = this.options.title;
+
+        // @@Future: support `left`, `right`, and `bottom` positions
+        assert(position === "top", "Only top position is supported for title");
+
+        if (alignment === "start") {
+            return { offset: this.lengths.x_begin, alignment: "left" };
+        } else if (alignment === "center") {
+            return { offset: this.lengths.x_center, alignment: "center" };
+        } else if (alignment === "end") {
+            return { offset: this.lengths.x_end, alignment: "right" };
+        } else {
+            assert(false, "Positional setting did not match any of the presets");
+        }
+    }
+
+    #drawTitle() {
+        if (!this.options.title.draw) {
+            return;
+        }
+
+        // draw the graph title at the specified position with font size and family specified
+        const { offset, alignment } = this.#determinePositionFromSetting();
+
+        this.ctx.save();
+
+        // add the title
+        this.drawer.text(
+            this.options.title.content,
+            offset,
+            (this.options.title.fontSize + this.padding.textPadding) / 2, // so the text is vertically centred
+            this.options.title.fontSize,
+            this.options.title.colour,
+            alignment
+        );
+
+        this.ctx.restore();
+    }
+
+    #drawLabels() {
         if (this.labelFontSize === 0) return;
 
         let labelXOffset = 0;
@@ -328,7 +390,7 @@ class BasicGraph {
         this.ctx.restore();
     }
 
-    _drawAxisGrid() {
+    #drawAxisGrid() {
         this.ctx.lineWidth = config.gridLineWidth;
         this.ctx.strokeStyle = rgba(config.axisColour, 40);
 
@@ -359,7 +421,7 @@ class BasicGraph {
         }
     }
 
-    _drawData() {
+    #drawData() {
         for (const lineData of this.dataManager.get()) {
             const { style, area, colour, interpolation, label, annotatePoints, data } = lineData;
 
@@ -395,11 +457,17 @@ class BasicGraph {
     }
 
     calculatePadding() {
+        // get the specified font size for title and the standard text padding so there
+        // is a gap between the graph (and maybe a legend)
+        this.padding.top += this.options.title.draw ? this.options.title.fontSize + this.padding.textPadding : 0;
+
         const longestItem = arrays.longest(this.axisManager.yAxis.getScaleLabels());
 
         // Set the config font size of axis labels, and then we can effectively 'measure' the width of the text
         this.drawer.toTextMode(config.axisLabelFontSize, config.axisColour);
-        this.padding.left = Math.ceil(this.options.padding + this.ctx.measureText(longestItem).width);
+        this.padding.left = Math.ceil(
+            this.options.padding + 9 + 3 * this.padding.textPadding + this.ctx.measureText(longestItem).width
+        );
 
         // get last label on x-axis
         const lastItemOnXAxis = this.axisManager.xAxis.scaleLabels[this.axisManager.xAxis.scaleLabels.length - 1];
@@ -467,17 +535,20 @@ class BasicGraph {
         /* Draw our Axis', including negative scales & scale labels */
         this.axisManager.draw();
 
-        /* Draw the 'X-Label' & 'Y-Label' labels on the graph canvas */
-        this._drawLabels();
-
-        /* Draw the Grid on the Graph lines & axis ticks, if enabled */
-        this._drawAxisGrid();
+        /* Draw the title on the graph */
+        this.#drawTitle();
 
         /* Draw the legend if it is enabled */
         this.legendManager?.draw();
 
+        /* Draw the 'X-Label' & 'Y-Label' labels on the graph canvas */
+        this.#drawLabels();
+
+        /* Draw the Grid on the Graph lines & axis ticks, if enabled */
+        this.#drawAxisGrid();
+
         /* Draw the data sets on the graph, using the provided dataset configurations  */
-        this._drawData();
+        this.#drawData();
 
         // draw boundaries over graph if we're in debug view.
         if (this.options.debug) {

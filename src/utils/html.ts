@@ -12,17 +12,12 @@
 import { assert } from "./assert";
 import { isDef, isUndefOrNull } from "./object";
 
-interface Config {
-    title_pos: string;
-    title: string;
-}
-
 type Elements = {
     canvas: HTMLCanvasElement | undefined;
     title: HTMLElement | undefined;
 };
 
-export function findObjectElements(id: string, options: Config): Elements {
+export function findObjectElements(id: string): Elements {
     const element = document.getElementById(id);
     const elementMap: Elements = {
         canvas: undefined,
@@ -49,22 +44,6 @@ export function findObjectElements(id: string, options: Config): Elements {
         element.style.width = elementMap.canvas.width.toString() + "px";
     } else {
         throw Error(`Graph Container with id: '${id}' doesn't contain <canvas/> element.`);
-    }
-
-    if (!isUndefOrNull(elementMap.title)) {
-        switch (options.title_pos) {
-            case "top-left":
-                elementMap.title.style.textAlign = "left";
-                break;
-            case "top-center":
-                elementMap.title.style.textAlign = "center";
-                break;
-            case "top-right":
-                elementMap.title.style.textAlign = "right";
-        }
-        elementMap.title.innerHTML = options.title;
-    } else {
-        throw Error(`Graph Container with id: '${id}' doesn't contain 'title' element.`);
     }
 
     return elementMap;
