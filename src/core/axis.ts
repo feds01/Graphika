@@ -168,6 +168,21 @@ class Axis {
     draw() {
         // determine the positions of the x-axis
         this.determineAxisPosition();
+
+        // @@TODO: consider drawing `x` axis at top if the graph is "inverted" or
+        //         only has negative values.
+        //
+        //         x----┴----┴----┴---┴---┴---┴----
+        //         |     x x                  x x
+        //         |         x              x
+        //         |          x            x
+        //         |           x          x
+        //         |            x        x
+        //         |             x     x
+        //         |               x x
+        //
+        //
+        // @@TODO: account for negative?
         let offset = this.manager.sharedAxisZero ? 1 : 0;
 
         // get the context ready to draw
