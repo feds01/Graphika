@@ -35,17 +35,13 @@ export type AxisOptions = {
 };
 
 class Axis {
-    public scaleStep: number;
     public scaleLabels: string[] = [];
     public yStart: number = 0;
     public start: number = 0; // @@TODO: explain the difference between `yStart` and `start`
-    public min: number = 0;
-    public max: number = 0;
 
     private data: Float64Array;
     private graph: BasicGraph;
-    private positiveScale: Scale | null = null;
-    private negativeScale: Scale | null = null;
+    private scale: Scale;
 
     constructor(
         private readonly manager: AxisManager,
@@ -59,12 +55,10 @@ class Axis {
         // DivisionByZero or Infinity issues
         assert(this.options.ticks > 0, `${this.type} cannot have zero or negative tick count`);
 
-        // This is the variable which holds the tick step of the axis.
-        this.scaleStep = 0;
-
         // we have negative values in the data set and therefore will require two
         // different scales
-        this._computeAxisScale();
+        this.scale = this.#computeAxisScale();
+        this.start = this.scale.roundedMinimum;
         this.scaleLabels = this.generateScaleNumbers();
     }
 
@@ -85,21 +79,23 @@ class Axis {
 
         // @@TODO: maybe just change the calculation to compute the position of the x-axis from the
         //      bottom of the graph.
-        if (this.type === "x" && this.manager.negativeScale) {
-            const zeroIndex = this.manager.scaleNumbers.y.reverse().indexOf("0");
+        if (this.type === "x") {
+            assert(isDef(this.scale), "scale must be defined");
+            const [start, end] = arrays.findClosestIndex(this.scale.ticks.reverse(), 0);
 
             // The zero index must not be '-1' or in other words, not found.
-            assert(zeroIndex !== -1, `couldn't find the '0' scale position on the {${this.type}}`);
+            assert(start !== -1, `couldn't find the '0' scale position on the {${this.type}}`);
 
-            this.yStart = this.graph.lengths.y_begin + this.graph.gridRectSize.y * zeroIndex;
+            const middleIndex = (start + end) / 2;
+            this.yStart = this.graph.lengths.y_begin + this.graph.gridRectSize.y * middleIndex;
         }
     }
 
-    _computeAxisScale() {
+    #computeAxisScale(): Scale {
         if (this.type === "x") {
             // we want to set the minimum scale step to 1 since we don't care about numerics on this
             // axis scale.
-            this.positiveScale = new Scale({
+            return new Scale({
                 min: 0,
                 max: this.graph.dataManager.maxLen() - 1,
                 // Subtract one here since we are counting the axis as a tick as well
@@ -108,95 +104,48 @@ class Axis {
                 minimumScaleStep: 1,
                 optimiseTicks: this.options.optimiseTicks,
             });
-
-            this.scaleStep = this.positiveScale.getScaleStep();
-        } else if (this.type === "y") {
-            const positiveValues = arrays.positiveAndZeroValues(this.data);
-
-            if (this.manager.negativeScale) {
-                const negativeDataSet = arrays.negativeValues(this.data).map((x) => Math.abs(x));
-                // divide the max ticks by two since negative and positive are sharing the scale.
-
-                this.negativeScale = new Scale({
-                    min: 0,
-                    max: arrays.getMax(negativeDataSet),
-                    tickCount: this.options.ticks / 2,
-                    isNegativeScale: true,
-                });
-            }
-
-            this.positiveScale = new Scale({
-                ...arrays.getMinMax(positiveValues),
-                tickCount: this.manager.negativeScale ? this.options.ticks / 2 : this.options.ticks,
-            });
-
-            // set the axis min and max
-            this.min = 0;
-            this.max = this.positiveScale.range;
-
-            /*
-            // Get the largest tick step of the two and set the other scale tick step to the same one. This is
-            // because the tick steps must be consistent for both negative and positive scales. Synchronise the
-            // tickSteps basically.
-            */
-            if (this.manager.negativeScale) {
-                assert(isDef(this.negativeScale), "negative scale must be defined for y-axis");
-
-                this.scaleStep = Math.max(this.positiveScale.getScaleStep(), this.negativeScale.getScaleStep());
-
-                this.positiveScale.tickStep = this.scaleStep;
-                this.negativeScale.tickStep = this.scaleStep;
-                this.start = 0;
-
-                // we'll need to overwrite the 'min' tick for this axis since in positive it will be 0
-                this.min = -this.negativeScale.range;
-            } else {
-                this.scaleStep = this.positiveScale.getScaleStep();
-                this.start = this.positiveScale.roundedMinimum;
-            }
         } else {
-            throw Error(`Unrecognised Axis type '${this.type}'`);
+            return new Scale({
+                ...arrays.getMinMax(this.data),
+                tickCount: this.options.ticks,
+            });
         }
     }
 
     generateScaleNumbers() {
-        if (this.type === "x") {
-            assert(isDef(this.positiveScale), "positive scale must be defined for x-axis");
+        const scale = this.scale;
+        const { tickLabels, drawLabels } = this.options;
 
+        if (this.type === "x") {
             // if the user has provided custom labels to use instead of the auto
             // generated ones, we use those instead. In the event that the user
             // provides less labels than the number of ticks, we will just fill
             // it in by copying in the provided labels.
-            if (isDef(this.options.tickLabels) && this.options.drawLabels) {
-                assert(this.options.tickLabels.length > 0, "left over ticks");
+            if (isDef(tickLabels) && drawLabels) {
+                assert(tickLabels.length > 0, "left over ticks");
 
-                return this.positiveScale.getScaleLabels().map((_, index: number) => {
-                    assert(isDef(this.options.tickLabels), "tick labels must be defined");
-                    return this.options.tickLabels[index % this.options.tickLabels.length];
+                return scale.getScaleLabels().map((_, index: number) => {
+                    assert(isDef(tickLabels), "tick labels must be defined");
+                    return tickLabels[index % tickLabels.length];
                 });
             } else {
-                return arrays
-                    .fillRange(this.positiveScale.getTickCount() + 1)
-                    .map((x) => (this.positiveScale!.scaleStep * x).toString());
+                return arrays.fillRange(scale.getTickCount() + 1).map((x) => (scale.scaleStep * x).toString());
             }
         } else {
-            assert(isDef(this.positiveScale), "positive scale must be defined for y-axis");
-
-            if (this.manager.negativeScale) {
-                assert(isDef(this.negativeScale), "negative scale must be defined for y-axis");
-
-                const scaleLabels = this.negativeScale.getScaleLabels(true, true);
-
-                // check if 0 & -0 exist, if so remove the negative 0
-                if (scaleLabels[scaleLabels.length - 1] === "0" && this.positiveScale.getScaleLabels().includes("0")) {
-                    scaleLabels.pop();
-                }
-
-                return [...scaleLabels, ...this.positiveScale.getScaleLabels()];
-            } else {
-                return this.positiveScale.getScaleLabels();
-            }
+            return scale.getScaleLabels();
         }
+    }
+
+    get scaleStep() {
+        return this.scale.scaleStep;
+    }
+
+    get min() {
+        return this.scale.min;
+    }
+
+    get max() {
+        return this.scale.max;
     }
 
     getScaleLabels(): string[] {
