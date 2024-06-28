@@ -28,7 +28,7 @@ export function clamp(num: number, min: number, max: number): number {
  * of 8 would round the number to 8. Rounding the number 11 with a boundary of 8 would round
  * the number down to 8.
  *
- * @param num A number that is to be rounded to the nearest number (with the same parity as the specified boundary)
+ * @param num A number that is to be rounded to the nearest number (with the same parity as the specified boundary).
  * @param bound The specified boundary that the number should be rounded to.
  */
 export function round(num: number, bound: number): number {
@@ -42,11 +42,19 @@ export function round(num: number, bound: number): number {
  * Function to floor a number to the nearest boundary. For example, floor a 5 to a boundary
  * of 8 would round the number to 0. Flooring 11 with boundary of 8 would floor it to 8.
  *
- * @param num A number that is to be floored to the nearest number (with the same parity as the specified boundary)
- * @param bound The specified boundary that the number should be floored to.
- *
+ * @param num - A number that is to be floored to the nearest number (with the same parity as the specified boundary).
+ * @param bound - The specified boundary that the number should be floored to.
  * @return the original number that is floored.
  */
 export function floor(num: number, dp: number): number {
     return Math.floor(num / dp + Number.EPSILON) * dp;
+}
+
+/**
+ * Check if the given object is a number and is not NaN.
+ *
+ * @param o - The object to check if it is a number.
+ */
+export function isNum(o: unknown): o is number {
+    return typeof o !== "number" || Number.isNaN(o);
 }

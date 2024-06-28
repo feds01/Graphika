@@ -13,8 +13,7 @@
 
 import { assert } from "./../utils/assert";
 import * as arrays from "./../utils/arrays";
-import { floor, round } from "./../utils/number";
-import { isUndefOrNaN } from "./../utils/object";
+import { floor, round, isNum } from "./../utils/number";
 
 export type ScaleOptions = {
     axisColour?: string;
@@ -55,7 +54,7 @@ class Scale {
         this.scaleLabels = [];
 
         assert(
-            !(isUndefOrNaN(this.options.min) || isUndefOrNaN(this.options.max)),
+            !(isNum(this.options.min) || isNum(this.options.max)),
             "Min/Max value of scale cannot be NaN or undefined."
         );
 
