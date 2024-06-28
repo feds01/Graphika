@@ -14,33 +14,25 @@
  */
 
 /**
- * Function converts a number into a smart numerical with a prefix with a
- * shortening for
+ * Function converts a number into a string representation of the number in a
+ * more human readable format.
  *
- *
- * @param numerical If the scale labels should be returned as what they truly
- * are. This is because the scale does not handle negative numbers and thus masks them
- * as positive numbers. The natural parameter will return them as negatives, if this scale
- * is a negative scale.
- *
- * @returns formatted numeric string.
+ * @param num - If the scale labels should be returned as what they truly
+ *                    are.
+ * @returns Formatted numeric string.
  * */
-export function convertFromNumerical(numerical: string | number): string {
-    if (typeof numerical === "string") {
-        numerical = parseFloat(numerical);
+export function convertFromNumerical(num: string | number): string {
+    if (typeof num === "string") {
+        num = parseFloat(num);
     }
 
-    const exponent = Math.log10(numerical);
+    const exponent = Math.log10(num);
 
     if (exponent > 2) {
-        if (exponent >= 3 && exponent < 6) return numerical / 10e2 + "k";
-        if (exponent >= 6 && exponent < 9) return numerical / 10e5 + "m";
-        if (exponent >= 9) return numerical / 10e8 + "b";
+        if (exponent >= 3 && exponent < 6) return num / 10e2 + "k";
+        if (exponent >= 6 && exponent < 9) return num / 10e5 + "m";
+        if (exponent >= 9) return num / 10e8 + "b";
     }
 
-    return numerical.toString();
+    return num.toString();
 }
-
-export default {
-    convertFromNumerical,
-};

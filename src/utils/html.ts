@@ -10,7 +10,7 @@
  */
 
 import { assert } from "./assert";
-import { isDef, isUndefOrNull } from "./object";
+import { isDef } from "./object";
 
 export function findCanvas(id: string): HTMLCanvasElement | undefined {
     const element = document.getElementById(id);
@@ -26,7 +26,7 @@ export function findCanvas(id: string): HTMLCanvasElement | undefined {
     }
 
     // DOM modifications
-    if (!isUndefOrNull(canvas)) {
+    if (isDef(canvas)) {
         element.style.width = canvas.width.toString() + "px";
     } else {
         throw Error(`Graph Container with id: '${id}' doesn't contain <canvas/> element.`);

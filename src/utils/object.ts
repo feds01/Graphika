@@ -10,11 +10,11 @@
  */
 
 /**
+ * Combine two objects into one.
  *
- * @param {Object} target The initial object that will be used as a based to merge
- * @param {Object} source The object that will be merged into target
- *
- * @return {Object} A merged object from target and source
+ * @param target The initial object that will be used as a based to merge.
+ * @param source The object that will be merged into target.
+ * @return A merged object from target and source.
  *  */
 export function merge<T extends object>(target: T, source: T): T {
     for (const key of Object.keys(source)) {
@@ -27,16 +27,12 @@ export function merge<T extends object>(target: T, source: T): T {
     return target;
 }
 
-// @TODO: remove
-export function isUndefOrNull<T>(o: T | null | undefined): o is null | undefined {
-    return typeof o === "undefined" || o === null;
-}
-
+/**
+ * Check whether some item is not null and not undefined.
+ *
+ * @param o - The item to check.
+ * @return Whether the item is defined, as a type assertion.
+ */
 export function isDef<T>(o: T | null | undefined): o is T {
     return typeof o !== "undefined" && o !== null;
-}
-
-// @TODO: remove
-export function isUndefOrNaN<T>(o: T | undefined | null): o is undefined | null {
-    return Number.isNaN(o) || typeof o === "undefined";
 }

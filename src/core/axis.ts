@@ -16,7 +16,7 @@ import config from "./../config";
 import { rgba } from "./../utils/colours";
 import * as arrays from "../utils/arrays";
 import { assert } from "./../utils/assert";
-import conversions from "../utils/conversions";
+import { convertFromNumerical } from "../utils/conversions";
 import AxisManager from "./axis-manager";
 import BasicGraph from "../basic.graph";
 import { isDef } from "../utils/object";
@@ -80,7 +80,6 @@ class Axis {
         // @@TODO: maybe just change the calculation to compute the position of the x-axis from the
         //      bottom of the graph.
         if (this.type === "x") {
-            assert(isDef(this.scale), "scale must be defined");
             const [start, end] = arrays.findClosestIndex(this.scale.ticks.reverse(), 0);
 
             // The zero index must not be '-1' or in other words, not found.
@@ -155,7 +154,7 @@ class Axis {
             scaleNumericsToDraw = scaleNumericsToDraw.map((numeric) => {
                 // TODO: unhandled case where we have a float that is larger than log(n) > 1
                 if (Number.isInteger(parseFloat(numeric))) {
-                    return conversions.convertFromNumerical(numeric);
+                    return convertFromNumerical(numeric);
                 } else {
                     return numeric;
                 }
