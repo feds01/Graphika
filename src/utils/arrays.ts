@@ -134,7 +134,50 @@ export function getMinMax(arr: NumberArray): { min: number; max: number } {
 }
 
 /**
+ * Find the index or indices or the closest elements to a given
+ * values in an array. For example:
  *
+ * ```ts
+ * const arr = [-5, -4, -3, -1, 1, 2, 3, 4, 5];
+ * findClosest(arr,  0);  // returns [3, 4]
+ * findClosest(arr,  2);  // returns [5, 5]
+ * findClosest(arr, -6);  // returns [0, 0]
+ * findClosest(arr,  6);  // returns [8, 8]
+ * findClosest([],   6);  // returns [-1, -1]
+ * ```
+ *
+ * @param arr - The array to search for the closest element.
+ * @param value - The value to find the closest element to.
+ * @returns The indices of the closest element to the given value.
+ */
+export function findClosestIndex(arr: NumberArray, value: number): [number, number] {
+    if (arr.length === 0) {
+        return [-1, -1];
+    }
+
+    let closestIndex1 = 0;
+    let closestIndex2 = 0;
+    let minDiff1 = Math.abs(arr[0] - value);
+    let minDiff2 = minDiff1;
+
+    for (let i = 1; i < arr.length; i++) {
+        const currentDiff = Math.abs(arr[i] - value);
+
+        if (currentDiff < minDiff1) {
+            closestIndex2 = closestIndex1;
+            closestIndex1 = i;
+            minDiff2 = minDiff1;
+            minDiff1 = currentDiff;
+        } else if (currentDiff < minDiff2) {
+            closestIndex2 = i;
+            minDiff2 = currentDiff;
+        }
+    }
+
+    return [closestIndex1, Math.max(closestIndex1, closestIndex2)];
+}
+
+/**
  * Array sum function.
  *
  * @param arr - Array to be summed.
