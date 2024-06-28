@@ -14,7 +14,7 @@ import config from "./../config";
 import { rgba } from "./../utils/colours";
 import { splineCurve } from "./interpolation";
 import * as arrays from "./../utils/arrays";
-import { isUndefOrNull } from "../utils/object";
+import { isDef } from "../utils/object";
 import BasicGraph from "../basic.graph";
 
 export type LineOptions = {
@@ -42,7 +42,7 @@ class Line {
         private readonly graph: BasicGraph,
         private readonly options: LineOptions
     ) {
-        this._convertDataToPoints();
+        this.#convertDataToPoints();
     }
 
     /**
@@ -52,13 +52,13 @@ class Line {
      * to be done since we need to convert the data into positions on the chart that can be
      * drawn.
      * */
-    _convertDataToPoints() {
+    #convertDataToPoints() {
         for (let index = 0; index < this.data.length; index++) {
             this.points.push(new Point({ x: index, y: this.data[index] }, this.graph));
         }
 
         if (this.options.interpolation === "cubic") {
-            this._computeInterpolationControlPoints();
+            this.#computeInterpolationControlPoints();
         }
     }
 
@@ -68,7 +68,7 @@ class Line {
      * Internal function to compute interpolation points for a line if it has 'cubic' interpolation
      * enabled.
      * */
-    _computeInterpolationControlPoints() {
+    #computeInterpolationControlPoints() {
         this.controlPoints = [];
 
         // start from point 1 and not point 0, as point one and last point will
@@ -102,7 +102,7 @@ class Line {
      *
      * Internal function to draw the line fill for a linearly interpolated line.
      *  */
-    _drawLineFill() {
+    #drawLineFill() {
         const context = this.graph.drawer.ctx;
 
         context.beginPath();
@@ -127,7 +127,7 @@ class Line {
      *
      * Internal function to draw the line fill for a cubic interpolated line.
      *  */
-    _drawLineFillForCubic() {
+    #drawLineFillForCubic() {
         const context = this.graph.drawer.ctx;
 
         const f1 = new Point({ x: 0, y: this.graph.axisManager.yAxis.start }, this.graph);
@@ -194,13 +194,13 @@ class Line {
     draw() {
         const context = this.graph.drawer.ctx;
 
-        if (!isUndefOrNull(this.options.area) && this.options.area.fill) {
+        if (isDef(this.options.area) && this.options.area.fill) {
             // set the 'global' alpha to 0.6 for lines that are on top of each other to look as if they are 'transparent'
             context.globalAlpha = 0.6;
 
             // Apply area colour setting if one is present, if not default to using
             // the general colour of the line.
-            if (!isUndefOrNull(this.options.area.colour)) {
+            if (isDef(this.options.area.colour)) {
                 context.fillStyle = this.options.area.colour;
             } else {
                 context.fillStyle = this.options.colour;
@@ -208,9 +208,9 @@ class Line {
 
             // draw fill depending on interpolation
             if (this.options.interpolation === "cubic") {
-                this._drawLineFillForCubic();
+                this.#drawLineFillForCubic();
             } else if (this.options.interpolation === "linear") {
-                this._drawLineFill();
+                this.#drawLineFill();
             }
             context.globalAlpha = 1;
         }

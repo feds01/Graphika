@@ -21,6 +21,8 @@ export type ScaleOptions = {
     drawLabels?: boolean;
     drawTicks?: boolean;
     labelDirection?: string;
+
+    /* Boolean flag to denote whether or not to optimise tick count */
     optimiseTicks?: boolean;
     startAtZero?: boolean;
     tickLabels?: string[] | null; // @@FIXME
@@ -34,28 +36,23 @@ export type ScaleOptions = {
     /* Whether or not to optimise the tickCount  */
     minimumScaleStep?: number;
 
-    /* flag to denote if scale is working with negatives. */
-    isNegativeScale?: boolean;
-
     /* Target number of ticks on the axis which will be displayed. * */
     tickCount: number;
 };
 
 class Scale {
+    /* The range of the values, simply a max - min subtraction */
     public range: number;
     public scaleStep: number;
     public scaleLabels: (number | string)[]; // @@TODO: make it always a string
     public roundedMinimum: number = Number.NEGATIVE_INFINITY;
 
     constructor(private readonly options: ScaleOptions) {
-        /* The range of the values, simply a max - min subtraction */
-        this.range = 0;
+        this.range = Scale.niceNum(this.options.max - this.options.min, false);
+        this.scaleStep = Scale.niceNum((this.options.max - this.options.min) / (this.tickCount - 1), true);
 
-        /* Boolean flag to denote whether or not to optimise tick count */
         this.options.optimiseTicks = options.optimiseTicks ?? true;
-
         this.scaleLabels = [];
-        this.scaleStep = 0;
 
         assert(
             !(isUndefOrNaN(this.options.min) || isUndefOrNaN(this.options.max)),
@@ -107,20 +104,36 @@ class Scale {
         this.generateScaleLabels();
     }
 
+    /**
+     * Generate the ticks for the scale. This function will generate the numeric
+     * ticks for the scale.
+     */
+    get ticks(): number[] {
+        return arrays.fillRange(this.tickCount + 1).map((x) => {
+            const scaleLabel = this.roundedMinimum + x * this.scaleStep;
+            return scaleLabel;
+        });
+    }
+
+    get min() {
+        return this.options.min;
+    }
+
+    get max() {
+        return this.options.max;
+    }
+
     generateScaleLabels() {
         const logarithmicScaleStep = Math.log10(this.scaleStep);
         const precision = Math.abs(Math.floor(logarithmicScaleStep));
 
-        // fill array with labels.
-        this.scaleLabels = arrays.fillRange(this.tickCount + 1).map((x) => {
-            const scaleLabel = this.roundedMinimum + x * this.scaleStep;
-
+        return this.ticks.map((x) => {
             // pass the zero, so we don't convert say '0' to '0.00'
-            if (logarithmicScaleStep < 0 && scaleLabel !== 0) {
-                return scaleLabel.toPrecision(precision);
+            if (logarithmicScaleStep < 0 && x !== 0) {
+                return x.toPrecision(precision);
             }
 
-            return scaleLabel;
+            return x;
         });
     }
 
@@ -150,20 +163,13 @@ class Scale {
      * also accepts values that allow the scale values to be transformed to be
      * represented on a axis/graph.
      *
-     * @param natural {boolean} If the scale labels should be returned as what they truly
-     * are. This is because the scale does not handle negative numbers and thus masks them
-     * as positive numbers. The natural parameter will return them as negatives, if this scale
-     * is a negative scale.
-     *
-     * @param rtl {boolean} If the numbers should be returned from Right-To-Left (largest to
+     * @param rtl If the numbers should be returned from Right-To-Left (largest to
      * smallest) or else.
      *
      * @returns {string[]} the scale labels.
      * */
-    getScaleLabels(natural = true, rtl = false): string[] {
-        let scaleLabels = this.scaleLabels;
-
-        if (natural && this.options.isNegativeScale) scaleLabels = scaleLabels.map((x) => -x);
+    getScaleLabels(rtl: boolean = false): string[] {
+        let scaleLabels = this.generateScaleLabels();
         if (rtl) scaleLabels = scaleLabels.reverse();
 
         return scaleLabels.map((x) => x.toString());
