@@ -9,6 +9,8 @@
  * @email <alexander.fedotov.uk@gmail.com>
  */
 
+type NumberArray = Array<number> | Float64Array;
+
 /**
  * fills an empty array from 0 to size with integers and then returns the new array.
  *
@@ -70,7 +72,7 @@ export function getNext<T>(index: number, arr: T[]): T {
  *
  * @returns {Array<number>} Negative only items
  * */
-export function negativeValues(arr: number[] | Float64Array): number[] | Float64Array {
+export function negativeValues(arr: NumberArray): NumberArray {
     return arr.filter(function (value) {
         return value < 0;
     });
@@ -132,7 +134,7 @@ export function getMin(arr: number[]): number {
  *
  * @returns {{min: Number, max: Number}} smallest and largest numbers within the array
  */
-export function getMinMax(arr: number[] | Float64Array): { min: number; max: number } {
+export function getMinMax(arr: NumberArray): { min: number; max: number } {
     let min = arr[0];
     let max = arr[0];
     let i = arr.length;
@@ -161,6 +163,6 @@ export function sum(arr: number[]): number {
  *
  * @returns {Array<Number>} the array with only natural numbers
  *  */
-export function positiveAndZeroValues(array: number[] | Float64Array): number[] | Float64Array {
+export function nonNegativeValues(array: NumberArray): NumberArray {
     return array.filter((value) => value >= 0);
 }
