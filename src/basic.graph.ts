@@ -75,12 +75,14 @@ type GraphPadding = {
 };
 
 type GraphLengths = {
-    x_begin: number;
-    y_begin: number;
-    x_end: number;
-    y_end: number;
-    x_center: number;
-    y_center: number;
+    xBegin: number;
+    yBegin: number;
+    xEnd: number;
+    yEnd: number;
+    xCenter: number;
+    yCenter: number;
+    xLength: number;
+    yLength: number;
 };
 
 /**
@@ -192,15 +194,15 @@ class BasicGraph {
     // @@TODO: move all of this into GraphMeasurements
     padding: GraphPadding;
     gridRectSize: { x: number; y: number };
-    xLength: number;
-    yLength: number;
     lengths: GraphLengths = {
-        x_begin: 0,
-        y_begin: 0,
-        x_end: 0,
-        y_end: 0,
-        x_center: 0,
-        y_center: 0,
+        xBegin: 0,
+        yBegin: 0,
+        xEnd: 0,
+        yEnd: 0,
+        xCenter: 0,
+        yCenter: 0,
+        yLength: 0,
+        xLength: 0,
     };
 
     constructor(
@@ -241,15 +243,16 @@ class BasicGraph {
 
         // @@Cleanup: move all this stuff into `draw()`
         this.calculatePadding();
-        this.xLength = this.canvas.clientWidth - (this.padding.right + this.padding.left + this.options.labelFontSize);
-        this.yLength = this.canvas.clientHeight - (this.padding.top + this.padding.bottom);
+        this.lengths.xLength =
+            this.canvas.clientWidth - (this.padding.right + this.padding.left + this.options.labelFontSize);
+        this.lengths.yLength = this.canvas.clientHeight - (this.padding.top + this.padding.bottom);
 
         // Subtract a 1 from each length because we actually don't need to worry about the first
         // iteration. Having an extra pole will make the square size less than it should be, We're
         // actually only really concerned about how many 'gaps' there are between each item
         this.gridRectSize = {
-            x: this.xLength / (this.axisManager.xAxis.scaleLabels.length - 1),
-            y: this.yLength / (this.axisManager.yAxis.scaleLabels.length - 1),
+            x: this.lengths.xLength / (this.axisManager.xAxis.scaleLabels.length - 1),
+            y: this.lengths.yLength / (this.axisManager.yAxis.scaleLabels.length - 1),
         };
 
         // if 'strict' grid mode is enabled, we select the smallest grid size out of x and y
@@ -310,11 +313,11 @@ class BasicGraph {
         assert(position === "top", "Only top position is supported for title");
 
         if (alignment === "start") {
-            return { offset: this.lengths.x_begin, alignment: "left" };
+            return { offset: this.lengths.xBegin, alignment: "left" };
         } else if (alignment === "center") {
-            return { offset: this.lengths.x_center, alignment: "center" };
+            return { offset: this.lengths.xCenter, alignment: "center" };
         } else if (alignment === "end") {
-            return { offset: this.lengths.x_end, alignment: "right" };
+            return { offset: this.lengths.xEnd, alignment: "right" };
         } else {
             assert(false, "Positional setting did not match any of the presets");
         }
@@ -362,7 +365,7 @@ class BasicGraph {
         // add x-axis label
         this.drawer.text(
             this.options.x_label,
-            this.lengths.x_center,
+            this.lengths.xCenter,
             this.drawer.height - (this.fontSize() / 2 + this.padding.textPadding + labelXOffset),
             this.fontSize(),
             config.axisColour
@@ -370,7 +373,7 @@ class BasicGraph {
 
         // add y-axis label
         this.ctx.save();
-        this.ctx.translate(this.fontSize() + labelYOffset, this.lengths.y_center);
+        this.ctx.translate(this.fontSize() + labelYOffset, this.lengths.yCenter);
         this.ctx.rotate(-Math.PI / 2);
         this.ctx.fillText(this.options.y_label, 0, 0);
         this.ctx.restore();
@@ -386,8 +389,8 @@ class BasicGraph {
         const xTicks = this.axisManager.xAxis.scaleLabels.length;
         const yTicks = this.axisManager.yAxis.scaleLabels.length;
 
-        const y_len = this.options.grid.gridded ? 9 + this.yLength : 9;
-        const x_len = this.options.grid.gridded ? 9 + this.xLength : 9;
+        const y_len = this.options.grid.gridded ? 9 + this.lengths.yLength : 9;
+        const x_len = this.options.grid.gridded ? 9 + this.lengths.xLength : 9;
 
         let offset = 0;
 
@@ -395,13 +398,17 @@ class BasicGraph {
             // The X-Axis drawing
             if (offset < xTicks) {
                 const x_offset = offset * this.gridRectSize.x;
-                this.drawer.verticalLine(this.lengths.x_begin + x_offset, this.yLength + this.padding.top, -y_len + 9);
+                this.drawer.verticalLine(
+                    this.lengths.xBegin + x_offset,
+                    this.lengths.yLength + this.padding.top,
+                    -y_len + 9
+                );
             }
 
             // The Y-Axis drawing
             if (offset < this.axisManager.yAxis.scaleLabels.length) {
                 const y_offset = offset * this.gridRectSize.y;
-                this.drawer.horizontalLine(this.lengths.x_begin, this.lengths.y_begin + y_offset, x_len - 9);
+                this.drawer.horizontalLine(this.lengths.xBegin, this.lengths.yBegin + y_offset, x_len - 9);
             }
             offset++;
         }
@@ -428,16 +435,19 @@ class BasicGraph {
     }
 
     calculateLengths() {
-        this.xLength = this.canvas.clientWidth - (this.padding.right + this.padding.left + this.options.labelFontSize);
-        this.yLength = this.canvas.clientHeight - (this.padding.top + this.padding.bottom + this.options.labelFontSize);
+        const xLength = this.canvas.clientWidth - (this.padding.right + this.padding.left + this.options.labelFontSize);
+        const yLength =
+            this.canvas.clientHeight - (this.padding.top + this.padding.bottom + this.options.labelFontSize);
 
         this.lengths = {
-            x_begin: this.padding.left + this.options.labelFontSize,
-            y_begin: this.padding.top,
-            x_end: this.drawer.width - this.padding.right,
-            y_end: this.drawer.height - this.padding.bottom,
-            x_center: this.padding.left + this.options.labelFontSize + this.xLength / 2,
-            y_center: this.padding.top + this.options.labelFontSize / 2 + this.yLength / 2,
+            xBegin: this.padding.left + this.options.labelFontSize,
+            yBegin: this.padding.top,
+            xEnd: this.drawer.width - this.padding.right,
+            yEnd: this.drawer.height - this.padding.bottom,
+            xCenter: this.padding.left + this.options.labelFontSize + xLength / 2,
+            yCenter: this.padding.top + this.options.labelFontSize / 2 + yLength / 2,
+            xLength,
+            yLength,
         };
     }
 
@@ -517,16 +527,16 @@ class BasicGraph {
             // we need to re-calculate right padding before we can call calculateLengths() as it is dependant on the
             // right padding value, which has now changed.
             this.padding.right =
-                this.canvas.clientWidth - (this.gridRectSize.x * numberOfSquares + this.lengths.x_begin);
+                this.canvas.clientWidth - (this.gridRectSize.x * numberOfSquares + this.lengths.xBegin);
 
-            this.xLength =
+            this.lengths.xLength =
                 this.canvas.clientWidth - (this.padding.right + this.padding.left + this.options.labelFontSize);
         }
 
         this.calculateLengths();
 
         // TODO: this should be used as a general form for the Y-Axis length of the graph.
-        this.yLength = (this.axisManager.yAxis.scaleLabels.length - 1) * this.gridRectSize.y;
+        this.lengths.yLength = (this.axisManager.yAxis.scaleLabels.length - 1) * this.gridRectSize.y;
 
         /* Draw our Axis', including negative scales & scale labels */
         this.axisManager.draw();
@@ -560,15 +570,15 @@ class BasicGraph {
             this.ctx.fillStyle = colours.DEBUG;
 
             // draw box around graph boundary
-            this.ctx.strokeRect(this.lengths.x_begin, this.lengths.y_begin, this.xLength, this.yLength);
+            this.ctx.strokeRect(this.lengths.xBegin, this.lengths.yBegin, this.lengths.xLength, this.lengths.yLength);
 
             // draw line at center of the graph
             this.ctx.beginPath();
-            this.ctx.moveTo(this.lengths.x_begin, this.lengths.y_center);
-            this.ctx.lineTo(this.lengths.x_end, this.lengths.y_center);
+            this.ctx.moveTo(this.lengths.xBegin, this.lengths.yCenter);
+            this.ctx.lineTo(this.lengths.xEnd, this.lengths.yCenter);
 
-            this.ctx.moveTo(this.lengths.x_center, this.lengths.y_begin);
-            this.ctx.lineTo(this.lengths.x_center, this.lengths.y_end);
+            this.ctx.moveTo(this.lengths.xCenter, this.lengths.yBegin);
+            this.ctx.lineTo(this.lengths.xCenter, this.lengths.yEnd);
 
             this.ctx.stroke();
             this.ctx.closePath();

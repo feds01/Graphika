@@ -124,7 +124,7 @@ class LegendManager {
      */
     draw() {
         let orientation = "",
-            xBegin = this.graph.lengths.x_begin,
+            xBegin = this.graph.lengths.xBegin,
             yBegin =
                 LegendManager.PADDING +
                 (this.graph.options.title.draw
@@ -146,12 +146,12 @@ class LegendManager {
             case "left":
                 orientation = "vertical";
                 xBegin = LegendManager.PADDING;
-                yBegin = this.graph.lengths.y_begin;
+                yBegin = this.graph.lengths.yBegin;
                 break;
             case "right": {
                 orientation = "vertical";
-                xBegin = this.graph.lengths.x_end + LegendManager.PADDING * 2;
-                yBegin = this.graph.lengths.y_begin;
+                xBegin = this.graph.lengths.xEnd + LegendManager.PADDING * 2;
+                yBegin = this.graph.lengths.yBegin;
                 break;
             }
             default: {
@@ -184,12 +184,12 @@ class LegendManager {
                     const offset = arrays.sum(requiredSpaces.slice(0, Math.round(requiredSpaces.length / 2)));
 
                     // we add one padding unit to account for the space between each legend
-                    xBegin = this.graph.lengths.x_center - offset + LegendManager.PADDING;
+                    xBegin = this.graph.lengths.xCenter - offset + LegendManager.PADDING;
                     break;
                 }
                 case "end": {
                     const offset = arrays.sum(requiredSpaces);
-                    xBegin = this.graph.lengths.x_end - offset;
+                    xBegin = this.graph.lengths.xEnd - offset;
                     break;
                 }
             }
@@ -199,12 +199,12 @@ class LegendManager {
                     break; // we don't need to do anything here since we assume that it is the initial condition
                 case "center": {
                     const offset = arrays.sum(requiredSpaces) / 2;
-                    yBegin = this.graph.lengths.y_center - offset;
+                    yBegin = this.graph.lengths.yCenter - offset;
                     break;
                 }
                 case "end": {
                     const offset = arrays.sum(requiredSpaces);
-                    yBegin = this.graph.lengths.y_begin + this.graph.yLength - offset;
+                    yBegin = this.graph.lengths.yBegin + this.graph.lengths.yLength - offset;
                     break;
                 }
             }
