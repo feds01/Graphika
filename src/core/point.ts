@@ -55,7 +55,7 @@ class Point {
         assert(this.graph !== undefined, "Point class must be provided with the relevant graph.");
 
         // calculate actual graphical coordinates
-        const yScalar = (data.y - manager.yAxis.start) / manager.yAxis.scaleStep;
+        const yScalar = Math.abs(data.y) / manager.yAxis.scaleStep;
         const xScalar = data.x / manager.xAxis.scaleStep;
 
         /*
@@ -71,7 +71,8 @@ class Point {
         // is not always at the 'y' beelining of the graph, this is due to the graph possibly containing negative
         // numbers, and therefore the graph must adjust the position of the Y-Axis.
         */
-        this.y = manager.xAxis.yStart - yScalar * graph.gridRectSize.y;
+        const direction = data.y < 0 ? -1 : 1;
+        this.y = manager.xAxis.yStart - direction * yScalar * graph.gridRectSize.y;
     }
 
     /**
