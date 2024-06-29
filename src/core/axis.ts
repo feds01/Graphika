@@ -35,7 +35,6 @@ export type AxisOptions = {
 };
 
 class Axis {
-    public scaleLabels: string[] = [];
     public yStart: number = 0;
     public start: number = 0; // @@TODO: explain the difference between `yStart` and `start`
 
@@ -58,8 +57,7 @@ class Axis {
         // we have negative values in the data set and therefore will require two
         // different scales
         this.scale = this.#computeAxisScale();
-        this.start = this.scale.roundedMinimum;
-        this.scaleLabels = this.generateScaleNumbers();
+        this.start = this.scale.closestToZero;
     }
 
     /**
@@ -80,7 +78,8 @@ class Axis {
         // @@TODO: maybe just change the calculation to compute the position of the x-axis from the
         //      bottom of the graph.
         if (this.type === "x") {
-            const [start, end] = arrays.findClosestIndex(this.scale.ticks.reverse(), 0);
+            const ticks = this.manager.yAxis.scale.ticks;
+            const [start, end] = arrays.findClosestIndex(ticks.reverse(), 0);
 
             // The zero index must not be '-1' or in other words, not found.
             assert(start !== -1, `couldn't find the '0' scale position on the {${this.type}}`);
@@ -147,7 +146,7 @@ class Axis {
         return this.scale.max;
     }
 
-    getScaleLabels(): string[] {
+    get scaleLabels(): string[] {
         let scaleNumericsToDraw = this.generateScaleNumbers();
 
         if (this.graph.options.scale.shorthandNumerics) {
@@ -188,9 +187,6 @@ class Axis {
         this.graph.ctx.lineWidth = config.gridLineWidth;
         this.graph.ctx.strokeStyle = rgba(this.options.axisColour, 60);
 
-        // Apply numerical conversion magic.
-        const scaleNumericsToDraw = this.getScaleLabels();
-
         // Y-Axis Drawing !
         if (this.type === "y") {
             this.graph.drawer.verticalLine(
@@ -200,7 +196,7 @@ class Axis {
             );
             this.graph.ctx.textBaseline = "middle";
 
-            for (const number of scaleNumericsToDraw) {
+            for (const number of this.scaleLabels) {
                 if (!(this.manager.sharedAxisZero && number.toString() === "0")) {
                     const y_offset = offset * this.graph.gridRectSize.y;
 
@@ -240,9 +236,9 @@ class Axis {
 
             const scale_offset = this.graph.padding.textPadding + this.graph.fontSize() / 2;
 
-            for (const number of scaleNumericsToDraw) {
+            for (const label of this.scaleLabels) {
                 // if sharedAxisZero isn't enabled and the number isn't zero, draw the number label
-                if (!(this.manager.sharedAxisZero && number.toString() === "0")) {
+                if (!(this.manager.sharedAxisZero && label === "0")) {
                     const x_offset = offset * this.graph.gridRectSize.x;
 
                     // draw the tick
@@ -253,7 +249,7 @@ class Axis {
                     );
 
                     this.graph.drawer.text(
-                        number,
+                        label,
                         this.graph.lengths.x_begin + x_offset,
                         this.graph.yLength + 9 + this.graph.padding.top + scale_offset,
                         config.scaleLabelFontSize,

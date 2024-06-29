@@ -150,7 +150,6 @@ class Scale {
     set tickStep(val: number) {
         this.scaleStep = val;
         this.options.tickCount = Math.ceil(this.options.max / val);
-        this.generateScaleLabels();
     }
 
     getTickCount(): number {
@@ -176,6 +175,27 @@ class Scale {
 
     getScaleStep() {
         return this.scaleStep;
+    }
+
+    /**
+     * Get the closest number to zero in the scale. This is a useful
+     * utility to have when trying to work out the orientation of the
+     * scale.
+     *
+     * @returns the closest number to zero in the scale.
+     */
+    get closestToZero(): number {
+        let candidate = Math.abs(this.roundedMinimum);
+
+        for (const tick of this.ticks) {
+            if (tick === 0) return 0;
+
+            if (Math.abs(tick) < candidate) {
+                candidate = Math.abs(tick);
+            }
+        }
+
+        return candidate;
     }
 
     static niceNum(range: number, round: boolean): number {

@@ -104,13 +104,14 @@ class Line {
      *  */
     #drawLineFill() {
         const context = this.graph.drawer.ctx;
+        const { start } = this.graph.axisManager.yAxis;
 
         context.beginPath();
 
         for (let i = 0; i < this.points.length - 1; i++) {
             // Initiate critical points on X-Axis
-            const x1 = new Point({ x: i, y: this.graph.axisManager.yAxis.start }, this.graph);
-            const x2 = new Point({ x: i + 1, y: this.graph.axisManager.yAxis.start }, this.graph);
+            const x1 = new Point({ x: i, y: start }, this.graph);
+            const x2 = new Point({ x: i + 1, y: start }, this.graph);
 
             context.moveTo(this.points[i].x, this.points[i].y);
             context.lineTo(this.points[i + 1].x, this.points[i + 1].y);
@@ -129,9 +130,10 @@ class Line {
      *  */
     #drawLineFillForCubic() {
         const context = this.graph.drawer.ctx;
+        const { start } = this.graph.axisManager.yAxis;
 
-        const f1 = new Point({ x: 0, y: this.graph.axisManager.yAxis.start }, this.graph);
-        const f2 = new Point({ x: 1, y: this.graph.axisManager.yAxis.start }, this.graph);
+        const f1 = new Point({ x: 0, y: start }, this.graph);
+        const f2 = new Point({ x: 1, y: start }, this.graph);
 
         context.beginPath();
 
@@ -150,8 +152,8 @@ class Line {
         // iterate over the central critical points and create a fillable path
         for (let i = 1; i < this.points.length - 2; i++) {
             // Initiate critical points on X-Axis
-            const x1 = new Point({ x: i, y: this.graph.axisManager.yAxis.start }, this.graph);
-            const x2 = new Point({ x: i + 1, y: this.graph.axisManager.yAxis.start }, this.graph);
+            const x1 = new Point({ x: i, y: start }, this.graph);
+            const x2 = new Point({ x: i + 1, y: start }, this.graph);
 
             context.moveTo(this.points[i].x, this.points[i].y);
             context.bezierCurveTo(
@@ -166,8 +168,8 @@ class Line {
             context.lineTo(x1.x, x1.y);
         }
 
-        const f3 = new Point({ x: this.points.length - 2, y: this.graph.axisManager.yAxis.start }, this.graph);
-        const f4 = new Point({ x: this.points.length - 1, y: this.graph.axisManager.yAxis.start }, this.graph);
+        const f3 = new Point({ x: this.points.length - 2, y: start }, this.graph);
+        const f4 = new Point({ x: this.points.length - 1, y: start }, this.graph);
 
         const precursorPoint = this.points[this.points.length - 1];
 
