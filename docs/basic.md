@@ -6,12 +6,15 @@
  let graph = new Graph('g', {
             x_label: 'X-Label',
             y_label: 'Y-Label',
-            title_pos: 'top-center',
+            title: {
+                content: 'Simple Graph', // Title of the graph
+                alignment: 'center' // Title alignment
+            },
             gridOptions: {
                 gridded: true,
                 sharedAxisZero: true // Share zero between x & y axis' if applicable.
                 // for more options check the API docs
-            },   
+            },
         },
         [
             {
@@ -44,8 +47,10 @@ The library also supports data sets which include negative numbers:
  let graph = new Graph("graph", {
             x_label: "X-Label",
             y_label: "Y-Label",
-            title_pos: "top-center",
-            title: "Graph with negative scale",
+            title: {
+              content: "Graph with negative scale",
+              alignment: "center"
+            },
             gridOptions: {
                 gridded: true,
             },

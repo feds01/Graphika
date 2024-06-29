@@ -6,7 +6,7 @@ When creating a new graph, you can customise the look and feel of the legend com
 
 From this sample, it's easy to see how someone could configure the legend options for some graph:
 
-```javascript
+```ts
  let graph = new Graph('g', {
             ...
             // generic legend options

@@ -7,9 +7,10 @@ Lightning fast, robust library to draw graphs and charts in the browser. The cur
 
 Documentation is split into separate files regarding each sub-system of the drawing library.
 
--   To read about customising grid options go [here](docs/api/grid-options.md)
--   To read about customising line options go [here](docs/api/line-options.md)
--   To read about customising graph legend options, go [here](docs/api/legend-options.md) (WIP)
+- Read about customising title options go [here](docs/api/title-options.md).
+- Read about customising grid options go [here](docs/api/grid-options.md).
+- Read about customising line options go [here](docs/api/line-options.md).
+- Read about customising legend options, go [here](docs/api/legend-options.md).
 
 ## Getting started
 
@@ -20,18 +21,17 @@ To create a new graph you must import the minified or combined version into the 
 <script src="js/graphika/dist/graph.min.js">
 ```
 
-Once you have done this, to create a new graph you must initialise a graph object by providing it a `<div>` element id, where the graph object should insert the given tittle and canvas (if no canvas exists within the element). To this, simply create a new variable and associate a 'new' graph object like so:
+To create a new graph you must initialise a graph object by providing it a `<div>` element id, where the graph object should insert the given tittle and canvas (if no canvas exists within the element). To this, simply create a new variable and associate a 'new' graph object like so:
 
 ```html
 <div id="graph">
-    <div class="title"></div>
     <canvas width="800" height="600"></canvas>
 </div>
 ```
 
 Add some javascript:
 
-```javascript
+```ts
 
 // some data, use a function to load it, fetch it, read csv
 const dataset = [
@@ -45,7 +45,7 @@ const graph = new Graph.Graph(
     {
         title: {
             content: "Graphika!",
-        }
+        },
         x_label: "X-Axis",
         y_label: "Y-Axis",
     },
@@ -84,4 +84,4 @@ Result:
 
 ## Examples
 
-Check out examples of graphs in the examples directory
+Check out examples of graphs in the examples directory.

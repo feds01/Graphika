@@ -7,11 +7,11 @@ You can do this my modyfying the settings when creating a new graph object as sh
 
 From this sample, it's easy to see how someone could configure general options for a graph:
 
-```javascript
+```ts
  let graph = new Graph('g', {
             title: {
                 content: "A new graph!",
-            }
+            },
             x_label: "X-Axis",
             y_label: "Y-Axis",
             ... // scale, grid, title, legend options...
@@ -19,7 +19,6 @@ From this sample, it's easy to see how someone could configure general options f
         },
         [ ... ]  // lines
 }
-
 ```
 
 ## Options
@@ -36,9 +35,8 @@ Here's a table of all the options that are provided for general options on chart
 
 If you want to customise specific parts of a chart like the grid, or a line, check out the docs:
 
-- To read about customising title options go [here](title-options.md)
-- To read about customising grid options go [here](grid-options.md)
-- To read about customising line options go [here](line-options.md)
-- To read about customising scale options go [here](scale-options.md)
-- To read about customising legend options go [here](legend-options.md) (WIP)
-- More documentation is available in the docs folder
+- Read about customising title options go [here](title-options.md).
+- Read about customising grid options go [here](grid-options.md).
+- Read about customising line options go [here](line-options.md).
+- Read about customising scale options go [here](scale-options.md).
+- Read about customising legend options go [here](legend-options.md).
