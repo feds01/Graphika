@@ -36,3 +36,7 @@ export function merge<T extends object>(target: T, source: T): T {
 export function isDef<T>(o: T | null | undefined): o is T {
     return typeof o !== "undefined" && o !== null;
 }
+
+export function expr<T>(cb: () => T): T {
+    return cb();
+}
