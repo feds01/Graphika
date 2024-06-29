@@ -33,7 +33,6 @@
 
 import BasicGraph from "../basic.graph";
 import config from "./../config";
-import { assert } from "./../utils/assert";
 
 class Point {
     /**
@@ -52,27 +51,30 @@ class Point {
     ) {
         const manager = graph.axisManager;
 
-        assert(this.graph !== undefined, "Point class must be provided with the relevant graph.");
+        // 1. calculate the number of tick lengths we are away from the "axis" origin.
+        //
+        // N.B. We must adjust for the minimum value of the axis, as the axis may not start at 0.
+        let relX = Math.abs(data.x);
+        if (manager.xAxis.roundedMin > 0) {
+            relX -= manager.xAxis.roundedMin;
+        }
 
-        // calculate actual graphical coordinates
-        const yScalar = Math.abs(data.y) / manager.yAxis.scaleStep;
-        const xScalar = data.x / manager.xAxis.scaleStep;
+        const xScalar = relX / manager.xAxis.scaleStep;
 
-        /*
-        // Work out fraction between the data 'x' and the longest data length. Then multiply it by the available
-        // graph canvas length to get a 'ratio' of the length and then add the 'x_begin' value to counter for the
-        // axis offset.
-        */
-        this.x = graph.lengths.x_begin + xScalar * graph.gridRectSize.x;
+        let relY = Math.abs(data.y);
 
-        /*
-        // Get the ratio of the actual 'y' data value, divide it by the Y-Axis tick step and multiply it by the
-        // Y square size. Negate the worked out value from the graph 'yStartingPosition' because the yStartingPosition
-        // is not always at the 'y' beelining of the graph, this is due to the graph possibly containing negative
-        // numbers, and therefore the graph must adjust the position of the Y-Axis.
-        */
-        const direction = data.y < 0 ? -1 : 1;
-        this.y = manager.xAxis.yStart - direction * yScalar * graph.gridRectSize.y;
+        if (manager.yAxis.roundedMin > 0) {
+            relY -= manager.yAxis.roundedMin;
+        }
+
+        const yScalar = relY / manager.yAxis.scaleStep;
+
+        // 2. Apply the direction of the x and y axis
+        const xDirection = data.x < 0 ? -1 : 1;
+        this.x = graph.lengths.xBegin + xDirection * xScalar * graph.gridRectSize.x;
+
+        const yDirection = data.y < 0 ? -1 : 1;
+        this.y = manager.xAxis.yStart - yDirection * yScalar * graph.gridRectSize.y;
     }
 
     /**
