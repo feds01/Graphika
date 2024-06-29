@@ -152,11 +152,7 @@ class Axis {
         if (this.graph.options.scale.shorthandNumerics) {
             scaleNumericsToDraw = scaleNumericsToDraw.map((numeric) => {
                 // TODO: unhandled case where we have a float that is larger than log(n) > 1
-                if (Number.isInteger(parseFloat(numeric))) {
-                    return convertFromNumerical(numeric);
-                } else {
-                    return numeric;
-                }
+                return convertFromNumerical(numeric);
             });
         }
 
