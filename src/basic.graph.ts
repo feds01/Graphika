@@ -447,11 +447,13 @@ class BasicGraph {
      * that needs to be reserved around the area.
      *  */
     calculatePadding() {
+        const { legend, title } = this.options;
         // get the specified font size for title and the standard text padding so there
         // is a gap between the graph (and maybe a legend)
-        this.padding.top += this.options.title.draw ? this.options.title.fontSize + this.padding.textPadding : 0;
+        this.padding.top += title.draw ? title.fontSize + this.padding.textPadding : 0;
 
-        const longestItem = arrays.longest(this.axisManager.yAxis.getScaleLabels());
+        const { yAxis, xAxis } = this.axisManager;
+        const longestItem = arrays.longest(yAxis.scaleLabels);
 
         // Set the config font size of axis labels, and then we can effectively 'measure' the width of the text
         this.drawer.toTextMode(config.axisLabelFontSize, config.axisColour);
@@ -461,8 +463,8 @@ class BasicGraph {
 
         // if we don't have a legend on the right hand side of the table, we might need to add some padding
         // to the right hand-side of the graph.
-        if (!this.options.legend.draw || this.options.legend.position !== "right") {
-            const lastItemOnXAxis = this.axisManager.xAxis.scaleLabels[this.axisManager.xAxis.scaleLabels.length - 1];
+        if (!legend.draw || legend.position !== "right") {
+            const lastItemOnXAxis = xAxis.scaleLabels.at(-1)!;
             this.padding.right = Math.ceil(this.ctx.measureText(lastItemOnXAxis).width);
         }
 
@@ -473,7 +475,7 @@ class BasicGraph {
         this.padding.bottom = Math.ceil(9 + 2 * this.options.labelFontSize + 3 * this.padding.textPadding);
 
         // apply legend padding if legends are enabled
-        if (this.options.legend.draw && isDef(this.legendManager)) {
+        if (legend.draw && isDef(this.legendManager)) {
             this.padding[this.legendManager.position] += this.legendManager.requiredSpace;
         }
     }
