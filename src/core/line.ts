@@ -87,12 +87,12 @@ class Line {
             // perform a check to see if a control point goes out of the graph bounds,
             // if so we correct this behaviour by setting the 'y' to the lengths.y_begin
             // value.
-            if (this.controlPoints[k - 1].prev.y < this.graph.lengths.y_begin) {
-                this.controlPoints[k - 1].prev.y = this.graph.lengths.y_begin;
+            if (this.controlPoints[k - 1].prev.y < this.graph.lengths.yBegin) {
+                this.controlPoints[k - 1].prev.y = this.graph.lengths.yBegin;
             }
 
-            if (this.controlPoints[k - 1].next.y < this.graph.lengths.y_begin) {
-                this.controlPoints[k - 1].next.y = this.graph.lengths.y_begin;
+            if (this.controlPoints[k - 1].next.y < this.graph.lengths.yBegin) {
+                this.controlPoints[k - 1].next.y = this.graph.lengths.yBegin;
             }
         }
     }

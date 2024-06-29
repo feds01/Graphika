@@ -67,7 +67,7 @@ class Axis {
         // Y & X positions which represent the start of the drawing line
         // @@Cleanup: this must be determined here because the graph 'lengths' haven't been
         // calculated yet.
-        this.yStart = this.graph.padding.top + this.graph.yLength;
+        this.yStart = this.graph.padding.top + this.graph.lengths.yLength;
 
         // position the x-axis then in the center of the y-axis, calculate this offset by indexing
         // where the zero '0' value in the scale label array (reversed), and multiplying this by the
@@ -85,7 +85,7 @@ class Axis {
             assert(start !== -1, `couldn't find the '0' scale position on the {${this.type}}`);
 
             const middleIndex = (start + end) / 2;
-            this.yStart = this.graph.lengths.y_begin + this.graph.gridRectSize.y * middleIndex;
+            this.yStart = this.graph.lengths.yBegin + this.graph.gridRectSize.y * middleIndex;
         }
     }
 
@@ -141,6 +141,10 @@ class Axis {
         return this.scale.min;
     }
 
+    get roundedMin() {
+        return this.scale.roundedMinimum;
+    }
+
     get max() {
         return this.scale.max;
     }
@@ -185,9 +189,9 @@ class Axis {
         // Y-Axis Drawing !
         if (this.type === "y") {
             this.graph.drawer.verticalLine(
-                this.graph.lengths.x_begin,
-                this.graph.lengths.y_begin,
-                this.graph.yLength + 9
+                this.graph.lengths.xBegin,
+                this.graph.lengths.yBegin,
+                this.graph.lengths.yLength + 9
             );
             this.graph.ctx.textBaseline = "middle";
 
@@ -197,16 +201,16 @@ class Axis {
 
                     // tick drawing
                     this.graph.drawer.horizontalLine(
-                        this.graph.lengths.x_begin - 9,
-                        this.graph.lengths.y_begin + y_offset,
+                        this.graph.lengths.xBegin - 9,
+                        this.graph.lengths.yBegin + y_offset,
                         9
                     );
 
                     // draw the text
                     this.graph.drawer.text(
                         number,
-                        this.graph.lengths.x_begin - 9 - this.graph.padding.textPadding,
-                        this.graph.padding.top + this.graph.yLength - y_offset,
+                        this.graph.lengths.xBegin - 9 - this.graph.padding.textPadding,
+                        this.graph.padding.top + this.graph.lengths.yLength - y_offset,
                         config.scaleLabelFontSize,
                         this.options.axisColour,
                         "right"
@@ -215,7 +219,11 @@ class Axis {
                 }
             }
         } else {
-            this.graph.drawer.horizontalLine(this.graph.lengths.x_begin - 9, this.yStart, this.graph.xLength + 9);
+            this.graph.drawer.horizontalLine(
+                this.graph.lengths.xBegin - 9,
+                this.yStart,
+                this.graph.lengths.xLength + 9
+            );
 
             // We also need to draw a horizontal line at the bottom of the graph
             // if it includes a negative quadrant. We can check this by accessing the
@@ -223,9 +231,9 @@ class Axis {
             // bottom of the graph.
             if (this.manager.negativeScale && !this.graph.options.grid.gridded) {
                 this.graph.drawer.horizontalLine(
-                    this.graph.lengths.x_begin,
-                    this.graph.yLength + this.graph.padding.top,
-                    this.graph.xLength
+                    this.graph.lengths.xBegin,
+                    this.graph.lengths.yLength + this.graph.padding.top,
+                    this.graph.lengths.xLength
                 );
             }
 
@@ -238,15 +246,15 @@ class Axis {
 
                     // draw the tick
                     this.graph.drawer.verticalLine(
-                        this.graph.lengths.x_begin + x_offset,
-                        this.graph.yLength + this.graph.padding.top,
+                        this.graph.lengths.xBegin + x_offset,
+                        this.graph.lengths.yLength + this.graph.padding.top,
                         9
                     );
 
                     this.graph.drawer.text(
                         label,
-                        this.graph.lengths.x_begin + x_offset,
-                        this.graph.yLength + 9 + this.graph.padding.top + scale_offset,
+                        this.graph.lengths.xBegin + x_offset,
+                        this.graph.lengths.yLength + 9 + this.graph.padding.top + scale_offset,
                         config.scaleLabelFontSize,
                         this.options.axisColour,
                         "center"
