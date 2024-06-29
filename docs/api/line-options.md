@@ -1,13 +1,13 @@
 # Configuring the Graph grid
 
-When creating a new graph, you can customise the look and feel of the datasets that are drawn on 
-the graph. 
+When creating a new graph, you can customise the look and feel of the datasets that are drawn on
+the graph.
 
 ## Sample
 
 From this sample, it's easy to see how someone could configure the line options for a graph:
 
-```javascript
+```ts
  let graph = new Graph('g', {
             ... // options
         },
@@ -39,5 +39,3 @@ Here's a table of all the options that are provided for lines on line charts, wh
 | label           | `string`        | `line-0`  | A string representing the data set label. If you do not provide one, the graph will automatically assign incrementing labels. **Note:** Providing multiple lines with the same label will prevent the graph from being drawn.       | `false`  |
 | strokeThickness | `number`        | `1`       | A number representing the line thickness of the drawn line. (Not available yet)                                                                                                                                                     | `false`  |
 | style           | `dashed\|full`  | `full`    | The style of the line stroke                                                                                                                                                                                                        | `false`  |
-
-

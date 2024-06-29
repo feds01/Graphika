@@ -6,7 +6,7 @@ When creating a new graph, you can customise the look and feel of the grid. The 
 
 From this sample, it's easy to see how someone could configure the grid options for some object:
 
-```javascript
+```ts
  let graph = new Graph('g', {
             ...
             // generic grid options
@@ -33,4 +33,3 @@ Here's a table of all the options that are provided for grids, what they mean an
 | optimiseSquareSize | `boolean`       | `true`  | Ensure that the grid square size are rounded to integers. This could impact the sharpness of the drawn grid content.     |
 | sharedAxisZero     | `boolean`       | `true`  | If both the X & Y Axis' start at 0, they can share the zero rather than painting two zeroes                              |
 | strict             | `boolean`       | `false` | This mode enforces the drawn grid to be as close as possible to using squares as grid cells.                             |
-    

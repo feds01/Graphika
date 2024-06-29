@@ -1,19 +1,19 @@
 # Configuring the Graph grid
 
-When creating a new graph, you can customise the look and feel of the scales that are drawn on 
-the graph. 
+When creating a new graph, you can customise the look and feel of the scales that are drawn on
+the graph.
 
 ## Sample
 
 From this sample, it's easy to see how someone could configure the scale options for a graph:
 
-```javascript
+```ts
  const graph = new Graph('g', {
             ...
             scale: {
                 shorthandNumerics: false,
                 x: {...}, // configure axis options separately
-                y: {...} 
+                y: {...}
             }
         },
         [ ... ]
@@ -27,7 +27,7 @@ From this sample, it's easy to see how someone could configure the scale options
 Here's a table of all the generic options that are provided for scales on charts, what they mean and what are the defaults:
 
 
-| Name              | Type      | Default | Description                                                                                                                                                                                 | Required | 
+| Name              | Type      | Default | Description                                                                                                                                                                                 | Required |
 |-------------------|-----------|---------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------|
 | shorthandNumerics | `boolean` | `false` | Whether to use short hand numerics when encountering data sets with large numbers. For example when using short hand numerics, rather than showing `9000000` the graph will just show `9M`. | `false`  |
 
@@ -46,7 +46,6 @@ Here are all the options for configuring the look and feel of the **X-Axis**:
 | axisColour      | `string`                        | `#5e5e5e`    | The colour in which the x-axis is painted.                                                                                                                                                                 |
 | tickLabels      | `string[]`                      | `null`       | A list of labels that should be used instead of the generated ones. If you provide less than the number of drawn ticks, it will fill the extra ticks with the provided labels by just re-using the labels. |
 | ticks           | `number`                        | `10`         | Number of ticks the x-axis should use.                                                                                                                                                                     |
-| optimiseTicks   | `boolean`                       | `true`       | Whether or not the tick count should be optimised to produce the best visual results.                                                                                                                      |
 
 Here are all the options for configuring the look and feel of the **Y-Axis**:
 
@@ -57,7 +56,4 @@ Here are all the options for configuring the look and feel of the **Y-Axis**:
 | labelDirection  | `horizontal\|vertical\|slanted` | `horizontal` | Which direction should the y-axis labels should be drawn.                                                                                                                                                  |
 | axisColour      | `string`                        | `#5e5e5e`    | The colour in which the y-axis is painted.                                                                                                                                                                 |
 | ticks           | `number`                        | `10`         | Number of ticks the y-axis should use.                                                                                                                                                                     |
-| optimiseTicks   | `boolean`                       | `true`       | Whether or not the tick count should be optimised to produce the best visual results.                                                                                                                      |
 | startAtZero     | `boolean`                       | `false`      | Whether or not the scale should always start at zero.                                                                                                                                                      |
-
-
