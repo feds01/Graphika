@@ -100,7 +100,6 @@ class Axis {
                 tickCount: this.options.ticks - 1,
                 // bound the minimum step to one!
                 minimumScaleStep: 1,
-                optimiseTicks: this.options.optimiseTicks,
             });
         } else {
             return new Scale({

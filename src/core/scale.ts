@@ -13,16 +13,12 @@
 
 import { assert } from "./../utils/assert";
 import * as arrays from "./../utils/arrays";
-import { floor, round, isNum } from "./../utils/number";
 
 export type ScaleOptions = {
     axisColour?: string;
     drawLabels?: boolean;
     drawTicks?: boolean;
     labelDirection?: string;
-
-    /* Boolean flag to denote whether or not to optimise tick count */
-    optimiseTicks?: boolean;
     startAtZero?: boolean;
     tickLabels?: string[] | null; // @@FIXME
 
@@ -32,7 +28,7 @@ export type ScaleOptions = {
     /* Maximum data value within the data set.* */
     max: number;
 
-    /* Whether or not to optimise the tickCount  */
+    /* The smallest allowed scale step to have  */
     minimumScaleStep?: number;
 
     /* Target number of ticks on the axis which will be displayed. * */
@@ -41,66 +37,37 @@ export type ScaleOptions = {
 
 class Scale {
     /* The range of the values, simply a max - min subtraction */
-    public range: number;
-    public scaleStep: number;
+    public range: number = 0;
+    public scaleStep: number = 0;
     public scaleLabels: (number | string)[]; // @@TODO: make it always a string
     public roundedMinimum: number = Number.NEGATIVE_INFINITY;
 
     constructor(private readonly options: ScaleOptions) {
-        this.range = Scale.niceNum(this.options.max - this.options.min, false);
-        this.scaleStep = Scale.niceNum((this.options.max - this.options.min) / (this.tickCount - 1), true);
-
-        this.options.optimiseTicks = options.optimiseTicks ?? true;
         this.scaleLabels = [];
-
-        assert(
-            !(isNum(this.options.min) || isNum(this.options.max)),
-            "Min/Max value of scale cannot be NaN or undefined."
-        );
-
-        // initial calculation before tick optimisations
         this.calculate();
-
-        // recalculate to get proper tick range if there is an underflow
-        while (this.scaleStep * this.options.tickCount > this.range) {
-            this.options.tickCount -= 1;
-        }
-
-        // avoid too little ticks if the user didn't strictly specify so many ticks.
-        while (this.scaleStep * this.options.tickCount < this.options.max - this.options.min) {
-            this.options.tickCount += 1;
-        }
-
-        this.calculate();
-
-        if (this.options.optimiseTicks) {
-            // reduction by checking if data is present within the 'tick' area. If not, we simply reduce
-            // the tick count until it reaches a tick that's in use. We don't re-calculate every single
-            // time because this will change the 'scaleStep' value and therefore lead to an infinite reduction loop.
-            const precision = Math.max(1, Math.ceil(Math.abs(Math.log10(this.scaleStep))));
-
-            const range = round(this.options.max - this.options.min / 10 ** precision, precision);
-            const initialTick = floor(this.options.min, this.scaleStep);
-
-            while (range < round(this.scaleStep * (this.options.tickCount - 1) + initialTick, precision)) {
-                this.options.tickCount -= 1;
-            }
-        }
-
-        this.generateScaleLabels();
     }
 
     calculate() {
-        this.range = Scale.niceNum(this.options.max - this.options.min, false);
-        this.scaleStep = Scale.niceNum((this.options.max - this.options.min) / (this.tickCount - 1), true);
+        const diff = Math.abs(this.options.max - this.options.min);
+        this.range = Scale.niceNum(diff, false);
+        this.scaleStep = Scale.niceNum(diff / (this.tickCount - 1), true);
 
         if (this.options.minimumScaleStep) {
             this.scaleStep = Math.max(this.options.minimumScaleStep, this.scaleStep);
         }
 
+        // avoid too little ticks if the user didn't strictly specify so many ticks.
+        while (this.scaleStep * this.options.tickCount < diff) {
+            this.options.tickCount += 1;
+        }
+
         this.roundedMinimum = Math.floor(this.options.min / this.scaleStep) * this.scaleStep;
 
-        this.generateScaleLabels();
+        // Now we have check whether the max also fits...
+        while (this.scaleStep * this.options.tickCount - Math.abs(this.roundedMinimum) < this.options.max) {
+            this.options.tickCount += 1;
+            this.roundedMinimum = Math.floor(this.options.min / this.scaleStep) * this.scaleStep;
+        }
     }
 
     /**
