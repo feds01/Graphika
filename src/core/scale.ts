@@ -63,6 +63,8 @@ class Scale {
 
         this.roundedMinimum = Math.floor(this.options.min / this.scaleStep) * this.scaleStep;
 
+        if (this.options.max > 0 && this.options.min > 0) return;
+
         // Now we have check whether the max also fits...
         while (this.scaleStep * this.options.tickCount - Math.abs(this.roundedMinimum) < this.options.max) {
             this.options.tickCount += 1;
