@@ -26,7 +26,7 @@ export function convertFromNumerical(num: string | number): string {
         num = parseFloat(num);
     }
 
-    const exponent = Math.log10(num);
+    const exponent = Math.log10(Math.abs(num));
 
     if (exponent > 2) {
         if (exponent >= 3 && exponent < 6) return num / 10e2 + "k";
