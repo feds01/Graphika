@@ -12,20 +12,33 @@
 import Point from "./point";
 import config from "./../config";
 import { rgba } from "./../utils/colours";
-import { splineCurve } from "./interpolation";
+import { ControlPoint, InterpolationKind, splineCurve } from "./interpolation";
 import * as arrays from "./../utils/arrays";
 import { isDef } from "../utils/object";
 import BasicGraph from "../basic.graph";
 
+/** Options for the line area. */
+export type LineAreaOptions = {
+    fill: boolean;
+    colour?: string;
+};
+
 export type LineOptions = {
+    /** Colour of the line. */
     colour: string;
+
+    /** Style of the line: 'solid' or 'dashed'. */
     style: string;
-    interpolation: "linear" | "cubic";
-    area?: {
-        fill: boolean;
-        colour?: string;
-    };
+
+    /** Interpolation type for the line. */
+    interpolation: InterpolationKind;
+
+    /** Optional area settings for the line. */
+    area?: LineAreaOptions;
+
     label?: string;
+
+    /** Whether to annotate points on the line. */
     annotatePoints: boolean;
 };
 
@@ -35,7 +48,7 @@ export type LineOptions = {
  *  */
 class Line {
     private points: Point[] = [];
-    private controlPoints: { prev: Point; next: Point }[] = [];
+    private controlPoints: ControlPoint[] = [];
 
     constructor(
         private readonly data: number[] | Float64Array,
@@ -190,6 +203,94 @@ class Line {
     /**
      * @since v1.0.0
      *
+     * Internal function to draw point annotations on the line.
+     *  */
+    #drawPointAnnotations() {
+        this.points.forEach((point, index) => {
+            if (index === this.points.length - 1 || (point.data.x / this.graph.axisManager.xAxis.scaleStep) % 1 === 0) {
+                point.draw();
+            }
+        });
+    }
+
+    /**
+     * @since v1.0.0
+     *
+     * Internal function to draw a cubic interpolated line.
+     *  */
+    #drawCubicLine() {
+        const context = this.graph.drawer.ctx;
+
+        // draw the cubic spline curves
+        context.beginPath();
+        for (let i = 1; i < this.points.length - 2; i++) {
+            // begin current trajectory, by moving to starting point
+            context.moveTo(this.points[i].x, this.points[i].y);
+
+            // create bezier curve using the next control point of previous entry
+            // and previous control point of current entry and which leads to next
+            // point
+            context.bezierCurveTo(
+                this.controlPoints[i - 1].next.x,
+                this.controlPoints[i - 1].next.y,
+                this.controlPoints[i].prev.x,
+                this.controlPoints[i].prev.y,
+                this.points[i + 1].x,
+                this.points[i + 1].y,
+            );
+        }
+
+        context.stroke();
+        context.closePath();
+
+        // now draw the starting quadratic between first and second curve
+        context.beginPath();
+        context.moveTo(this.points[0].x, this.points[0].y);
+        context.quadraticCurveTo(
+            this.controlPoints[0].prev.x,
+            this.controlPoints[0].prev.y,
+            this.points[1].x,
+            this.points[1].y,
+        );
+        context.stroke();
+        context.closePath();
+
+        // now draw final quadratic curve, between last and the point before the last.
+        context.beginPath();
+        context.moveTo(this.points[this.points.length - 1].x, this.points[this.points.length - 1].y);
+
+        context.quadraticCurveTo(
+            this.controlPoints[this.controlPoints.length - 1].next.x,
+            this.controlPoints[this.controlPoints.length - 1].next.y,
+            this.points[this.points.length - 2].x,
+            this.points[this.points.length - 2].y,
+        );
+        context.stroke();
+        context.closePath();
+    }
+
+    /**
+     * @since v1.0.0
+     *
+     * Internal function to draw a linearly interpolated line.
+     *  */
+    #drawLinearLine() {
+        const context = this.graph.drawer.ctx;
+
+        context.beginPath();
+
+        for (let p = 0; p < this.points.length - 1; p++) {
+            context.moveTo(this.points[p].x, this.points[p].y);
+            context.lineTo(this.points[p + 1].x, this.points[p + 1].y);
+        }
+
+        context.stroke();
+        context.closePath();
+    }
+
+    /**
+     * @since v1.0.0
+     *
      * Function that can be called by a graph to draw the graph including the line
      * style and the line fill (if enabled).
      *  */
@@ -225,74 +326,14 @@ class Line {
         context.setLineDash(this.options.style === "dashed" ? [5, 5] : []);
 
         if (this.options.interpolation === "cubic") {
-            // draw the cubic spline curves
-
-            context.beginPath();
-            for (let i = 1; i < this.points.length - 2; i++) {
-                // begin current trajectory, by moving to starting point
-                context.moveTo(this.points[i].x, this.points[i].y);
-
-                // create bezier curve using the next control point of previous entry
-                // and previous control point of current entry and which leads to next
-                // point
-                context.bezierCurveTo(
-                    this.controlPoints[i - 1].next.x,
-                    this.controlPoints[i - 1].next.y,
-                    this.controlPoints[i].prev.x,
-                    this.controlPoints[i].prev.y,
-                    this.points[i + 1].x,
-                    this.points[i + 1].y,
-                );
-            }
-
-            context.stroke();
-            context.closePath();
-
-            // now draw the starting quadratic between first and second curve
-            context.beginPath();
-            context.moveTo(this.points[0].x, this.points[0].y);
-            context.quadraticCurveTo(
-                this.controlPoints[0].prev.x,
-                this.controlPoints[0].prev.y,
-                this.points[1].x,
-                this.points[1].y,
-            );
-            context.stroke();
-            context.closePath();
-
-            // now draw final quadratic curve, between last and the point before the last.
-            context.beginPath();
-            context.moveTo(this.points[this.points.length - 1].x, this.points[this.points.length - 1].y);
-
-            context.quadraticCurveTo(
-                this.controlPoints[this.controlPoints.length - 1].next.x,
-                this.controlPoints[this.controlPoints.length - 1].next.y,
-                this.points[this.points.length - 2].x,
-                this.points[this.points.length - 2].y,
-            );
-            context.stroke();
-            context.closePath();
+            this.#drawCubicLine();
         } else {
-            context.beginPath();
-            for (let p = 0; p < this.points.length - 1; p++) {
-                context.moveTo(this.points[p].x, this.points[p].y);
-                context.lineTo(this.points[p + 1].x, this.points[p + 1].y);
-            }
-
-            context.stroke();
-            context.closePath();
+            this.#drawLinearLine();
         }
 
         // if point annotation is enabled, draw the points.
         if (this.options.annotatePoints) {
-            this.points.forEach((point, index) => {
-                if (
-                    index === this.points.length - 1 ||
-                    (point.data.x / this.graph.axisManager.xAxis.scaleStep) % 1 === 0
-                ) {
-                    point.draw();
-                }
-            });
+            this.#drawPointAnnotations();
         }
     }
 }

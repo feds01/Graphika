@@ -14,6 +14,10 @@ import Point from "./point";
 import { clamp } from "./../utils/number";
 import BasicGraph from "../basic.graph";
 
+/** Types of interpolation supported. */
+export type InterpolationKind = "linear" | "cubic";
+
+/** Control points for cubic Bezier curves. */
 export type ControlPoint = {
     prev: Point;
     next: Point;
