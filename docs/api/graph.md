@@ -1,42 +1,63 @@
-# Configuring the Graph - adding labels and titles
+# Graph Options
 
-When creating a new graph, you can customise the graph by adding a title and X-AXIS and Y-AXIS labels.
-You can do this my modyfying the settings when creating a new graph object as shown in the sample.
+Configure the main graph settings including labels, title, grid, scale, and legend.
+
+::: tip Type Reference
+For the full type definition, see [`BasicGraphOptions`](/reference/basic.graph).
+:::
 
 ## Sample
 
-From this sample, it's easy to see how someone could configure general options for a graph:
-
 ```ts
- let graph = new Graph('g', {
-            title: {
-                content: "A new graph!",
-            },
-            x_label: "X-Axis",
-            y_label: "Y-Axis",
-            ... // scale, grid, title, legend options...
-            }
+let graph = new Graph(
+    "g",
+    {
+        title: {
+            content: "A new graph!",
         },
-        [ ... ]  // lines
-}
+        x_label: "X-Axis",
+        y_label: "Y-Axis",
+        grid: {
+            gridded: true,
+            sharedAxisZero: true,
+        },
+        scale: {
+            shorthandNumerics: false,
+            x: { ticks: 10 },
+            y: { startAtZero: true },
+        },
+        legend: {
+            draw: true,
+            position: "top",
+        },
+    },
+    [
+        /* lines */
+    ],
+);
 ```
 
 ## Options
 
-Here's a table of all the options that are provided for general options on charts, what they mean and what are the defaults:
+| Name        | Type     | Default | Description                               |
+| ----------- | -------- | ------- | ----------------------------------------- |
+| `x_label`   | `string` | `""`    | Label drawn at the x-axis.                |
+| `y_label`   | `string` | `""`    | Label drawn at the y-axis.                |
+| `title`     | `object` | -       | Title settings. See [Title Options].      |
+| `grid`      | `object` | -       | Grid settings. See [Grid Options].        |
+| `scale`     | `object` | -       | Scale settings. See [Scale Options].      |
+| `legend`    | `object` | -       | Legend settings. See [Legend Options].    |
+| `animation` | `object` | -       | Animation settings for drawing the graph. |
 
-| Name    | Type     | Default | Description                                                                                      | Required |
-| ------- | -------- | ------- | ------------------------------------------------------------------------------------------------ | -------- |
-| title   | `object` | ``      | The title settings of the graph.                                                                 | `false`  |
-| x_label | `string` | ``      | The label that is drawn at the x-axis, typically used to describe what the axis is representing. | `false`  |
-| y_label | `string` | ``      | The label that is drawn at the y-axis, typically used to describe what the axis is representing. | `false`  |
+## Customise Specific Parts
 
-## Customise specific parts
+- [Title Options](./title-options.md) - Customize graph title appearance
+- [Grid Options](./grid-options.md) - Configure grid lines and appearance
+- [Line Options](./line-options.md) - Style individual data lines
+- [Scale Options](./scale-options.md) - Configure axis scales and ticks
+- [Legend Options](./legend-options.md) - Position and style the legend
 
-If you want to customise specific parts of a chart like the grid, or a line, check out the docs:
-
-- Read about customising title options go [here](title-options.md).
-- Read about customising grid options go [here](grid-options.md).
-- Read about customising line options go [here](line-options.md).
-- Read about customising scale options go [here](scale-options.md).
-- Read about customising legend options go [here](legend-options.md).
+[Title Options]: ./title-options.md
+[Grid Options]: ./grid-options.md
+[Scale Options]: ./scale-options.md
+[Legend Options]: ./legend-options.md

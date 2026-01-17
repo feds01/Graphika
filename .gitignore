@@ -67,3 +67,8 @@ dist/
 .vscode
 
 /index.html
+
+docs/.vitepress
+
+# LLMs
+.claude/
