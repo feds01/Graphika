@@ -1,0 +1,19 @@
+{
+    "$schema": "https://typedoc.org/schema.json",
+    "entryPoints": ["./src/**/*.ts"],
+    "entryPointStrategy": "expand",
+    "out": "./docs/reference",
+    "plugin": ["typedoc-plugin-markdown"],
+    "outputFileStrategy": "modules",
+    "excludePrivate": true,
+    "excludeInternal": true,
+    "readme": "none",
+    "githubPages": false,
+    "hideGenerator": true,
+    "useCodeBlocks": true,
+    "expandObjects": true,
+    "parametersFormat": "table",
+    "propertiesFormat": "table",
+    "enumMembersFormat": "table",
+    "typeDeclarationFormat": "table"
+}

@@ -1,6 +1,6 @@
-#Basic graphs
+# Basic Graphs
 
-##Creating a simple graph with some data sets:
+## Creating a simple graph with some data sets
 
 ```javascript
 let graph = new Graph(
@@ -38,10 +38,6 @@ let graph = new Graph(
 graph.draw();
 ```
 
-Result:
-
-![simple_graph](img/simple_graph.PNG)
-
 The library also supports data sets which include negative numbers:
 
 ```javascript
@@ -76,7 +72,3 @@ let graph = new Graph(
 );
 graph.draw();
 ```
-
-Result:
-
-![negative_scale_graph](img/negative_scale_graph.PNG)
