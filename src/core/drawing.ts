@@ -29,7 +29,7 @@ class Drawer {
     constructor(
         private readonly canvas: HTMLCanvasElement,
         private readonly context: CanvasRenderingContext2D,
-        private readonly options: DrawerOptions
+        private readonly options: DrawerOptions,
     ) {}
 
     _coordinateSafetyCheck(x: number, y: number) {

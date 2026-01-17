@@ -55,7 +55,7 @@ export function splineCurve(prev: Point, current: Point, next: Point, t: number,
                 x: current.data.x + fa * (prev.data.x - next.data.x),
                 y: y1,
             },
-            graph
+            graph,
         ),
 
         next: new Point(
@@ -63,7 +63,7 @@ export function splineCurve(prev: Point, current: Point, next: Point, t: number,
                 x: current.data.x - fb * (prev.data.x - next.data.x),
                 y: y2,
             },
-            graph
+            graph,
         ),
     };
 }

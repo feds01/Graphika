@@ -208,7 +208,7 @@ class BasicGraph {
     constructor(
         private readonly id: string,
         options: BasicGraphOptions,
-        data: DataSource[]
+        data: DataSource[],
     ) {
         this.dataManager = new DataManager(data);
 
@@ -340,7 +340,7 @@ class BasicGraph {
             (this.options.title.fontSize + this.padding.textPadding) / 2, // so the text is vertically centred
             this.options.title.fontSize,
             this.options.title.colour,
-            alignment
+            alignment,
         );
 
         this.ctx.restore();
@@ -368,7 +368,7 @@ class BasicGraph {
             this.lengths.xCenter,
             this.drawer.height - (this.fontSize() / 2 + this.padding.textPadding + labelXOffset),
             this.fontSize(),
-            config.axisColour
+            config.axisColour,
         );
 
         // add y-axis label
@@ -401,7 +401,7 @@ class BasicGraph {
                 this.drawer.verticalLine(
                     this.lengths.xBegin + x_offset,
                     this.lengths.yLength + this.padding.top,
-                    -y_len + 9
+                    -y_len + 9,
                 );
             }
 
@@ -468,7 +468,7 @@ class BasicGraph {
         // Set the config font size of axis labels, and then we can effectively 'measure' the width of the text
         this.drawer.toTextMode(config.axisLabelFontSize, config.axisColour);
         this.padding.left = Math.ceil(
-            this.options.padding + 2 * this.padding.textPadding + this.ctx.measureText(longestItem).width
+            this.options.padding + 2 * this.padding.textPadding + this.ctx.measureText(longestItem).width,
         );
 
         // if we don't have a legend on the right hand side of the table, we might need to add some padding
