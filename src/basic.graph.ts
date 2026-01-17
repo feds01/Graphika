@@ -22,6 +22,7 @@ import AxisManager from "./core/axis-manager";
 import DataManager, { DataSource } from "./core/data-manager";
 import LegendManager, { LegendOptions } from "./legend/manager";
 import { AxisOptions } from "./core/axis";
+import { EasingAnimationFn, easeOutCubic } from "./core/animation";
 
 type GridOptions = {
     gridded: boolean;
@@ -29,6 +30,16 @@ type GridOptions = {
     optimiseSquareSize: boolean;
     sharedAxisZero: boolean;
     strict: boolean;
+};
+
+/** Animation options for the graph. */
+type AnimationOptions = {
+    /** Whether to animate the lines when drawing. */
+    enabled: boolean;
+    /** Duration of the animation in milliseconds. */
+    duration: number;
+    /** Easing function for the animation. */
+    easing: EasingAnimationFn;
 };
 
 type BasicGraphOptions = {
@@ -44,29 +55,34 @@ type BasicGraphOptions = {
     labelFontSize: number;
     axisColour: string;
     grid: GridOptions;
-    title: GraphTitleOptions;
+    title: TitleOptions;
     scale: {
         shorthandNumerics: boolean;
         x: AxisOptions;
         y: AxisOptions;
     };
+
+    /** Legend options for the graph. */
     legend: LegendOptions;
+
+    /** Animation settings for the graph. */
+    animation: AnimationOptions;
 };
 
-type GraphTitleOptions = {
+type TitleOptions = {
     draw: boolean;
     content: string;
-    position: GraphTitlePosition;
-    alignment: GraphTitleAlignment;
+    position: TitlePosition;
+    alignment: TitleAlignment;
     fontFamily: string;
     fontSize: number;
     colour: string;
 };
 
-type GraphTitlePosition = "top";
-type GraphTitleAlignment = "start" | "center" | "end";
+type TitlePosition = "top";
+type TitleAlignment = "start" | "center" | "end";
 
-type GraphPadding = {
+type Padding = {
     top: number;
     left: number;
     right: number;
@@ -74,7 +90,7 @@ type GraphPadding = {
     textPadding: number;
 };
 
-type GraphLengths = {
+type Lengths = {
     xBegin: number;
     yBegin: number;
     xEnd: number;
@@ -146,6 +162,13 @@ const defaultConfig: BasicGraphOptions = {
         position: "top",
         alignment: "center",
     },
+
+    // default animation settings
+    animation: {
+        enabled: false,
+        duration: 1000,
+        easing: easeOutCubic,
+    },
 }; // TODO: create a validation schema function
 
 /**
@@ -192,7 +215,7 @@ class BasicGraph {
     ctx: CanvasRenderingContext2D;
 
     // @@TODO: move all of this into GraphMeasurements
-    padding: GraphPadding;
+    padding: Padding;
     gridRectSize: { x: number; y: number };
 
     /**
@@ -200,7 +223,7 @@ class BasicGraph {
      */
     private lines: Line[] = [];
 
-    lengths: GraphLengths = {
+    lengths: Lengths = {
         xBegin: 0,
         yBegin: 0,
         xEnd: 0,
@@ -447,21 +470,6 @@ class BasicGraph {
         return lines;
     }
 
-    #drawData() {
-        this.lines = this.#createLines();
-        for (const line of this.lines) {
-            line.draw();
-        }
-    }
-
-    /**
-     * Returns the Line instances for this graph.
-     * Must be called after draw() to get the lines.
-     */
-    getLines(): Line[] {
-        return this.lines;
-    }
-
     calculateLengths() {
         const xLength = this.canvas.clientWidth - (this.padding.right + this.padding.left + this.options.labelFontSize);
         const yLength =
@@ -519,16 +527,9 @@ class BasicGraph {
     }
 
     /**
-     * Method that draws the whole graph, computing all pre-requisites and then invoking
-     * draw on children components.
-     *  */
-    draw() {
-        // clear the rectangle and reset colour
-        this.ctx.clearRect(0, 0, this.drawer.width, this.drawer.height);
-        this.ctx.strokeStyle = config.axisColour;
-        this.ctx.fillStyle = colours.BLACK;
-        this.ctx.translate(0.5, 0.5);
-
+     * Performs initial setup and grid optimization. Called once at the start of draw().
+     */
+    #setupDraw() {
         // optimise x-square-size if float
         if (this.options.grid.optimiseSquareSize && this.gridRectSize.x % 1 !== 0) {
             let preferredSquareSize = Math.round(this.gridRectSize.x);
@@ -565,91 +566,133 @@ class BasicGraph {
 
         // TODO: this should be used as a general form for the Y-Axis length of the graph.
         this.lengths.yLength = (this.axisManager.yAxis.scaleLabels.length - 1) * this.gridRectSize.y;
-
-        /* Draw our Axis', including negative scales & scale labels */
-        this.axisManager.draw();
-
-        /* Draw the title on the graph */
-        this.#drawTitle();
-
-        /* Draw the legend if it is enabled */
-        this.legendManager?.draw();
-
-        /* Draw the 'X-Label' & 'Y-Label' labels on the graph canvas */
-        this.#drawLabels();
-
-        /* Draw the Grid on the Graph lines & axis ticks, if enabled */
-        this.#drawAxisGrid();
-
-        /* Draw the data sets on the graph, using the provided dataset configurations  */
-        this.#drawData();
-
-        // draw boundaries over graph if we're in debug view.
-        if (this.options.debug) {
-            this.ctx.setTransform(1, 0, 0, 1, 0, 0); // reset translation
-
-            this.ctx.lineWidth = 2;
-
-            // draw canvas boundary in red
-            this.ctx.strokeStyle = "red";
-            this.ctx.strokeRect(0, 0, this.canvas.clientWidth, this.canvas.clientHeight);
-
-            this.ctx.strokeStyle = colours.DEBUG;
-            this.ctx.fillStyle = colours.DEBUG;
-
-            // draw box around graph boundary
-            this.ctx.strokeRect(this.lengths.xBegin, this.lengths.yBegin, this.lengths.xLength, this.lengths.yLength);
-
-            // draw line at center of the graph
-            this.ctx.beginPath();
-            this.ctx.moveTo(this.lengths.xBegin, this.lengths.yCenter);
-            this.ctx.lineTo(this.lengths.xEnd, this.lengths.yCenter);
-
-            this.ctx.moveTo(this.lengths.xCenter, this.lengths.yBegin);
-            this.ctx.lineTo(this.lengths.xCenter, this.lengths.yEnd);
-
-            this.ctx.stroke();
-            this.ctx.closePath();
-        }
     }
 
     /**
-     * Clears the canvas. Useful for animation loops.
+     * Method that draws the whole graph, computing all pre-requisites and then invoking
+     * draw on children components.
      */
-    clear() {
-        this.ctx.setTransform(1, 0, 0, 1, 0, 0); // reset any transforms
+    draw() {
+        // Reset transform (preserving DPI scale) and clear the rectangle
+        const scale = window.devicePixelRatio || 1;
+        this.ctx.setTransform(scale, 0, 0, scale, 0, 0);
         this.ctx.clearRect(0, 0, this.drawer.width, this.drawer.height);
-    }
-
-    /**
-     * Draws the graph background (axes, grid, title, legend, labels) without drawing the data lines.
-     * Useful for animation loops where you want to redraw the background and then draw lines
-     * with a custom progress value.
-     *
-     * @example
-     * ```typescript
-     * graph.draw(); // Initial draw to create lines
-     * const lines = graph.getLines();
-     *
-     * function animate(progress: number) {
-     *     graph.clear();
-     *     graph.drawBackground();
-     *     lines.forEach(line => line.draw(progress));
-     *     if (progress < 1) requestAnimationFrame(() => animate(progress + 0.01));
-     * }
-     * animate(0);
-     * ```
-     */
-    drawBackground() {
         this.ctx.strokeStyle = config.axisColour;
         this.ctx.fillStyle = colours.BLACK;
         this.ctx.translate(0.5, 0.5);
 
+        // Setup calculations (grid optimization, lengths)
+        this.#setupDraw();
+
+        // Draw background elements
         this.axisManager.draw();
         this.#drawTitle();
         this.legendManager?.draw();
         this.#drawLabels();
         this.#drawAxisGrid();
+
+        // Create line instances now (after all setup is complete)
+        this.lines = this.#createLines();
+
+        // If animation is enabled, run the animation loop
+        if (this.options.animation.enabled) {
+            this.#runAnimation();
+        } else {
+            // Otherwise draw lines immediately
+            this.#drawLinesWithProgress(1);
+        }
+
+        // Debug overlay
+        this.#drawDebugOverlay();
+    }
+
+    /**
+     * Clears the canvas and resets the context for a new frame.
+     */
+    #clearAndResetContext() {
+        const scale = window.devicePixelRatio || 1;
+        this.ctx.setTransform(scale, 0, 0, scale, 0, 0);
+        this.ctx.clearRect(0, 0, this.drawer.width, this.drawer.height);
+        this.ctx.strokeStyle = config.axisColour;
+        this.ctx.fillStyle = colours.BLACK;
+        this.ctx.translate(0.5, 0.5);
+    }
+
+    /**
+     * Draws the graph background (axes, grid, title, legend, labels) without drawing the data lines.
+     */
+    #drawBackground() {
+        this.axisManager.draw();
+        this.#drawTitle();
+        this.legendManager?.draw();
+        this.#drawLabels();
+        this.#drawAxisGrid();
+    }
+
+    /**
+     * Draws lines with the given progress value.
+     */
+    #drawLinesWithProgress(progress: number) {
+        for (const line of this.lines) {
+            line.draw(progress);
+        }
+    }
+
+    /**
+     * Runs the animation loop for drawing lines.
+     */
+    #runAnimation() {
+        const { duration, easing } = this.options.animation;
+        const startTime = performance.now();
+
+        const animate = (currentTime: number) => {
+            const elapsed = currentTime - startTime;
+            const rawProgress = Math.min(elapsed / duration, 1);
+            const progress = easing(rawProgress);
+
+            this.#clearAndResetContext();
+            this.#drawBackground();
+            this.#drawLinesWithProgress(progress);
+            this.#drawDebugOverlay();
+
+            if (rawProgress < 1) {
+                requestAnimationFrame(animate);
+            }
+        };
+
+        requestAnimationFrame(animate);
+    }
+
+    /**
+     * Draws the debug overlay if debug mode is enabled.
+     */
+    #drawDebugOverlay() {
+        if (!this.options.debug) return;
+
+        const scale = window.devicePixelRatio || 1;
+        this.ctx.setTransform(scale, 0, 0, scale, 0, 0); // reset translation (preserve DPI scale)
+        this.ctx.lineWidth = 2;
+
+        // draw canvas boundary in red
+        this.ctx.strokeStyle = "red";
+        this.ctx.strokeRect(0, 0, this.canvas.clientWidth, this.canvas.clientHeight);
+
+        this.ctx.strokeStyle = colours.DEBUG;
+        this.ctx.fillStyle = colours.DEBUG;
+
+        // draw box around graph boundary
+        this.ctx.strokeRect(this.lengths.xBegin, this.lengths.yBegin, this.lengths.xLength, this.lengths.yLength);
+
+        // draw line at center of the graph
+        this.ctx.beginPath();
+        this.ctx.moveTo(this.lengths.xBegin, this.lengths.yCenter);
+        this.ctx.lineTo(this.lengths.xEnd, this.lengths.yCenter);
+
+        this.ctx.moveTo(this.lengths.xCenter, this.lengths.yBegin);
+        this.ctx.lineTo(this.lengths.xCenter, this.lengths.yEnd);
+
+        this.ctx.stroke();
+        this.ctx.closePath();
     }
 }
 

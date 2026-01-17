@@ -34,9 +34,8 @@
             }
 
             const dataset = {
-                0: getRandomArray(21, 1000, 2000),
-                1: getRandomArray(21, 1000, 2000),
-                2: getRandomArray(21, -50, 50),
+                0: getRandomArray(21, 1000, 2000).sort(),
+                1: getRandomArray(21, 1000, 2000).sort(),
             };
 
             const graph = new Graph.Graph(
@@ -64,12 +63,16 @@
                         position: "top",
                         alignment: "start",
                     },
+                    animation: {
+                        enabled: true,
+                        duration: 1200,
+                    },
                 },
                 [
                     {
                         style: "dashed",
                         label: "student_1",
-                        interpolation: "cubic",
+                        interpolation: "linear",
                         data: dataset[0],
                         colour: Graph.Colours.FLAMINGO_RED,
                         area: {
