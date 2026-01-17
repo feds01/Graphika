@@ -194,6 +194,12 @@ class BasicGraph {
     // @@TODO: move all of this into GraphMeasurements
     padding: GraphPadding;
     gridRectSize: { x: number; y: number };
+
+    /**
+     * The Line instances created for this graph. These are populated during draw().
+     */
+    private lines: Line[] = [];
+
     lengths: GraphLengths = {
         xBegin: 0,
         yBegin: 0,
@@ -414,24 +420,46 @@ class BasicGraph {
         }
     }
 
-    #drawData() {
+    /**
+     * Creates Line instances from the data. Called internally during draw().
+     */
+    #createLines(): Line[] {
+        const lines: Line[] = [];
+
         for (const lineData of this.dataManager.get()) {
             const { style, area, colour, interpolation, label, annotatePoints, data } = lineData;
 
             // don't even init the line if no data is supplied
             if (lineData.data.constructor === Float64Array && lineData.data.length > 0) {
-                const line = new Line(data, this, {
-                    style,
-                    area,
-                    colour,
-                    interpolation,
-                    label,
-                    annotatePoints: annotatePoints ?? false,
-                });
-
-                line.draw();
+                lines.push(
+                    new Line(data, this, {
+                        style,
+                        area,
+                        colour,
+                        interpolation,
+                        label,
+                        annotatePoints: annotatePoints ?? false,
+                    }),
+                );
             }
         }
+
+        return lines;
+    }
+
+    #drawData() {
+        this.lines = this.#createLines();
+        for (const line of this.lines) {
+            line.draw();
+        }
+    }
+
+    /**
+     * Returns the Line instances for this graph.
+     * Must be called after draw() to get the lines.
+     */
+    getLines(): Line[] {
+        return this.lines;
     }
 
     calculateLengths() {
@@ -583,6 +611,45 @@ class BasicGraph {
             this.ctx.stroke();
             this.ctx.closePath();
         }
+    }
+
+    /**
+     * Clears the canvas. Useful for animation loops.
+     */
+    clear() {
+        this.ctx.setTransform(1, 0, 0, 1, 0, 0); // reset any transforms
+        this.ctx.clearRect(0, 0, this.drawer.width, this.drawer.height);
+    }
+
+    /**
+     * Draws the graph background (axes, grid, title, legend, labels) without drawing the data lines.
+     * Useful for animation loops where you want to redraw the background and then draw lines
+     * with a custom progress value.
+     *
+     * @example
+     * ```typescript
+     * graph.draw(); // Initial draw to create lines
+     * const lines = graph.getLines();
+     *
+     * function animate(progress: number) {
+     *     graph.clear();
+     *     graph.drawBackground();
+     *     lines.forEach(line => line.draw(progress));
+     *     if (progress < 1) requestAnimationFrame(() => animate(progress + 0.01));
+     * }
+     * animate(0);
+     * ```
+     */
+    drawBackground() {
+        this.ctx.strokeStyle = config.axisColour;
+        this.ctx.fillStyle = colours.BLACK;
+        this.ctx.translate(0.5, 0.5);
+
+        this.axisManager.draw();
+        this.#drawTitle();
+        this.legendManager?.draw();
+        this.#drawLabels();
+        this.#drawAxisGrid();
     }
 }
 
