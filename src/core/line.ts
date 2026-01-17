@@ -14,8 +14,8 @@ import config from "./../config";
 import { rgba } from "./../utils/colours";
 import { ControlPoint, InterpolationKind, splineCurve } from "./interpolation";
 import * as arrays from "./../utils/arrays";
-import { isDef } from "../utils/object";
 import BasicGraph from "../basic.graph";
+import { EasingAnimationFn } from "./animation";
 
 /** Options for the line area. */
 export type LineAreaOptions = {
@@ -23,6 +23,13 @@ export type LineAreaOptions = {
     colour?: string;
 };
 
+/** Options for line animation. */
+export type LineAnimationOptions = {
+    duration: number;
+    easing: EasingAnimationFn;
+};
+
+/** Options for a line on a graph. */
 export type LineOptions = {
     /** Colour of the line. */
     colour: string;
@@ -36,6 +43,10 @@ export type LineOptions = {
     /** Optional area settings for the line. */
     area?: LineAreaOptions;
 
+    /** Optional animation settings for the line. */
+    animation?: LineAnimationOptions;
+
+    /** Optional label for the line. */
     label?: string;
 
     /** Whether to annotate points on the line. */
@@ -111,65 +122,74 @@ class Line {
     }
 
     /**
-     * @since v1.0.0
-     *
-     * Internal function to draw the line fill for a linearly interpolated line.
-     *  */
-    #drawLineFill() {
-        const context = this.graph.drawer.ctx;
-        const { start } = this.graph.axisManager.yAxis;
+     * Sets up the canvas context with the appropriate styles for drawing.
+     */
+    #setupContext(): CanvasRenderingContext2D {
+        const ctx = this.graph.drawer.ctx;
 
-        context.beginPath();
+        ctx.lineJoin = "round";
+        ctx.lineWidth = config.lineWidth;
+        ctx.fillStyle = rgba(this.options.colour, 100);
+        ctx.strokeStyle = rgba(this.options.colour, 40);
+        ctx.setLineDash(this.options.style === "dashed" ? [5, 5] : []);
 
-        for (let i = 0; i < this.points.length - 1; i++) {
-            // Initiate critical points on X-Axis
-            const x1 = new Point({ x: i, y: start }, this.graph);
-            const x2 = new Point({ x: i + 1, y: start }, this.graph);
-
-            context.moveTo(this.points[i].x, this.points[i].y);
-            context.lineTo(this.points[i + 1].x, this.points[i + 1].y);
-            context.lineTo(x2.x, x2.y);
-            context.lineTo(x1.x, x1.y);
-        }
-
-        context.closePath();
-        context.fill();
+        return ctx;
     }
 
     /**
-     * @since v1.0.0
-     *
-     * Internal function to draw the line fill for a cubic interpolated line.
-     *  */
-    #drawLineFillForCubic() {
-        const context = this.graph.drawer.ctx;
+     * Builds a Path2D for the linear line stroke.
+     */
+    #buildLinearLinePath(): Path2D {
+        const path = new Path2D();
+
+        for (let p = 0; p < this.points.length - 1; p++) {
+            path.moveTo(this.points[p].x, this.points[p].y);
+            path.lineTo(this.points[p + 1].x, this.points[p + 1].y);
+        }
+
+        return path;
+    }
+
+    /**
+     * Builds a Path2D for the linear area fill.
+     */
+    #buildLinearAreaPath(): Path2D {
+        const path = new Path2D();
         const { start } = this.graph.axisManager.yAxis;
 
-        const f1 = new Point({ x: 0, y: start }, this.graph);
-        const f2 = new Point({ x: 1, y: start }, this.graph);
+        for (let i = 0; i < this.points.length - 1; i++) {
+            const x1 = new Point({ x: i, y: start }, this.graph);
+            const x2 = new Point({ x: i + 1, y: start }, this.graph);
 
-        context.beginPath();
+            path.moveTo(this.points[i].x, this.points[i].y);
+            path.lineTo(this.points[i + 1].x, this.points[i + 1].y);
+            path.lineTo(x2.x, x2.y);
+            path.lineTo(x1.x, x1.y);
+            path.closePath();
+        }
 
-        // Begin by creating the outline for the first chunk of the cubic curve section
-        // since the first section and the last section have to be drawn slightly differently.
-        context.moveTo(this.points[0].x, this.points[0].y);
-        context.quadraticCurveTo(
+        return path;
+    }
+
+    /**
+     * Builds a Path2D for the cubic line stroke (including first/last quadratic curves).
+     */
+    #buildCubicLinePath(): Path2D {
+        const path = new Path2D();
+
+        // First quadratic curve: from point 0 to point 1
+        path.moveTo(this.points[0].x, this.points[0].y);
+        path.quadraticCurveTo(
             this.controlPoints[0].prev.x,
             this.controlPoints[0].prev.y,
             this.points[1].x,
             this.points[1].y,
         );
-        context.lineTo(f2.x, f2.y);
-        context.lineTo(f1.x, f1.y);
 
-        // iterate over the central critical points and create a fillable path
+        // Middle bezier curves
         for (let i = 1; i < this.points.length - 2; i++) {
-            // Initiate critical points on X-Axis
-            const x1 = new Point({ x: i, y: start }, this.graph);
-            const x2 = new Point({ x: i + 1, y: start }, this.graph);
-
-            context.moveTo(this.points[i].x, this.points[i].y);
-            context.bezierCurveTo(
+            path.moveTo(this.points[i].x, this.points[i].y);
+            path.bezierCurveTo(
                 this.controlPoints[i - 1].next.x,
                 this.controlPoints[i - 1].next.y,
                 this.controlPoints[i].prev.x,
@@ -177,27 +197,78 @@ class Line {
                 this.points[i + 1].x,
                 this.points[i + 1].y,
             );
-            context.lineTo(x2.x, x2.y);
-            context.lineTo(x1.x, x1.y);
         }
 
-        const f3 = new Point({ x: this.points.length - 2, y: start }, this.graph);
-        const f4 = new Point({ x: this.points.length - 1, y: start }, this.graph);
-
-        const precursorPoint = this.points[this.points.length - 1];
-
-        // for the last section we have to draw it 'backwards'
-        context.moveTo(f4.x, f4.y);
-        context.lineTo(precursorPoint.x, precursorPoint.y);
-        context.quadraticCurveTo(
+        // Last quadratic curve: from last point to second-to-last point
+        path.moveTo(this.points[this.points.length - 1].x, this.points[this.points.length - 1].y);
+        path.quadraticCurveTo(
             this.controlPoints[this.controlPoints.length - 1].next.x,
             this.controlPoints[this.controlPoints.length - 1].next.y,
             this.points[this.points.length - 2].x,
             this.points[this.points.length - 2].y,
         );
-        context.lineTo(f3.x, f3.y);
-        context.closePath();
-        context.fill();
+
+        return path;
+    }
+
+    /**
+     * Builds a Path2D for the cubic area fill.
+     */
+    #buildCubicAreaPath(): Path2D {
+        const path = new Path2D();
+        const { start } = this.graph.axisManager.yAxis;
+
+        // First section: quadratic from point 0 to point 1
+        const f1 = new Point({ x: 0, y: start }, this.graph);
+        const f2 = new Point({ x: 1, y: start }, this.graph);
+
+        path.moveTo(this.points[0].x, this.points[0].y);
+        path.quadraticCurveTo(
+            this.controlPoints[0].prev.x,
+            this.controlPoints[0].prev.y,
+            this.points[1].x,
+            this.points[1].y,
+        );
+        path.lineTo(f2.x, f2.y);
+        path.lineTo(f1.x, f1.y);
+        path.closePath();
+
+        // Middle sections: bezier curves
+        for (let i = 1; i < this.points.length - 2; i++) {
+            const x1 = new Point({ x: i, y: start }, this.graph);
+            const x2 = new Point({ x: i + 1, y: start }, this.graph);
+
+            path.moveTo(this.points[i].x, this.points[i].y);
+            path.bezierCurveTo(
+                this.controlPoints[i - 1].next.x,
+                this.controlPoints[i - 1].next.y,
+                this.controlPoints[i].prev.x,
+                this.controlPoints[i].prev.y,
+                this.points[i + 1].x,
+                this.points[i + 1].y,
+            );
+            path.lineTo(x2.x, x2.y);
+            path.lineTo(x1.x, x1.y);
+            path.closePath();
+        }
+
+        // Last section: quadratic from last point to second-to-last
+        const f3 = new Point({ x: this.points.length - 2, y: start }, this.graph);
+        const f4 = new Point({ x: this.points.length - 1, y: start }, this.graph);
+        const lastPoint = this.points[this.points.length - 1];
+
+        path.moveTo(f4.x, f4.y);
+        path.lineTo(lastPoint.x, lastPoint.y);
+        path.quadraticCurveTo(
+            this.controlPoints[this.controlPoints.length - 1].next.x,
+            this.controlPoints[this.controlPoints.length - 1].next.y,
+            this.points[this.points.length - 2].x,
+            this.points[this.points.length - 2].y,
+        );
+        path.lineTo(f3.x, f3.y);
+        path.closePath();
+
+        return path;
     }
 
     /**
@@ -216,122 +287,30 @@ class Line {
     /**
      * @since v1.0.0
      *
-     * Internal function to draw a cubic interpolated line.
-     *  */
-    #drawCubicLine() {
-        const context = this.graph.drawer.ctx;
-
-        // draw the cubic spline curves
-        context.beginPath();
-        for (let i = 1; i < this.points.length - 2; i++) {
-            // begin current trajectory, by moving to starting point
-            context.moveTo(this.points[i].x, this.points[i].y);
-
-            // create bezier curve using the next control point of previous entry
-            // and previous control point of current entry and which leads to next
-            // point
-            context.bezierCurveTo(
-                this.controlPoints[i - 1].next.x,
-                this.controlPoints[i - 1].next.y,
-                this.controlPoints[i].prev.x,
-                this.controlPoints[i].prev.y,
-                this.points[i + 1].x,
-                this.points[i + 1].y,
-            );
-        }
-
-        context.stroke();
-        context.closePath();
-
-        // now draw the starting quadratic between first and second curve
-        context.beginPath();
-        context.moveTo(this.points[0].x, this.points[0].y);
-        context.quadraticCurveTo(
-            this.controlPoints[0].prev.x,
-            this.controlPoints[0].prev.y,
-            this.points[1].x,
-            this.points[1].y,
-        );
-        context.stroke();
-        context.closePath();
-
-        // now draw final quadratic curve, between last and the point before the last.
-        context.beginPath();
-        context.moveTo(this.points[this.points.length - 1].x, this.points[this.points.length - 1].y);
-
-        context.quadraticCurveTo(
-            this.controlPoints[this.controlPoints.length - 1].next.x,
-            this.controlPoints[this.controlPoints.length - 1].next.y,
-            this.points[this.points.length - 2].x,
-            this.points[this.points.length - 2].y,
-        );
-        context.stroke();
-        context.closePath();
-    }
-
-    /**
-     * @since v1.0.0
-     *
-     * Internal function to draw a linearly interpolated line.
-     *  */
-    #drawLinearLine() {
-        const context = this.graph.drawer.ctx;
-
-        context.beginPath();
-
-        for (let p = 0; p < this.points.length - 1; p++) {
-            context.moveTo(this.points[p].x, this.points[p].y);
-            context.lineTo(this.points[p + 1].x, this.points[p + 1].y);
-        }
-
-        context.stroke();
-        context.closePath();
-    }
-
-    /**
-     * @since v1.0.0
-     *
      * Function that can be called by a graph to draw the graph including the line
      * style and the line fill (if enabled).
-     *  */
+     */
     draw() {
-        const context = this.graph.drawer.ctx;
+        const ctx = this.#setupContext();
 
-        if (isDef(this.options.area) && this.options.area.fill) {
-            // set the 'global' alpha to 0.6 for lines that are on top of each other to look as if they are 'transparent'
-            context.globalAlpha = 0.6;
+        // Build paths based on interpolation type
+        const linePath =
+            this.options.interpolation === "cubic" ? this.#buildCubicLinePath() : this.#buildLinearLinePath();
 
-            // Apply area colour setting if one is present, if not default to using
-            // the general colour of the line.
-            if (isDef(this.options.area.colour)) {
-                context.fillStyle = this.options.area.colour;
-            } else {
-                context.fillStyle = this.options.colour;
-            }
+        // Draw area fill if enabled
+        if (this.options.area?.fill) {
+            const areaPath =
+                this.options.interpolation === "cubic" ? this.#buildCubicAreaPath() : this.#buildLinearAreaPath();
 
-            // draw fill depending on interpolation
-            if (this.options.interpolation === "cubic") {
-                this.#drawLineFillForCubic();
-            } else if (this.options.interpolation === "linear") {
-                this.#drawLineFill();
-            }
-            context.globalAlpha = 1;
+            ctx.globalAlpha = 0.6;
+            ctx.fill(areaPath);
+            ctx.globalAlpha = 1;
         }
 
-        // setup canvas context for drawing.
-        context.lineJoin = "round";
-        context.lineWidth = config.lineWidth;
-        context.fillStyle = rgba(this.options.colour, 100);
-        context.strokeStyle = rgba(this.options.colour, 40);
-        context.setLineDash(this.options.style === "dashed" ? [5, 5] : []);
+        // Stroke the line
+        ctx.stroke(linePath);
 
-        if (this.options.interpolation === "cubic") {
-            this.#drawCubicLine();
-        } else {
-            this.#drawLinearLine();
-        }
-
-        // if point annotation is enabled, draw the points.
+        // Draw point annotations if enabled
         if (this.options.annotatePoints) {
             this.#drawPointAnnotations();
         }
