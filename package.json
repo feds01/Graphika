@@ -21,21 +21,17 @@
     "type": "module",
     "main": "dist/graphika.js",
     "scripts": {
-        "build": "rollup -c",
-        "watch": "rollup -c -w",
+        "build": "rolldown -c",
+        "watch": "rolldown -c -w",
         "fmt": "oxfmt",
         "lint": "oxlint",
         "check": "tsc --noEmit"
     },
     "devDependencies": {
-        "@rollup/plugin-commonjs": "^29.0.0",
-        "@rollup/plugin-node-resolve": "^16.0.3",
-        "@rollup/plugin-terser": "^0.4.4",
-        "@rollup/plugin-typescript": "^12.3.0",
         "globals": "^17.0.0",
         "oxfmt": "^0.24.0",
         "oxlint": "^1.39.0",
-        "rollup": "4.55.1",
+        "rolldown": "^1.0.0-beta.60",
         "tslib": "^2.8.1",
         "typescript": "^5.9.3",
         "typescript-eslint": "^8.53.0"
