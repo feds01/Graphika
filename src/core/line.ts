@@ -29,6 +29,16 @@ export type LineAnimationOptions = {
     easing: EasingAnimationFn;
 };
 
+/** Represents the drawing state for partial line rendering. */
+type DrawState = {
+    /** Number of complete segments to draw. */
+    segments: number;
+    /** Progress within the partial segment (0-1). */
+    segmentProgress: number;
+    /** Interpolated endpoint for the partial segment. */
+    endpoint: { x: number; y: number };
+};
+
 /** Options for a line on a graph. */
 export type LineOptions = {
     /** Colour of the line. */
@@ -137,14 +147,111 @@ class Line {
     }
 
     /**
+     * Computes the draw state for a given progress value (0-1).
+     */
+    #computeDrawState(progress: number): DrawState {
+        const totalSegments = this.points.length - 1;
+        const exactSegment = progress * totalSegments;
+        const segments = Math.floor(exactSegment);
+        const segmentProgress = exactSegment - segments;
+
+        let endpoint: { x: number; y: number };
+
+        if (segments >= totalSegments) {
+            // Fully complete - use the last point
+            const lastPoint = this.points[this.points.length - 1];
+            endpoint = { x: lastPoint.x, y: lastPoint.y };
+        } else if (this.options.interpolation === "cubic") {
+            endpoint = this.#interpolateCubicAt(segments, segmentProgress);
+        } else {
+            endpoint = this.#interpolateLinearAt(segments, segmentProgress);
+        }
+
+        return { segments: Math.min(segments, totalSegments), segmentProgress, endpoint };
+    }
+
+    /**
+     * Linearly interpolates a point within a segment.
+     */
+    #interpolateLinearAt(segment: number, t: number): { x: number; y: number } {
+        const p0 = this.points[segment];
+        const p1 = this.points[segment + 1];
+
+        return {
+            x: p0.x + (p1.x - p0.x) * t,
+            y: p0.y + (p1.y - p0.y) * t,
+        };
+    }
+
+    /**
+     * Interpolates a point along a cubic bezier curve segment using de Casteljau's algorithm.
+     * Handles the special cases of quadratic curves at the start and end.
+     */
+    #interpolateCubicAt(segment: number, t: number): { x: number; y: number } {
+        const totalSegments = this.points.length - 1;
+
+        if (segment === 0) {
+            // First segment: quadratic curve
+            const p0 = this.points[0];
+            const cp = this.controlPoints[0].prev;
+            const p1 = this.points[1];
+
+            // Quadratic bezier: B(t) = (1-t)²P0 + 2(1-t)tCP + t²P1
+            const mt = 1 - t;
+            return {
+                x: mt * mt * p0.x + 2 * mt * t * cp.x + t * t * p1.x,
+                y: mt * mt * p0.y + 2 * mt * t * cp.y + t * t * p1.y,
+            };
+        } else if (segment === totalSegments - 1) {
+            // Last segment: quadratic curve (drawn in reverse)
+            const p0 = this.points[segment];
+            const cp = this.controlPoints[this.controlPoints.length - 1].next;
+            const p1 = this.points[segment + 1];
+
+            // Quadratic bezier
+            const mt = 1 - t;
+            return {
+                x: mt * mt * p0.x + 2 * mt * t * cp.x + t * t * p1.x,
+                y: mt * mt * p0.y + 2 * mt * t * cp.y + t * t * p1.y,
+            };
+        } else {
+            // Middle segments: cubic bezier
+            const p0 = this.points[segment];
+            const cp1 = this.controlPoints[segment - 1].next;
+            const cp2 = this.controlPoints[segment].prev;
+            const p1 = this.points[segment + 1];
+
+            // Cubic bezier: B(t) = (1-t)³P0 + 3(1-t)²tCP1 + 3(1-t)t²CP2 + t³P1
+            const mt = 1 - t;
+            const mt2 = mt * mt;
+            const mt3 = mt2 * mt;
+            const t2 = t * t;
+            const t3 = t2 * t;
+
+            return {
+                x: mt3 * p0.x + 3 * mt2 * t * cp1.x + 3 * mt * t2 * cp2.x + t3 * p1.x,
+                y: mt3 * p0.y + 3 * mt2 * t * cp1.y + 3 * mt * t2 * cp2.y + t3 * p1.y,
+            };
+        }
+    }
+
+    /**
      * Builds a Path2D for the linear line stroke.
      */
-    #buildLinearLinePath(): Path2D {
+    #buildLinearLinePath(state?: DrawState): Path2D {
         const path = new Path2D();
+        const segmentCount = state ? state.segments : this.points.length - 1;
 
-        for (let p = 0; p < this.points.length - 1; p++) {
+        // Draw complete segments
+        for (let p = 0; p < segmentCount; p++) {
             path.moveTo(this.points[p].x, this.points[p].y);
             path.lineTo(this.points[p + 1].x, this.points[p + 1].y);
+        }
+
+        // Draw partial segment if there's progress within a segment
+        if (state && state.segmentProgress > 0 && state.segments < this.points.length - 1) {
+            path.moveTo(this.points[state.segments].x, this.points[state.segments].y);
+            path.lineTo(state.endpoint.x, state.endpoint.y);
         }
 
         return path;
@@ -153,11 +260,13 @@ class Line {
     /**
      * Builds a Path2D for the linear area fill.
      */
-    #buildLinearAreaPath(): Path2D {
+    #buildLinearAreaPath(state?: DrawState): Path2D {
         const path = new Path2D();
         const { start } = this.graph.axisManager.yAxis;
+        const segmentCount = state ? state.segments : this.points.length - 1;
 
-        for (let i = 0; i < this.points.length - 1; i++) {
+        // Draw complete segment areas
+        for (let i = 0; i < segmentCount; i++) {
             const x1 = new Point({ x: i, y: start }, this.graph);
             const x2 = new Point({ x: i + 1, y: start }, this.graph);
 
@@ -168,26 +277,48 @@ class Line {
             path.closePath();
         }
 
+        // Draw partial segment area
+        if (state && state.segmentProgress > 0 && state.segments < this.points.length - 1) {
+            const x1 = new Point({ x: state.segments, y: start }, this.graph);
+            // Interpolate the baseline x position
+            const baselineEndX = x1.x + (state.endpoint.x - this.points[state.segments].x);
+
+            path.moveTo(this.points[state.segments].x, this.points[state.segments].y);
+            path.lineTo(state.endpoint.x, state.endpoint.y);
+            path.lineTo(baselineEndX, x1.y);
+            path.lineTo(x1.x, x1.y);
+            path.closePath();
+        }
+
         return path;
     }
 
     /**
      * Builds a Path2D for the cubic line stroke (including first/last quadratic curves).
      */
-    #buildCubicLinePath(): Path2D {
+    #buildCubicLinePath(state?: DrawState): Path2D {
         const path = new Path2D();
+        const totalSegments = this.points.length - 1;
+        const segmentCount = state ? state.segments : totalSegments;
 
-        // First quadratic curve: from point 0 to point 1
-        path.moveTo(this.points[0].x, this.points[0].y);
-        path.quadraticCurveTo(
-            this.controlPoints[0].prev.x,
-            this.controlPoints[0].prev.y,
-            this.points[1].x,
-            this.points[1].y,
-        );
+        // First quadratic curve: from point 0 to point 1 (segment 0)
+        if (segmentCount >= 1) {
+            path.moveTo(this.points[0].x, this.points[0].y);
+            path.quadraticCurveTo(
+                this.controlPoints[0].prev.x,
+                this.controlPoints[0].prev.y,
+                this.points[1].x,
+                this.points[1].y,
+            );
+        } else if (state && state.segments === 0 && state.segmentProgress > 0) {
+            // Partial first segment
+            path.moveTo(this.points[0].x, this.points[0].y);
+            path.lineTo(state.endpoint.x, state.endpoint.y);
+        }
 
-        // Middle bezier curves
-        for (let i = 1; i < this.points.length - 2; i++) {
+        // Middle bezier curves (segments 1 to length-3)
+        const middleEnd = Math.min(segmentCount, totalSegments - 1);
+        for (let i = 1; i < middleEnd; i++) {
             path.moveTo(this.points[i].x, this.points[i].y);
             path.bezierCurveTo(
                 this.controlPoints[i - 1].next.x,
@@ -199,14 +330,26 @@ class Line {
             );
         }
 
-        // Last quadratic curve: from last point to second-to-last point
-        path.moveTo(this.points[this.points.length - 1].x, this.points[this.points.length - 1].y);
-        path.quadraticCurveTo(
-            this.controlPoints[this.controlPoints.length - 1].next.x,
-            this.controlPoints[this.controlPoints.length - 1].next.y,
-            this.points[this.points.length - 2].x,
-            this.points[this.points.length - 2].y,
-        );
+        // Partial middle segment
+        if (state && state.segmentProgress > 0 && state.segments >= 1 && state.segments < totalSegments - 1) {
+            path.moveTo(this.points[state.segments].x, this.points[state.segments].y);
+            path.lineTo(state.endpoint.x, state.endpoint.y);
+        }
+
+        // Last quadratic curve: from last point to second-to-last point (segment length-2)
+        if (segmentCount >= totalSegments) {
+            path.moveTo(this.points[this.points.length - 1].x, this.points[this.points.length - 1].y);
+            path.quadraticCurveTo(
+                this.controlPoints[this.controlPoints.length - 1].next.x,
+                this.controlPoints[this.controlPoints.length - 1].next.y,
+                this.points[this.points.length - 2].x,
+                this.points[this.points.length - 2].y,
+            );
+        } else if (state && state.segmentProgress > 0 && state.segments === totalSegments - 1) {
+            // Partial last segment
+            path.moveTo(this.points[state.segments].x, this.points[state.segments].y);
+            path.lineTo(state.endpoint.x, state.endpoint.y);
+        }
 
         return path;
     }
@@ -214,27 +357,42 @@ class Line {
     /**
      * Builds a Path2D for the cubic area fill.
      */
-    #buildCubicAreaPath(): Path2D {
+    #buildCubicAreaPath(state?: DrawState): Path2D {
         const path = new Path2D();
         const { start } = this.graph.axisManager.yAxis;
+        const totalSegments = this.points.length - 1;
+        const segmentCount = state ? state.segments : totalSegments;
 
         // First section: quadratic from point 0 to point 1
-        const f1 = new Point({ x: 0, y: start }, this.graph);
-        const f2 = new Point({ x: 1, y: start }, this.graph);
+        if (segmentCount >= 1) {
+            const f1 = new Point({ x: 0, y: start }, this.graph);
+            const f2 = new Point({ x: 1, y: start }, this.graph);
 
-        path.moveTo(this.points[0].x, this.points[0].y);
-        path.quadraticCurveTo(
-            this.controlPoints[0].prev.x,
-            this.controlPoints[0].prev.y,
-            this.points[1].x,
-            this.points[1].y,
-        );
-        path.lineTo(f2.x, f2.y);
-        path.lineTo(f1.x, f1.y);
-        path.closePath();
+            path.moveTo(this.points[0].x, this.points[0].y);
+            path.quadraticCurveTo(
+                this.controlPoints[0].prev.x,
+                this.controlPoints[0].prev.y,
+                this.points[1].x,
+                this.points[1].y,
+            );
+            path.lineTo(f2.x, f2.y);
+            path.lineTo(f1.x, f1.y);
+            path.closePath();
+        } else if (state && state.segments === 0 && state.segmentProgress > 0) {
+            // Partial first segment area
+            const f1 = new Point({ x: 0, y: start }, this.graph);
+            const baselineEndX = f1.x + (state.endpoint.x - this.points[0].x);
+
+            path.moveTo(this.points[0].x, this.points[0].y);
+            path.lineTo(state.endpoint.x, state.endpoint.y);
+            path.lineTo(baselineEndX, f1.y);
+            path.lineTo(f1.x, f1.y);
+            path.closePath();
+        }
 
         // Middle sections: bezier curves
-        for (let i = 1; i < this.points.length - 2; i++) {
+        const middleEnd = Math.min(segmentCount, totalSegments - 1);
+        for (let i = 1; i < middleEnd; i++) {
             const x1 = new Point({ x: i, y: start }, this.graph);
             const x2 = new Point({ x: i + 1, y: start }, this.graph);
 
@@ -252,21 +410,45 @@ class Line {
             path.closePath();
         }
 
-        // Last section: quadratic from last point to second-to-last
-        const f3 = new Point({ x: this.points.length - 2, y: start }, this.graph);
-        const f4 = new Point({ x: this.points.length - 1, y: start }, this.graph);
-        const lastPoint = this.points[this.points.length - 1];
+        // Partial middle segment area
+        if (state && state.segmentProgress > 0 && state.segments >= 1 && state.segments < totalSegments - 1) {
+            const x1 = new Point({ x: state.segments, y: start }, this.graph);
+            const baselineEndX = x1.x + (state.endpoint.x - this.points[state.segments].x);
 
-        path.moveTo(f4.x, f4.y);
-        path.lineTo(lastPoint.x, lastPoint.y);
-        path.quadraticCurveTo(
-            this.controlPoints[this.controlPoints.length - 1].next.x,
-            this.controlPoints[this.controlPoints.length - 1].next.y,
-            this.points[this.points.length - 2].x,
-            this.points[this.points.length - 2].y,
-        );
-        path.lineTo(f3.x, f3.y);
-        path.closePath();
+            path.moveTo(this.points[state.segments].x, this.points[state.segments].y);
+            path.lineTo(state.endpoint.x, state.endpoint.y);
+            path.lineTo(baselineEndX, x1.y);
+            path.lineTo(x1.x, x1.y);
+            path.closePath();
+        }
+
+        // Last section: quadratic from last point to second-to-last
+        if (segmentCount >= totalSegments) {
+            const f3 = new Point({ x: this.points.length - 2, y: start }, this.graph);
+            const f4 = new Point({ x: this.points.length - 1, y: start }, this.graph);
+            const lastPoint = this.points[this.points.length - 1];
+
+            path.moveTo(f4.x, f4.y);
+            path.lineTo(lastPoint.x, lastPoint.y);
+            path.quadraticCurveTo(
+                this.controlPoints[this.controlPoints.length - 1].next.x,
+                this.controlPoints[this.controlPoints.length - 1].next.y,
+                this.points[this.points.length - 2].x,
+                this.points[this.points.length - 2].y,
+            );
+            path.lineTo(f3.x, f3.y);
+            path.closePath();
+        } else if (state && state.segmentProgress > 0 && state.segments === totalSegments - 1) {
+            // Partial last segment area
+            const x1 = new Point({ x: state.segments, y: start }, this.graph);
+            const baselineEndX = x1.x + (state.endpoint.x - this.points[state.segments].x);
+
+            path.moveTo(this.points[state.segments].x, this.points[state.segments].y);
+            path.lineTo(state.endpoint.x, state.endpoint.y);
+            path.lineTo(baselineEndX, x1.y);
+            path.lineTo(x1.x, x1.y);
+            path.closePath();
+        }
 
         return path;
     }
@@ -275,9 +457,14 @@ class Line {
      * @since v1.0.0
      *
      * Internal function to draw point annotations on the line.
-     *  */
-    #drawPointAnnotations() {
+     */
+    #drawPointAnnotations(state?: DrawState) {
+        const maxIndex = state ? state.segments : this.points.length - 1;
+
         this.points.forEach((point, index) => {
+            // Only draw points up to the current progress
+            if (index > maxIndex) return;
+
             if (index === this.points.length - 1 || (point.data.x / this.graph.axisManager.xAxis.scaleStep) % 1 === 0) {
                 point.draw();
             }
@@ -289,18 +476,29 @@ class Line {
      *
      * Function that can be called by a graph to draw the graph including the line
      * style and the line fill (if enabled).
+     *
+     * @param progress - Value from 0 to 1 indicating how much of the line to draw.
+     *                   Defaults to 1 (full line).
      */
-    draw() {
+    draw(progress: number = 1) {
+        if (progress <= 0) return;
+        progress = Math.min(1, progress);
+
         const ctx = this.#setupContext();
+        const state = progress < 1 ? this.#computeDrawState(progress) : undefined;
 
         // Build paths based on interpolation type
         const linePath =
-            this.options.interpolation === "cubic" ? this.#buildCubicLinePath() : this.#buildLinearLinePath();
+            this.options.interpolation === "cubic"
+                ? this.#buildCubicLinePath(state)
+                : this.#buildLinearLinePath(state);
 
         // Draw area fill if enabled
         if (this.options.area?.fill) {
             const areaPath =
-                this.options.interpolation === "cubic" ? this.#buildCubicAreaPath() : this.#buildLinearAreaPath();
+                this.options.interpolation === "cubic"
+                    ? this.#buildCubicAreaPath(state)
+                    : this.#buildLinearAreaPath(state);
 
             ctx.globalAlpha = 0.6;
             ctx.fill(areaPath);
@@ -312,7 +510,7 @@ class Line {
 
         // Draw point annotations if enabled
         if (this.options.annotatePoints) {
-            this.#drawPointAnnotations();
+            this.#drawPointAnnotations(state);
         }
     }
 }
