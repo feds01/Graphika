@@ -22,7 +22,7 @@
     "main": "dist/graphika.js",
     "scripts": {
         "build": "rolldown -c",
-        "watch": "rolldown -c -w",
+        "watch": "rolldown --config rolldown.config.js --watch",
         "fmt": "oxfmt",
         "lint": "oxlint",
         "check": "tsc --noEmit"
