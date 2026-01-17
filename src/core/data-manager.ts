@@ -45,7 +45,7 @@ class DataManager {
         // TODO: show/display the conflicting labels. Could probably done by using a 'reduce'
         assert(
             arrays.uniqueValues(this.labels()).size === this.labels().length,
-            "data must have unique labels for each data set"
+            "data must have unique labels for each data set",
         );
 
         // Ensure that the provided data can be accessed and is not empty data, this is simple sanitization

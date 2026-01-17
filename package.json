@@ -2,43 +2,39 @@
     "name": "@feds01/graphika",
     "version": "1.0.0",
     "description": "A fast JavaScript library to draw elegant graphs ",
-    "main": "dist/graphika.js",
-    "scripts": {
-        "build": "rollup -c",
-        "watch": "rollup -c -w",
-        "fmt": "prettier --write src examples *.js *.json",
-        "lint": "eslint src",
-        "check": "tsc --noEmit"
+    "keywords": [
+        "canvas",
+        "charts",
+        "fast",
+        "graphing"
+    ],
+    "homepage": "https://github.com/feds01/Graphika#readme",
+    "bugs": {
+        "url": "https://github.com/feds01/Graphika/issues"
     },
+    "license": "ISC",
+    "author": "Alexander Fedotov",
     "repository": {
         "type": "git",
         "url": "git+https://github.com/feds01/Graphika.git"
     },
     "type": "module",
-    "keywords": [
-        "graphing",
-        "fast",
-        "canvas",
-        "charts"
-    ],
-    "author": "Alexander Fedotov",
-    "license": "ISC",
-    "bugs": {
-        "url": "https://github.com/feds01/Graphika/issues"
+    "main": "dist/graphika.js",
+    "scripts": {
+        "build": "rollup -c",
+        "watch": "rollup -c -w",
+        "fmt": "oxfmt",
+        "lint": "oxlint",
+        "check": "tsc --noEmit"
     },
-    "homepage": "https://github.com/feds01/Graphika#readme",
     "devDependencies": {
-        "@eslint/js": "^9.39.2",
         "@rollup/plugin-commonjs": "^29.0.0",
         "@rollup/plugin-node-resolve": "^16.0.3",
         "@rollup/plugin-terser": "^0.4.4",
         "@rollup/plugin-typescript": "^12.3.0",
-        "@types/eslint__js": "^9.14.0",
-        "eslint": "^9.39.2",
-        "eslint-config-prettier": "^10.1.8",
-        "eslint-plugin-prettier": "^5.5.5",
         "globals": "^17.0.0",
-        "prettier": "3.8.0",
+        "oxfmt": "^0.24.0",
+        "oxlint": "^1.39.0",
         "rollup": "4.55.1",
         "tslib": "^2.8.1",
         "typescript": "^5.9.3",

@@ -45,7 +45,7 @@ class Axis {
     constructor(
         private readonly manager: AxisManager,
         private readonly type: AxisType,
-        private readonly options: AxisOptions
+        private readonly options: AxisOptions,
     ) {
         this.data = this.manager.data;
         this.graph = this.manager.graph;
@@ -191,7 +191,7 @@ class Axis {
             this.graph.drawer.verticalLine(
                 this.graph.lengths.xBegin,
                 this.graph.lengths.yBegin,
-                this.graph.lengths.yLength + 9
+                this.graph.lengths.yLength + 9,
             );
             this.graph.ctx.textBaseline = "middle";
 
@@ -203,7 +203,7 @@ class Axis {
                     this.graph.drawer.horizontalLine(
                         this.graph.lengths.xBegin - 9,
                         this.graph.lengths.yBegin + y_offset,
-                        9
+                        9,
                     );
 
                     // draw the text
@@ -213,7 +213,7 @@ class Axis {
                         this.graph.padding.top + this.graph.lengths.yLength - y_offset,
                         config.scaleLabelFontSize,
                         this.options.axisColour,
-                        "right"
+                        "right",
                     );
                     offset++;
                 }
@@ -222,7 +222,7 @@ class Axis {
             this.graph.drawer.horizontalLine(
                 this.graph.lengths.xBegin - 9,
                 this.yStart,
-                this.graph.lengths.xLength + 9
+                this.graph.lengths.xLength + 9,
             );
 
             // We also need to draw a horizontal line at the bottom of the graph
@@ -233,7 +233,7 @@ class Axis {
                 this.graph.drawer.horizontalLine(
                     this.graph.lengths.xBegin,
                     this.graph.lengths.yLength + this.graph.padding.top,
-                    this.graph.lengths.xLength
+                    this.graph.lengths.xLength,
                 );
             }
 
@@ -248,7 +248,7 @@ class Axis {
                     this.graph.drawer.verticalLine(
                         this.graph.lengths.xBegin + x_offset,
                         this.graph.lengths.yLength + this.graph.padding.top,
-                        9
+                        9,
                     );
 
                     this.graph.drawer.text(
@@ -257,7 +257,7 @@ class Axis {
                         this.graph.lengths.yLength + 9 + this.graph.padding.top + scale_offset,
                         config.scaleLabelFontSize,
                         this.options.axisColour,
-                        "center"
+                        "center",
                     );
                     offset++;
                 }

@@ -47,7 +47,7 @@ class Point {
 
     constructor(
         public readonly data: { x: number; y: number },
-        private readonly graph: BasicGraph
+        private readonly graph: BasicGraph,
     ) {
         const manager = graph.axisManager;
 
