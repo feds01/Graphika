@@ -1,20 +1,20 @@
 repos:
     - repo: local
       hooks:
-          - id: prettier
-            name: Prettier
+          - id: fmt
+            name: Formatter
             language: system
-            types: [ts]
+            types: [ts, yaml, json, markdown]
             entry: npm run fmt
             always_run: false
-          - id: eslint
-            name: ESLint
+          - id: lint
+            name: Lint
             language: system
             types: [ts]
             entry: npm run lint
             always_run: false
           - id: tsc
-            name: TypeScript Compiler
+            name: Build
             language: system
             types: [ts]
             entry: npm run check

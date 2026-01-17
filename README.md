@@ -1,6 +1,6 @@
 <h1 align='center'>Graphika :chart_with_upwards_trend: :bar_chart: </h1>
 
-![basic chart](./docs/img/front.png)
+![basic chart](./docs/public/img/front.png)
 Lightning fast, robust library to draw graphs and charts in the browser. The current version supports drawing graphs with positive and negative scales. It also enables the user to add custom labels and titles to the graphs. More coming in the future.
 
 ## Documentation
@@ -80,7 +80,7 @@ graph.draw(); // let's draw the graph
 ```
 
 Result:
-![basic chart](./docs/img/intro.png)
+![basic chart](./docs/public/img/intro.png)
 
 ## Examples
 
