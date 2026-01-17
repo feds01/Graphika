@@ -28,11 +28,10 @@ From this sample, it's easy to see how someone could configure the legend option
 Here's a table of all the options that are provided for legends, what they mean and what are the defaults:
 
 | Name      | Type                       | Default  | Description                                                              |
-|-----------|----------------------------|----------|--------------------------------------------------------------------------|
+| --------- | -------------------------- | -------- | ------------------------------------------------------------------------ |
 | draw      | `boolean`                  | `false`  | Whether or not to draw a legend for the current graph.                   |
 | position  | `top\|right\|bottom\|left` | `top`    | The position of the legend component.                                    |
 | alignment | `start\|center\|end`       | `center` | The alignment of the legend container within the current position space. |
-
 
 ## Example
 
@@ -90,7 +89,6 @@ let graph = new Graph(
 
       graph.draw();
 ```
-
 
 result:
 

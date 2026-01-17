@@ -25,11 +25,11 @@ From this sample, it's easy to see how someone could configure general options f
 
 Here's a table of all the options that are provided for general options on charts, what they mean and what are the defaults:
 
-| Name      | Type                              | Default      | Description                                                                                      | Required |
-|-----------|-----------------------------------|--------------|--------------------------------------------------------------------------------------------------|----------|
-| title     | `object`                          | ``  | The title settings of the graph.                                                                          | `false`  |
-| x_label   | `string`                          | ``           | The label that is drawn at the x-axis, typically used to describe what the axis is representing. | `false`  |
-| y_label   | `string`                          | ``           | The label that is drawn at the y-axis, typically used to describe what the axis is representing. | `false`  |
+| Name    | Type     | Default | Description                                                                                      | Required |
+| ------- | -------- | ------- | ------------------------------------------------------------------------------------------------ | -------- |
+| title   | `object` | ``      | The title settings of the graph.                                                                 | `false`  |
+| x_label | `string` | ``      | The label that is drawn at the x-axis, typically used to describe what the axis is representing. | `false`  |
+| y_label | `string` | ``      | The label that is drawn at the y-axis, typically used to describe what the axis is representing. | `false`  |
 
 ## Customise specific parts
 

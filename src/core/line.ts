@@ -40,7 +40,7 @@ class Line {
     constructor(
         private readonly data: number[] | Float64Array,
         private readonly graph: BasicGraph,
-        private readonly options: LineOptions
+        private readonly options: LineOptions,
     ) {
         this.#convertDataToPoints();
     }
@@ -80,8 +80,8 @@ class Line {
                     this.points[k],
                     arrays.getNext(k, this.points),
                     config.tension,
-                    this.graph
-                )
+                    this.graph,
+                ),
             );
 
             // perform a check to see if a control point goes out of the graph bounds,
@@ -144,7 +144,7 @@ class Line {
             this.controlPoints[0].prev.x,
             this.controlPoints[0].prev.y,
             this.points[1].x,
-            this.points[1].y
+            this.points[1].y,
         );
         context.lineTo(f2.x, f2.y);
         context.lineTo(f1.x, f1.y);
@@ -162,7 +162,7 @@ class Line {
                 this.controlPoints[i].prev.x,
                 this.controlPoints[i].prev.y,
                 this.points[i + 1].x,
-                this.points[i + 1].y
+                this.points[i + 1].y,
             );
             context.lineTo(x2.x, x2.y);
             context.lineTo(x1.x, x1.y);
@@ -180,7 +180,7 @@ class Line {
             this.controlPoints[this.controlPoints.length - 1].next.x,
             this.controlPoints[this.controlPoints.length - 1].next.y,
             this.points[this.points.length - 2].x,
-            this.points[this.points.length - 2].y
+            this.points[this.points.length - 2].y,
         );
         context.lineTo(f3.x, f3.y);
         context.closePath();
@@ -241,7 +241,7 @@ class Line {
                     this.controlPoints[i].prev.x,
                     this.controlPoints[i].prev.y,
                     this.points[i + 1].x,
-                    this.points[i + 1].y
+                    this.points[i + 1].y,
                 );
             }
 
@@ -255,7 +255,7 @@ class Line {
                 this.controlPoints[0].prev.x,
                 this.controlPoints[0].prev.y,
                 this.points[1].x,
-                this.points[1].y
+                this.points[1].y,
             );
             context.stroke();
             context.closePath();
@@ -268,7 +268,7 @@ class Line {
                 this.controlPoints[this.controlPoints.length - 1].next.x,
                 this.controlPoints[this.controlPoints.length - 1].next.y,
                 this.points[this.points.length - 2].x,
-                this.points[this.points.length - 2].y
+                this.points[this.points.length - 2].y,
             );
             context.stroke();
             context.closePath();
