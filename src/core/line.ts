@@ -15,7 +15,7 @@ import { rgba } from "./../utils/colours";
 import { ControlPoint, InterpolationKind, splineCurve } from "./interpolation";
 import * as arrays from "./../utils/arrays";
 import BasicGraph from "../basic.graph";
-import { EasingAnimationFn } from "./animation";
+import { EasingAnimationFn, splitCubicAt, splitQuadraticAt, Vec2 } from "./animation";
 
 /** Options for the line area. */
 export type LineAreaOptions = {
@@ -36,7 +36,7 @@ type DrawState = {
     /** Progress within the partial segment (0-1). */
     segmentProgress: number;
     /** Interpolated endpoint for the partial segment. */
-    endpoint: { x: number; y: number };
+    endpoint: Vec2;
 };
 
 /** Options for a line on a graph. */
@@ -311,9 +311,15 @@ class Line {
                 this.points[1].y,
             );
         } else if (state && state.segments === 0 && state.segmentProgress > 0) {
-            // Partial first segment
-            path.moveTo(this.points[0].x, this.points[0].y);
-            path.lineTo(state.endpoint.x, state.endpoint.y);
+            // Partial first segment - split the quadratic curve
+            const partial = splitQuadraticAt(
+                this.points[0],
+                this.controlPoints[0].prev,
+                this.points[1],
+                state.segmentProgress,
+            );
+            path.moveTo(partial.p0.x, partial.p0.y);
+            path.quadraticCurveTo(partial.cp.x, partial.cp.y, partial.p1.x, partial.p1.y);
         }
 
         // Middle bezier curves (segments 1 to length-3)
@@ -330,25 +336,39 @@ class Line {
             );
         }
 
-        // Partial middle segment
+        // Partial middle segment - split the cubic curve
         if (state && state.segmentProgress > 0 && state.segments >= 1 && state.segments < totalSegments - 1) {
-            path.moveTo(this.points[state.segments].x, this.points[state.segments].y);
-            path.lineTo(state.endpoint.x, state.endpoint.y);
+            const seg = state.segments;
+            const partial = splitCubicAt(
+                this.points[seg],
+                this.controlPoints[seg - 1].next,
+                this.controlPoints[seg].prev,
+                this.points[seg + 1],
+                state.segmentProgress,
+            );
+            path.moveTo(partial.p0.x, partial.p0.y);
+            path.bezierCurveTo(partial.cp1.x, partial.cp1.y, partial.cp2.x, partial.cp2.y, partial.p1.x, partial.p1.y);
         }
 
-        // Last quadratic curve: from last point to second-to-last point (segment length-2)
+        // Last quadratic curve: from second-to-last point to last point (segment length-2)
         if (segmentCount >= totalSegments) {
-            path.moveTo(this.points[this.points.length - 1].x, this.points[this.points.length - 1].y);
+            path.moveTo(this.points[this.points.length - 2].x, this.points[this.points.length - 2].y);
             path.quadraticCurveTo(
                 this.controlPoints[this.controlPoints.length - 1].next.x,
                 this.controlPoints[this.controlPoints.length - 1].next.y,
-                this.points[this.points.length - 2].x,
-                this.points[this.points.length - 2].y,
+                this.points[this.points.length - 1].x,
+                this.points[this.points.length - 1].y,
             );
         } else if (state && state.segmentProgress > 0 && state.segments === totalSegments - 1) {
-            // Partial last segment
-            path.moveTo(this.points[state.segments].x, this.points[state.segments].y);
-            path.lineTo(state.endpoint.x, state.endpoint.y);
+            // Partial last segment - split the quadratic curve
+            const partial = splitQuadraticAt(
+                this.points[state.segments],
+                this.controlPoints[this.controlPoints.length - 1].next,
+                this.points[this.points.length - 1],
+                state.segmentProgress,
+            );
+            path.moveTo(partial.p0.x, partial.p0.y);
+            path.quadraticCurveTo(partial.cp.x, partial.cp.y, partial.p1.x, partial.p1.y);
         }
 
         return path;
@@ -379,12 +399,18 @@ class Line {
             path.lineTo(f1.x, f1.y);
             path.closePath();
         } else if (state && state.segments === 0 && state.segmentProgress > 0) {
-            // Partial first segment area
+            // Partial first segment area - use split quadratic curve
             const f1 = new Point({ x: 0, y: start }, this.graph);
-            const baselineEndX = f1.x + (state.endpoint.x - this.points[0].x);
+            const partial = splitQuadraticAt(
+                this.points[0],
+                this.controlPoints[0].prev,
+                this.points[1],
+                state.segmentProgress,
+            );
+            const baselineEndX = f1.x + (partial.p1.x - this.points[0].x);
 
-            path.moveTo(this.points[0].x, this.points[0].y);
-            path.lineTo(state.endpoint.x, state.endpoint.y);
+            path.moveTo(partial.p0.x, partial.p0.y);
+            path.quadraticCurveTo(partial.cp.x, partial.cp.y, partial.p1.x, partial.p1.y);
             path.lineTo(baselineEndX, f1.y);
             path.lineTo(f1.x, f1.y);
             path.closePath();
@@ -410,41 +436,54 @@ class Line {
             path.closePath();
         }
 
-        // Partial middle segment area
+        // Partial middle segment area - use split cubic curve
         if (state && state.segmentProgress > 0 && state.segments >= 1 && state.segments < totalSegments - 1) {
-            const x1 = new Point({ x: state.segments, y: start }, this.graph);
-            const baselineEndX = x1.x + (state.endpoint.x - this.points[state.segments].x);
+            const seg = state.segments;
+            const x1 = new Point({ x: seg, y: start }, this.graph);
+            const partial = splitCubicAt(
+                this.points[seg],
+                this.controlPoints[seg - 1].next,
+                this.controlPoints[seg].prev,
+                this.points[seg + 1],
+                state.segmentProgress,
+            );
+            const baselineEndX = x1.x + (partial.p1.x - this.points[seg].x);
 
-            path.moveTo(this.points[state.segments].x, this.points[state.segments].y);
-            path.lineTo(state.endpoint.x, state.endpoint.y);
+            path.moveTo(partial.p0.x, partial.p0.y);
+            path.bezierCurveTo(partial.cp1.x, partial.cp1.y, partial.cp2.x, partial.cp2.y, partial.p1.x, partial.p1.y);
             path.lineTo(baselineEndX, x1.y);
             path.lineTo(x1.x, x1.y);
             path.closePath();
         }
 
-        // Last section: quadratic from last point to second-to-last
+        // Last section: quadratic from second-to-last point to last point
         if (segmentCount >= totalSegments) {
             const f3 = new Point({ x: this.points.length - 2, y: start }, this.graph);
             const f4 = new Point({ x: this.points.length - 1, y: start }, this.graph);
-            const lastPoint = this.points[this.points.length - 1];
 
-            path.moveTo(f4.x, f4.y);
-            path.lineTo(lastPoint.x, lastPoint.y);
+            path.moveTo(this.points[this.points.length - 2].x, this.points[this.points.length - 2].y);
             path.quadraticCurveTo(
                 this.controlPoints[this.controlPoints.length - 1].next.x,
                 this.controlPoints[this.controlPoints.length - 1].next.y,
-                this.points[this.points.length - 2].x,
-                this.points[this.points.length - 2].y,
+                this.points[this.points.length - 1].x,
+                this.points[this.points.length - 1].y,
             );
+            path.lineTo(f4.x, f4.y);
             path.lineTo(f3.x, f3.y);
             path.closePath();
         } else if (state && state.segmentProgress > 0 && state.segments === totalSegments - 1) {
-            // Partial last segment area
+            // Partial last segment area - use split quadratic curve
             const x1 = new Point({ x: state.segments, y: start }, this.graph);
-            const baselineEndX = x1.x + (state.endpoint.x - this.points[state.segments].x);
+            const partial = splitQuadraticAt(
+                this.points[state.segments],
+                this.controlPoints[this.controlPoints.length - 1].next,
+                this.points[this.points.length - 1],
+                state.segmentProgress,
+            );
+            const baselineEndX = x1.x + (partial.p1.x - this.points[state.segments].x);
 
-            path.moveTo(this.points[state.segments].x, this.points[state.segments].y);
-            path.lineTo(state.endpoint.x, state.endpoint.y);
+            path.moveTo(partial.p0.x, partial.p0.y);
+            path.quadraticCurveTo(partial.cp.x, partial.cp.y, partial.p1.x, partial.p1.y);
             path.lineTo(baselineEndX, x1.y);
             path.lineTo(x1.x, x1.y);
             path.closePath();
@@ -489,9 +528,7 @@ class Line {
 
         // Build paths based on interpolation type
         const linePath =
-            this.options.interpolation === "cubic"
-                ? this.#buildCubicLinePath(state)
-                : this.#buildLinearLinePath(state);
+            this.options.interpolation === "cubic" ? this.#buildCubicLinePath(state) : this.#buildLinearLinePath(state);
 
         // Draw area fill if enabled
         if (this.options.area?.fill) {

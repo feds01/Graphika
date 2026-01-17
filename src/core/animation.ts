@@ -77,10 +77,8 @@ export function easeInOutSine(t: number): number {
     return -(Math.cos(Math.PI * t) - 1) / 2;
 }
 
-
 /** A 2D point for bezier calculations. */
 export type Vec2 = { x: number; y: number };
-
 
 /** Control points for drawing a partial quadratic bezier curve. */
 type PartialQuadratic = {
