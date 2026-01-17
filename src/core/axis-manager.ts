@@ -63,7 +63,7 @@ class AxisManager {
                 this.graph.lengths.xBegin - this.graph.options.padding,
                 this.graph.lengths.yLength + this.graph.padding.top + this.graph.fontSize(),
                 12,
-                config.axisColour
+                config.axisColour,
             );
         }
 
