@@ -68,7 +68,8 @@ dist/
 
 /index.html
 
-docs/.vitepress
+docs/.vitepress/cache
+docs/.vitepress/dist
 
 # LLMs
 .claude/
