@@ -10,7 +10,7 @@
 
 ### default
 
-Defined in: [core/drawing.ts:28](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/core/drawing.ts#L28)
+Defined in: [core/drawing.ts:28](https://github.com/feds01/Graphika/blob/main/src/core/drawing.ts#L28)
 
 Utility class for drawing items on the canvas.
 
@@ -25,7 +25,7 @@ new default(
    options): default;
 ```
 
-Defined in: [core/drawing.ts:29](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/core/drawing.ts#L29)
+Defined in: [core/drawing.ts:29](https://github.com/feds01/Graphika/blob/main/src/core/drawing.ts#L29)
 
 ###### Parameters
 
@@ -49,7 +49,7 @@ Defined in: [core/drawing.ts:29](https://github.com/feds01/Graphika/blob/05ccf91
 get ctx(): CanvasRenderingContext2D;
 ```
 
-Defined in: [core/drawing.ts:129](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/core/drawing.ts#L129)
+Defined in: [core/drawing.ts:129](https://github.com/feds01/Graphika/blob/main/src/core/drawing.ts#L129)
 
 ###### Returns
 
@@ -63,7 +63,7 @@ Defined in: [core/drawing.ts:129](https://github.com/feds01/Graphika/blob/05ccf9
 get height(): number;
 ```
 
-Defined in: [core/drawing.ts:125](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/core/drawing.ts#L125)
+Defined in: [core/drawing.ts:125](https://github.com/feds01/Graphika/blob/main/src/core/drawing.ts#L125)
 
 ###### Returns
 
@@ -77,7 +77,7 @@ Defined in: [core/drawing.ts:125](https://github.com/feds01/Graphika/blob/05ccf9
 get width(): number;
 ```
 
-Defined in: [core/drawing.ts:121](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/core/drawing.ts#L121)
+Defined in: [core/drawing.ts:121](https://github.com/feds01/Graphika/blob/main/src/core/drawing.ts#L121)
 
 ###### Returns
 
@@ -91,7 +91,7 @@ Defined in: [core/drawing.ts:121](https://github.com/feds01/Graphika/blob/05ccf9
 _coordinateSafetyCheck(x, y): void;
 ```
 
-Defined in: [core/drawing.ts:35](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/core/drawing.ts#L35)
+Defined in: [core/drawing.ts:35](https://github.com/feds01/Graphika/blob/main/src/core/drawing.ts#L35)
 
 ###### Parameters
 
@@ -113,7 +113,7 @@ circle(
    rad): void;
 ```
 
-Defined in: [core/drawing.ts:40](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/core/drawing.ts#L40)
+Defined in: [core/drawing.ts:40](https://github.com/feds01/Graphika/blob/main/src/core/drawing.ts#L40)
 
 ###### Parameters
 
@@ -136,7 +136,7 @@ horizontalLine(
    len): void;
 ```
 
-Defined in: [core/drawing.ts:50](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/core/drawing.ts#L50)
+Defined in: [core/drawing.ts:50](https://github.com/feds01/Graphika/blob/main/src/core/drawing.ts#L50)
 
 ###### Parameters
 
@@ -162,7 +162,7 @@ text(
    alignment): void;
 ```
 
-Defined in: [core/drawing.ts:109](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/core/drawing.ts#L109)
+Defined in: [core/drawing.ts:109](https://github.com/feds01/Graphika/blob/main/src/core/drawing.ts#L109)
 
 ###### Parameters
 
@@ -196,7 +196,7 @@ toTextMode(
    alignment): void;
 ```
 
-Defined in: [core/drawing.ts:84](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/core/drawing.ts#L84)
+Defined in: [core/drawing.ts:84](https://github.com/feds01/Graphika/blob/main/src/core/drawing.ts#L84)
 
 ###### Parameters
 
@@ -228,7 +228,7 @@ verticalLine(
    len): void;
 ```
 
-Defined in: [core/drawing.ts:61](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/core/drawing.ts#L61)
+Defined in: [core/drawing.ts:61](https://github.com/feds01/Graphika/blob/main/src/core/drawing.ts#L61)
 
 ###### Parameters
 
@@ -250,4 +250,4 @@ Defined in: [core/drawing.ts:61](https://github.com/feds01/Graphika/blob/05ccf91
 type CanvasTextAlign = "center" | "end" | "left" | "right" | "start";
 ```
 
-Defined in: [core/drawing.ts:23](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/core/drawing.ts#L23)
+Defined in: [core/drawing.ts:23](https://github.com/feds01/Graphika/blob/main/src/core/drawing.ts#L23)

@@ -10,7 +10,7 @@
 
 ### EasingAnimationFn()
 
-Defined in: [core/animation.ts:6](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/core/animation.ts#L6)
+Defined in: [core/animation.ts:6](https://github.com/feds01/Graphika/blob/main/src/core/animation.ts#L6)
 
 Interface representing an easing function for animations.
 
@@ -18,7 +18,7 @@ Interface representing an easing function for animations.
 EasingAnimationFn(t): number;
 ```
 
-Defined in: [core/animation.ts:7](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/core/animation.ts#L7)
+Defined in: [core/animation.ts:7](https://github.com/feds01/Graphika/blob/main/src/core/animation.ts#L7)
 
 Interface representing an easing function for animations.
 
@@ -43,16 +43,16 @@ type Vec2 = {
 };
 ```
 
-Defined in: [core/animation.ts:81](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/core/animation.ts#L81)
+Defined in: [core/animation.ts:81](https://github.com/feds01/Graphika/blob/main/src/core/animation.ts#L81)
 
 A 2D point for bezier calculations.
 
 #### Properties
 
-| Property           | Type     | Defined in                                                                                                                         |
-| ------------------ | -------- | ---------------------------------------------------------------------------------------------------------------------------------- |
-| <a id="x"></a> `x` | `number` | [core/animation.ts:81](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/core/animation.ts#L81) |
-| <a id="y"></a> `y` | `number` | [core/animation.ts:81](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/core/animation.ts#L81) |
+| Property           | Type     | Defined in                                                                                     |
+| ------------------ | -------- | ---------------------------------------------------------------------------------------------- |
+| <a id="x"></a> `x` | `number` | [core/animation.ts:81](https://github.com/feds01/Graphika/blob/main/src/core/animation.ts#L81) |
+| <a id="y"></a> `y` | `number` | [core/animation.ts:81](https://github.com/feds01/Graphika/blob/main/src/core/animation.ts#L81) |
 
 ## Functions
 
@@ -62,7 +62,7 @@ A 2D point for bezier calculations.
 function easeInCubic(t): number;
 ```
 
-Defined in: [core/animation.ts:31](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/core/animation.ts#L31)
+Defined in: [core/animation.ts:31](https://github.com/feds01/Graphika/blob/main/src/core/animation.ts#L31)
 
 Ease-in cubic easing function that starts slowly and accelerates towards the end.
 
@@ -84,7 +84,7 @@ Ease-in cubic easing function that starts slowly and accelerates towards the end
 function easeInOutCubic(t): number;
 ```
 
-Defined in: [core/animation.ts:41](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/core/animation.ts#L41)
+Defined in: [core/animation.ts:41](https://github.com/feds01/Graphika/blob/main/src/core/animation.ts#L41)
 
 Ease-in-out cubic easing function that starts and ends slowly, with a faster middle phase.
 
@@ -106,7 +106,7 @@ Ease-in-out cubic easing function that starts and ends slowly, with a faster mid
 function easeInOutQuad(t): number;
 ```
 
-Defined in: [core/animation.ts:26](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/core/animation.ts#L26)
+Defined in: [core/animation.ts:26](https://github.com/feds01/Graphika/blob/main/src/core/animation.ts#L26)
 
 Ease-in-out quadratic easing function that starts and ends slowly, with a faster middle phase.
 
@@ -128,7 +128,7 @@ Ease-in-out quadratic easing function that starts and ends slowly, with a faster
 function easeInOutSine(t): number;
 ```
 
-Defined in: [core/animation.ts:76](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/core/animation.ts#L76)
+Defined in: [core/animation.ts:76](https://github.com/feds01/Graphika/blob/main/src/core/animation.ts#L76)
 
 #### Parameters
 
@@ -148,7 +148,7 @@ Defined in: [core/animation.ts:76](https://github.com/feds01/Graphika/blob/05ccf
 function easeInQuad(t): number;
 ```
 
-Defined in: [core/animation.ts:16](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/core/animation.ts#L16)
+Defined in: [core/animation.ts:16](https://github.com/feds01/Graphika/blob/main/src/core/animation.ts#L16)
 
 Ease-in quadratic easing function that starts slowly and accelerates towards the end.
 
@@ -170,7 +170,7 @@ Ease-in quadratic easing function that starts slowly and accelerates towards the
 function easeInSine(t): number;
 ```
 
-Defined in: [core/animation.ts:68](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/core/animation.ts#L68)
+Defined in: [core/animation.ts:68](https://github.com/feds01/Graphika/blob/main/src/core/animation.ts#L68)
 
 #### Parameters
 
@@ -190,7 +190,7 @@ Defined in: [core/animation.ts:68](https://github.com/feds01/Graphika/blob/05ccf
 function easeOutBounce(t): number;
 ```
 
-Defined in: [core/animation.ts:46](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/core/animation.ts#L46)
+Defined in: [core/animation.ts:46](https://github.com/feds01/Graphika/blob/main/src/core/animation.ts#L46)
 
 Ease-out bounce easing function that simulates a bouncing effect at the end of the animation.
 
@@ -212,7 +212,7 @@ Ease-out bounce easing function that simulates a bouncing effect at the end of t
 function easeOutCubic(t): number;
 ```
 
-Defined in: [core/animation.ts:36](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/core/animation.ts#L36)
+Defined in: [core/animation.ts:36](https://github.com/feds01/Graphika/blob/main/src/core/animation.ts#L36)
 
 Ease-out cubic easing function that starts quickly and decelerates towards the end.
 
@@ -234,7 +234,7 @@ Ease-out cubic easing function that starts quickly and decelerates towards the e
 function easeOutElastic(t): number;
 ```
 
-Defined in: [core/animation.ts:62](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/core/animation.ts#L62)
+Defined in: [core/animation.ts:62](https://github.com/feds01/Graphika/blob/main/src/core/animation.ts#L62)
 
 Elastic easing function that creates an oscillating effect, simulating a spring-like motion.
 
@@ -256,7 +256,7 @@ Elastic easing function that creates an oscillating effect, simulating a spring-
 function easeOutQuad(t): number;
 ```
 
-Defined in: [core/animation.ts:21](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/core/animation.ts#L21)
+Defined in: [core/animation.ts:21](https://github.com/feds01/Graphika/blob/main/src/core/animation.ts#L21)
 
 Ease-out quadratic easing function that starts quickly and decelerates towards the end.
 
@@ -278,7 +278,7 @@ Ease-out quadratic easing function that starts quickly and decelerates towards t
 function easeOutSine(t): number;
 ```
 
-Defined in: [core/animation.ts:72](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/core/animation.ts#L72)
+Defined in: [core/animation.ts:72](https://github.com/feds01/Graphika/blob/main/src/core/animation.ts#L72)
 
 #### Parameters
 
@@ -298,7 +298,7 @@ Defined in: [core/animation.ts:72](https://github.com/feds01/Graphika/blob/05ccf
 function lerp(a, b, t): Vec2;
 ```
 
-Defined in: [core/animation.ts:99](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/core/animation.ts#L99)
+Defined in: [core/animation.ts:99](https://github.com/feds01/Graphika/blob/main/src/core/animation.ts#L99)
 
 Linear interpolation between two points.
 
@@ -322,7 +322,7 @@ Linear interpolation between two points.
 function linearEasing(t): number;
 ```
 
-Defined in: [core/animation.ts:11](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/core/animation.ts#L11)
+Defined in: [core/animation.ts:11](https://github.com/feds01/Graphika/blob/main/src/core/animation.ts#L11)
 
 Linear easing function that returns the input value as is, resulting in a constant speed animation.
 
@@ -344,7 +344,7 @@ Linear easing function that returns the input value as is, resulting in a consta
 function splitCubicAt(p0, cp1, cp2, p1, t): PartialCubic;
 ```
 
-Defined in: [core/animation.ts:126](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/core/animation.ts#L126)
+Defined in: [core/animation.ts:126](https://github.com/feds01/Graphika/blob/main/src/core/animation.ts#L126)
 
 Splits a cubic bezier curve at parameter t and returns the first portion.
 Uses de Casteljau's algorithm.
@@ -371,7 +371,7 @@ Uses de Casteljau's algorithm.
 function splitQuadraticAt(p0, cp, p1, t): PartialQuadratic;
 ```
 
-Defined in: [core/animation.ts:110](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/core/animation.ts#L110)
+Defined in: [core/animation.ts:110](https://github.com/feds01/Graphika/blob/main/src/core/animation.ts#L110)
 
 Splits a quadratic bezier curve at parameter t and returns the first portion.
 Uses de Casteljau's algorithm.

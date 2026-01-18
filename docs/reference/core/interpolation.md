@@ -17,16 +17,16 @@ type ControlPoint = {
 };
 ```
 
-Defined in: [core/interpolation.ts:21](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/core/interpolation.ts#L21)
+Defined in: [core/interpolation.ts:21](https://github.com/feds01/Graphika/blob/main/src/core/interpolation.ts#L21)
 
 Control points for cubic Bezier curves.
 
 #### Properties
 
-| Property                 | Type                          | Defined in                                                                                                                                 |
-| ------------------------ | ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
-| <a id="next"></a> `next` | [`default`](point.md#default) | [core/interpolation.ts:23](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/core/interpolation.ts#L23) |
-| <a id="prev"></a> `prev` | [`default`](point.md#default) | [core/interpolation.ts:22](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/core/interpolation.ts#L22) |
+| Property                 | Type                          | Defined in                                                                                             |
+| ------------------------ | ----------------------------- | ------------------------------------------------------------------------------------------------------ |
+| <a id="next"></a> `next` | [`default`](point.md#default) | [core/interpolation.ts:23](https://github.com/feds01/Graphika/blob/main/src/core/interpolation.ts#L23) |
+| <a id="prev"></a> `prev` | [`default`](point.md#default) | [core/interpolation.ts:22](https://github.com/feds01/Graphika/blob/main/src/core/interpolation.ts#L22) |
 
 ---
 
@@ -36,7 +36,7 @@ Control points for cubic Bezier curves.
 type InterpolationKind = "linear" | "cubic";
 ```
 
-Defined in: [core/interpolation.ts:18](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/core/interpolation.ts#L18)
+Defined in: [core/interpolation.ts:18](https://github.com/feds01/Graphika/blob/main/src/core/interpolation.ts#L18)
 
 Types of interpolation supported.
 
@@ -48,7 +48,7 @@ Types of interpolation supported.
 function splineCurve(prev, current, next, t, graph): ControlPoint;
 ```
 
-Defined in: [core/interpolation.ts:41](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/core/interpolation.ts#L41)
+Defined in: [core/interpolation.ts:41](https://github.com/feds01/Graphika/blob/main/src/core/interpolation.ts#L41)
 
 x0,y0,x1,y1 are the coordinates of the end (knot) pts of this segment
 x2,y2 is the next knot -- not connected here but needed to calculate p2
