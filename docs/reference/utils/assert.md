@@ -14,7 +14,7 @@
 function assert(condition, message): asserts condition;
 ```
 
-Defined in: [utils/assert.ts:14](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/utils/assert.ts#L14)
+Defined in: [utils/assert.ts:14](https://github.com/feds01/Graphika/blob/main/src/utils/assert.ts#L14)
 
 #### Parameters
 

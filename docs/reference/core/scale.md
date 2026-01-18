@@ -10,7 +10,7 @@
 
 ### default
 
-Defined in: [core/scale.ts:38](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/core/scale.ts#L38)
+Defined in: [core/scale.ts:38](https://github.com/feds01/Graphika/blob/main/src/core/scale.ts#L38)
 
 #### Constructors
 
@@ -20,7 +20,7 @@ Defined in: [core/scale.ts:38](https://github.com/feds01/Graphika/blob/05ccf9175
 new default(options): default;
 ```
 
-Defined in: [core/scale.ts:45](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/core/scale.ts#L45)
+Defined in: [core/scale.ts:45](https://github.com/feds01/Graphika/blob/main/src/core/scale.ts#L45)
 
 ###### Parameters
 
@@ -34,12 +34,12 @@ Defined in: [core/scale.ts:45](https://github.com/feds01/Graphika/blob/05ccf9175
 
 #### Properties
 
-| Property                                     | Modifier | Type                     | Default value              | Defined in                                                                                                                 |
-| -------------------------------------------- | -------- | ------------------------ | -------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
-| <a id="range"></a> `range`                   | `public` | `number`                 | `0`                        | [core/scale.ts:40](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/core/scale.ts#L40) |
-| <a id="roundedminimum"></a> `roundedMinimum` | `public` | `number`                 | `Number.NEGATIVE_INFINITY` | [core/scale.ts:43](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/core/scale.ts#L43) |
-| <a id="scalelabels"></a> `scaleLabels`       | `public` | (`string` \| `number`)[] | `undefined`                | [core/scale.ts:42](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/core/scale.ts#L42) |
-| <a id="scalestep"></a> `scaleStep`           | `public` | `number`                 | `0`                        | [core/scale.ts:41](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/core/scale.ts#L41) |
+| Property                                     | Modifier | Type                     | Default value              | Defined in                                                                             |
+| -------------------------------------------- | -------- | ------------------------ | -------------------------- | -------------------------------------------------------------------------------------- |
+| <a id="range"></a> `range`                   | `public` | `number`                 | `0`                        | [core/scale.ts:40](https://github.com/feds01/Graphika/blob/main/src/core/scale.ts#L40) |
+| <a id="roundedminimum"></a> `roundedMinimum` | `public` | `number`                 | `Number.NEGATIVE_INFINITY` | [core/scale.ts:43](https://github.com/feds01/Graphika/blob/main/src/core/scale.ts#L43) |
+| <a id="scalelabels"></a> `scaleLabels`       | `public` | (`string` \| `number`)[] | `undefined`                | [core/scale.ts:42](https://github.com/feds01/Graphika/blob/main/src/core/scale.ts#L42) |
+| <a id="scalestep"></a> `scaleStep`           | `public` | `number`                 | `0`                        | [core/scale.ts:41](https://github.com/feds01/Graphika/blob/main/src/core/scale.ts#L41) |
 
 #### Accessors
 
@@ -51,7 +51,7 @@ Defined in: [core/scale.ts:45](https://github.com/feds01/Graphika/blob/05ccf9175
 get closestToZero(): number;
 ```
 
-Defined in: [core/scale.ts:156](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/core/scale.ts#L156)
+Defined in: [core/scale.ts:156](https://github.com/feds01/Graphika/blob/main/src/core/scale.ts#L156)
 
 Get the closest number to zero in the scale. This is a useful
 utility to have when trying to work out the orientation of the
@@ -71,7 +71,7 @@ the closest number to zero in the scale.
 get max(): number;
 ```
 
-Defined in: [core/scale.ts:90](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/core/scale.ts#L90)
+Defined in: [core/scale.ts:90](https://github.com/feds01/Graphika/blob/main/src/core/scale.ts#L90)
 
 ###### Returns
 
@@ -85,7 +85,7 @@ Defined in: [core/scale.ts:90](https://github.com/feds01/Graphika/blob/05ccf9175
 get min(): number;
 ```
 
-Defined in: [core/scale.ts:86](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/core/scale.ts#L86)
+Defined in: [core/scale.ts:86](https://github.com/feds01/Graphika/blob/main/src/core/scale.ts#L86)
 
 ###### Returns
 
@@ -99,7 +99,7 @@ Defined in: [core/scale.ts:86](https://github.com/feds01/Graphika/blob/05ccf9175
 get tickCount(): number;
 ```
 
-Defined in: [core/scale.ts:108](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/core/scale.ts#L108)
+Defined in: [core/scale.ts:108](https://github.com/feds01/Graphika/blob/main/src/core/scale.ts#L108)
 
 ###### Returns
 
@@ -111,7 +111,7 @@ Defined in: [core/scale.ts:108](https://github.com/feds01/Graphika/blob/05ccf917
 set tickCount(val): void;
 ```
 
-Defined in: [core/scale.ts:112](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/core/scale.ts#L112)
+Defined in: [core/scale.ts:112](https://github.com/feds01/Graphika/blob/main/src/core/scale.ts#L112)
 
 ###### Parameters
 
@@ -131,7 +131,7 @@ Defined in: [core/scale.ts:112](https://github.com/feds01/Graphika/blob/05ccf917
 get ticks(): number[];
 ```
 
-Defined in: [core/scale.ts:79](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/core/scale.ts#L79)
+Defined in: [core/scale.ts:79](https://github.com/feds01/Graphika/blob/main/src/core/scale.ts#L79)
 
 Generate the ticks for the scale. This function will generate the numeric
 ticks for the scale.
@@ -148,7 +148,7 @@ ticks for the scale.
 set tickStep(val): void;
 ```
 
-Defined in: [core/scale.ts:119](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/core/scale.ts#L119)
+Defined in: [core/scale.ts:119](https://github.com/feds01/Graphika/blob/main/src/core/scale.ts#L119)
 
 ###### Parameters
 
@@ -168,7 +168,7 @@ Defined in: [core/scale.ts:119](https://github.com/feds01/Graphika/blob/05ccf917
 calculate(): void;
 ```
 
-Defined in: [core/scale.ts:50](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/core/scale.ts#L50)
+Defined in: [core/scale.ts:50](https://github.com/feds01/Graphika/blob/main/src/core/scale.ts#L50)
 
 ###### Returns
 
@@ -180,7 +180,7 @@ Defined in: [core/scale.ts:50](https://github.com/feds01/Graphika/blob/05ccf9175
 generateScaleLabels(): (string | number)[];
 ```
 
-Defined in: [core/scale.ts:94](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/core/scale.ts#L94)
+Defined in: [core/scale.ts:94](https://github.com/feds01/Graphika/blob/main/src/core/scale.ts#L94)
 
 ###### Returns
 
@@ -192,7 +192,7 @@ Defined in: [core/scale.ts:94](https://github.com/feds01/Graphika/blob/05ccf9175
 getScaleLabels(rtl): string[];
 ```
 
-Defined in: [core/scale.ts:138](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/core/scale.ts#L138)
+Defined in: [core/scale.ts:138](https://github.com/feds01/Graphika/blob/main/src/core/scale.ts#L138)
 
 Function to get scale values for the given scale object. The function
 also accepts values that allow the scale values to be transformed to be
@@ -216,7 +216,7 @@ the scale labels.
 getScaleStep(): number;
 ```
 
-Defined in: [core/scale.ts:145](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/core/scale.ts#L145)
+Defined in: [core/scale.ts:145](https://github.com/feds01/Graphika/blob/main/src/core/scale.ts#L145)
 
 ###### Returns
 
@@ -228,7 +228,7 @@ Defined in: [core/scale.ts:145](https://github.com/feds01/Graphika/blob/05ccf917
 getTickCount(): number;
 ```
 
-Defined in: [core/scale.ts:124](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/core/scale.ts#L124)
+Defined in: [core/scale.ts:124](https://github.com/feds01/Graphika/blob/main/src/core/scale.ts#L124)
 
 ###### Returns
 
@@ -240,7 +240,7 @@ Defined in: [core/scale.ts:124](https://github.com/feds01/Graphika/blob/05ccf917
 static niceNum(range, round): number;
 ```
 
-Defined in: [core/scale.ts:170](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/core/scale.ts#L170)
+Defined in: [core/scale.ts:170](https://github.com/feds01/Graphika/blob/main/src/core/scale.ts#L170)
 
 ###### Parameters
 
@@ -273,20 +273,20 @@ type ScaleOptions = {
 };
 ```
 
-Defined in: [core/scale.ts:17](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/core/scale.ts#L17)
+Defined in: [core/scale.ts:17](https://github.com/feds01/Graphika/blob/main/src/core/scale.ts#L17)
 
 #### Properties
 
-| Property                                          | Type                 | Defined in                                                                                                                 |
-| ------------------------------------------------- | -------------------- | -------------------------------------------------------------------------------------------------------------------------- |
-| <a id="axiscolour"></a> `axisColour?`             | `string`             | [core/scale.ts:18](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/core/scale.ts#L18) |
-| <a id="drawlabels"></a> `drawLabels?`             | `boolean`            | [core/scale.ts:19](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/core/scale.ts#L19) |
-| <a id="drawticks"></a> `drawTicks?`               | `boolean`            | [core/scale.ts:20](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/core/scale.ts#L20) |
-| <a id="labeldirection"></a> `labelDirection?`     | `string`             | [core/scale.ts:21](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/core/scale.ts#L21) |
-| <a id="max-1"></a> `max`                          | `number`             | [core/scale.ts:29](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/core/scale.ts#L29) |
-| <a id="min-1"></a> `min`                          | `number`             | [core/scale.ts:27](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/core/scale.ts#L27) |
-| <a id="minimumscalestep"></a> `minimumScaleStep?` | `number`             | [core/scale.ts:32](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/core/scale.ts#L32) |
-| <a id="startatzero"></a> `startAtZero?`           | `boolean`            | [core/scale.ts:22](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/core/scale.ts#L22) |
-| <a id="tickcount-1"></a> `tickCount`              | `number`             | [core/scale.ts:35](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/core/scale.ts#L35) |
-| <a id="ticklabels"></a> `tickLabels?`             | `string`[] \| `null` | [core/scale.ts:23](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/core/scale.ts#L23) |
-| <a id="ticks-1"></a> `ticks?`                     | `number`             | [core/scale.ts:25](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/core/scale.ts#L25) |
+| Property                                          | Type                 | Defined in                                                                             |
+| ------------------------------------------------- | -------------------- | -------------------------------------------------------------------------------------- |
+| <a id="axiscolour"></a> `axisColour?`             | `string`             | [core/scale.ts:18](https://github.com/feds01/Graphika/blob/main/src/core/scale.ts#L18) |
+| <a id="drawlabels"></a> `drawLabels?`             | `boolean`            | [core/scale.ts:19](https://github.com/feds01/Graphika/blob/main/src/core/scale.ts#L19) |
+| <a id="drawticks"></a> `drawTicks?`               | `boolean`            | [core/scale.ts:20](https://github.com/feds01/Graphika/blob/main/src/core/scale.ts#L20) |
+| <a id="labeldirection"></a> `labelDirection?`     | `string`             | [core/scale.ts:21](https://github.com/feds01/Graphika/blob/main/src/core/scale.ts#L21) |
+| <a id="max-1"></a> `max`                          | `number`             | [core/scale.ts:29](https://github.com/feds01/Graphika/blob/main/src/core/scale.ts#L29) |
+| <a id="min-1"></a> `min`                          | `number`             | [core/scale.ts:27](https://github.com/feds01/Graphika/blob/main/src/core/scale.ts#L27) |
+| <a id="minimumscalestep"></a> `minimumScaleStep?` | `number`             | [core/scale.ts:32](https://github.com/feds01/Graphika/blob/main/src/core/scale.ts#L32) |
+| <a id="startatzero"></a> `startAtZero?`           | `boolean`            | [core/scale.ts:22](https://github.com/feds01/Graphika/blob/main/src/core/scale.ts#L22) |
+| <a id="tickcount-1"></a> `tickCount`              | `number`             | [core/scale.ts:35](https://github.com/feds01/Graphika/blob/main/src/core/scale.ts#L35) |
+| <a id="ticklabels"></a> `tickLabels?`             | `string`[] \| `null` | [core/scale.ts:23](https://github.com/feds01/Graphika/blob/main/src/core/scale.ts#L23) |
+| <a id="ticks-1"></a> `ticks?`                     | `number`             | [core/scale.ts:25](https://github.com/feds01/Graphika/blob/main/src/core/scale.ts#L25) |

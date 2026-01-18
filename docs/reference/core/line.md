@@ -10,7 +10,7 @@
 
 ### default
 
-Defined in: [core/line.ts:70](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/core/line.ts#L70)
+Defined in: [core/line.ts:70](https://github.com/feds01/Graphika/blob/main/src/core/line.ts#L70)
 
 Line class that represent the drawing mechanisms of each line that is drawn on a
 graph.
@@ -26,7 +26,7 @@ new default(
    options): default;
 ```
 
-Defined in: [core/line.ts:74](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/core/line.ts#L74)
+Defined in: [core/line.ts:74](https://github.com/feds01/Graphika/blob/main/src/core/line.ts#L74)
 
 ###### Parameters
 
@@ -48,7 +48,7 @@ Defined in: [core/line.ts:74](https://github.com/feds01/Graphika/blob/05ccf91755
 draw(progress): void;
 ```
 
-Defined in: [core/line.ts:522](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/core/line.ts#L522)
+Defined in: [core/line.ts:522](https://github.com/feds01/Graphika/blob/main/src/core/line.ts#L522)
 
 ###### Parameters
 
@@ -78,16 +78,16 @@ type LineAnimationOptions = {
 };
 ```
 
-Defined in: [core/line.ts:27](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/core/line.ts#L27)
+Defined in: [core/line.ts:27](https://github.com/feds01/Graphika/blob/main/src/core/line.ts#L27)
 
 Options for line animation.
 
 #### Properties
 
-| Property                         | Type                                                  | Defined in                                                                                                               |
-| -------------------------------- | ----------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
-| <a id="duration"></a> `duration` | `number`                                              | [core/line.ts:28](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/core/line.ts#L28) |
-| <a id="easing"></a> `easing`     | [`EasingAnimationFn`](animation.md#easinganimationfn) | [core/line.ts:29](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/core/line.ts#L29) |
+| Property                         | Type                                                  | Defined in                                                                           |
+| -------------------------------- | ----------------------------------------------------- | ------------------------------------------------------------------------------------ |
+| <a id="duration"></a> `duration` | `number`                                              | [core/line.ts:28](https://github.com/feds01/Graphika/blob/main/src/core/line.ts#L28) |
+| <a id="easing"></a> `easing`     | [`EasingAnimationFn`](animation.md#easinganimationfn) | [core/line.ts:29](https://github.com/feds01/Graphika/blob/main/src/core/line.ts#L29) |
 
 ---
 
@@ -100,16 +100,16 @@ type LineAreaOptions = {
 };
 ```
 
-Defined in: [core/line.ts:21](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/core/line.ts#L21)
+Defined in: [core/line.ts:21](https://github.com/feds01/Graphika/blob/main/src/core/line.ts#L21)
 
 Options for the line area.
 
 #### Properties
 
-| Property                      | Type      | Defined in                                                                                                               |
-| ----------------------------- | --------- | ------------------------------------------------------------------------------------------------------------------------ |
-| <a id="colour"></a> `colour?` | `string`  | [core/line.ts:23](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/core/line.ts#L23) |
-| <a id="fill"></a> `fill`      | `boolean` | [core/line.ts:22](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/core/line.ts#L22) |
+| Property                      | Type      | Defined in                                                                           |
+| ----------------------------- | --------- | ------------------------------------------------------------------------------------ |
+| <a id="colour"></a> `colour?` | `string`  | [core/line.ts:23](https://github.com/feds01/Graphika/blob/main/src/core/line.ts#L23) |
+| <a id="fill"></a> `fill`      | `boolean` | [core/line.ts:22](https://github.com/feds01/Graphika/blob/main/src/core/line.ts#L22) |
 
 ---
 
@@ -127,18 +127,18 @@ type LineOptions = {
 };
 ```
 
-Defined in: [core/line.ts:43](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/core/line.ts#L43)
+Defined in: [core/line.ts:43](https://github.com/feds01/Graphika/blob/main/src/core/line.ts#L43)
 
 Options for a line on a graph.
 
 #### Properties
 
-| Property                                     | Type                                                      | Description                               | Defined in                                                                                                               |
-| -------------------------------------------- | --------------------------------------------------------- | ----------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
-| <a id="animation"></a> `animation?`          | [`LineAnimationOptions`](#lineanimationoptions)           | Optional animation settings for the line. | [core/line.ts:57](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/core/line.ts#L57) |
-| <a id="annotatepoints"></a> `annotatePoints` | `boolean`                                                 | Whether to annotate points on the line.   | [core/line.ts:63](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/core/line.ts#L63) |
-| <a id="area"></a> `area?`                    | [`LineAreaOptions`](#lineareaoptions)                     | Optional area settings for the line.      | [core/line.ts:54](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/core/line.ts#L54) |
-| <a id="colour-1"></a> `colour`               | `string`                                                  | Colour of the line.                       | [core/line.ts:45](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/core/line.ts#L45) |
-| <a id="interpolation"></a> `interpolation`   | [`InterpolationKind`](interpolation.md#interpolationkind) | Interpolation type for the line.          | [core/line.ts:51](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/core/line.ts#L51) |
-| <a id="label"></a> `label?`                  | `string`                                                  | Optional label for the line.              | [core/line.ts:60](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/core/line.ts#L60) |
-| <a id="style"></a> `style`                   | `string`                                                  | Style of the line: 'solid' or 'dashed'.   | [core/line.ts:48](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/core/line.ts#L48) |
+| Property                                     | Type                                                      | Description                               | Defined in                                                                           |
+| -------------------------------------------- | --------------------------------------------------------- | ----------------------------------------- | ------------------------------------------------------------------------------------ |
+| <a id="animation"></a> `animation?`          | [`LineAnimationOptions`](#lineanimationoptions)           | Optional animation settings for the line. | [core/line.ts:57](https://github.com/feds01/Graphika/blob/main/src/core/line.ts#L57) |
+| <a id="annotatepoints"></a> `annotatePoints` | `boolean`                                                 | Whether to annotate points on the line.   | [core/line.ts:63](https://github.com/feds01/Graphika/blob/main/src/core/line.ts#L63) |
+| <a id="area"></a> `area?`                    | [`LineAreaOptions`](#lineareaoptions)                     | Optional area settings for the line.      | [core/line.ts:54](https://github.com/feds01/Graphika/blob/main/src/core/line.ts#L54) |
+| <a id="colour-1"></a> `colour`               | `string`                                                  | Colour of the line.                       | [core/line.ts:45](https://github.com/feds01/Graphika/blob/main/src/core/line.ts#L45) |
+| <a id="interpolation"></a> `interpolation`   | [`InterpolationKind`](interpolation.md#interpolationkind) | Interpolation type for the line.          | [core/line.ts:51](https://github.com/feds01/Graphika/blob/main/src/core/line.ts#L51) |
+| <a id="label"></a> `label?`                  | `string`                                                  | Optional label for the line.              | [core/line.ts:60](https://github.com/feds01/Graphika/blob/main/src/core/line.ts#L60) |
+| <a id="style"></a> `style`                   | `string`                                                  | Style of the line: 'solid' or 'dashed'.   | [core/line.ts:48](https://github.com/feds01/Graphika/blob/main/src/core/line.ts#L48) |
