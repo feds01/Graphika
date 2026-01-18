@@ -14,7 +14,7 @@
 function findCanvas(id): HTMLCanvasElement | undefined;
 ```
 
-Defined in: [utils/html.ts:15](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/utils/html.ts#L15)
+Defined in: [utils/html.ts:15](https://github.com/feds01/Graphika/blob/main/src/utils/html.ts#L15)
 
 #### Parameters
 
@@ -34,7 +34,7 @@ Defined in: [utils/html.ts:15](https://github.com/feds01/Graphika/blob/05ccf9175
 function setupCanvas(canvas): CanvasRenderingContext2D;
 ```
 
-Defined in: [utils/html.ts:38](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/utils/html.ts#L38)
+Defined in: [utils/html.ts:38](https://github.com/feds01/Graphika/blob/main/src/utils/html.ts#L38)
 
 #### Parameters
 

@@ -10,7 +10,7 @@
 
 ### default
 
-Defined in: [core/point.ts:37](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/core/point.ts#L37)
+Defined in: [core/point.ts:37](https://github.com/feds01/Graphika/blob/main/src/core/point.ts#L37)
 
 #### Constructors
 
@@ -20,7 +20,7 @@ Defined in: [core/point.ts:37](https://github.com/feds01/Graphika/blob/05ccf9175
 new default(data, graph): default;
 ```
 
-Defined in: [core/point.ts:48](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/core/point.ts#L48)
+Defined in: [core/point.ts:48](https://github.com/feds01/Graphika/blob/main/src/core/point.ts#L48)
 
 ###### Parameters
 
@@ -37,13 +37,13 @@ Defined in: [core/point.ts:48](https://github.com/feds01/Graphika/blob/05ccf9175
 
 #### Properties
 
-| Property                 | Modifier   | Type                                | Description                                                    | Defined in                                                                                                                 |
-| ------------------------ | ---------- | ----------------------------------- | -------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
-| <a id="data"></a> `data` | `readonly` | \{ `x`: `number`; `y`: `number`; \} | -                                                              | [core/point.ts:49](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/core/point.ts#L49) |
-| `data.x`                 | `public`   | `number`                            | -                                                              | [core/point.ts:49](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/core/point.ts#L49) |
-| `data.y`                 | `public`   | `number`                            | -                                                              | [core/point.ts:49](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/core/point.ts#L49) |
-| <a id="x"></a> `x`       | `public`   | `number`                            | **Since** v0.0.1 This is the 'real' x-coordinate of the point. | [core/point.ts:41](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/core/point.ts#L41) |
-| <a id="y"></a> `y`       | `public`   | `number`                            | **Since** v0.0.1 This is the 'real' y-coordinate of the point. | [core/point.ts:46](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/core/point.ts#L46) |
+| Property                 | Modifier   | Type                                | Description                                                    | Defined in                                                                             |
+| ------------------------ | ---------- | ----------------------------------- | -------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
+| <a id="data"></a> `data` | `readonly` | \{ `x`: `number`; `y`: `number`; \} | -                                                              | [core/point.ts:49](https://github.com/feds01/Graphika/blob/main/src/core/point.ts#L49) |
+| `data.x`                 | `public`   | `number`                            | -                                                              | [core/point.ts:49](https://github.com/feds01/Graphika/blob/main/src/core/point.ts#L49) |
+| `data.y`                 | `public`   | `number`                            | -                                                              | [core/point.ts:49](https://github.com/feds01/Graphika/blob/main/src/core/point.ts#L49) |
+| <a id="x"></a> `x`       | `public`   | `number`                            | **Since** v0.0.1 This is the 'real' x-coordinate of the point. | [core/point.ts:41](https://github.com/feds01/Graphika/blob/main/src/core/point.ts#L41) |
+| <a id="y"></a> `y`       | `public`   | `number`                            | **Since** v0.0.1 This is the 'real' y-coordinate of the point. | [core/point.ts:46](https://github.com/feds01/Graphika/blob/main/src/core/point.ts#L46) |
 
 #### Methods
 
@@ -53,7 +53,7 @@ Defined in: [core/point.ts:48](https://github.com/feds01/Graphika/blob/05ccf9175
 draw(): void;
 ```
 
-Defined in: [core/point.ts:83](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/core/point.ts#L83)
+Defined in: [core/point.ts:83](https://github.com/feds01/Graphika/blob/main/src/core/point.ts#L83)
 
 ###### Returns
 

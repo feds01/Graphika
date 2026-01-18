@@ -14,7 +14,7 @@
 function clamp(num, min, max): number;
 ```
 
-Defined in: [utils/number.ts:22](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/utils/number.ts#L22)
+Defined in: [utils/number.ts:22](https://github.com/feds01/Graphika/blob/main/src/utils/number.ts#L22)
 
 Returns a number whose value is limited to the given range.
 
@@ -40,7 +40,7 @@ A number in the range [min, max].
 function floor(num, dp): number;
 ```
 
-Defined in: [utils/number.ts:49](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/utils/number.ts#L49)
+Defined in: [utils/number.ts:49](https://github.com/feds01/Graphika/blob/main/src/utils/number.ts#L49)
 
 Function to floor a number to the nearest boundary. For example, floor a 5 to a boundary
 of 8 would round the number to 0. Flooring 11 with boundary of 8 would floor it to 8.
@@ -66,7 +66,7 @@ the original number that is floored.
 function isNum(o): o is number;
 ```
 
-Defined in: [utils/number.ts:58](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/utils/number.ts#L58)
+Defined in: [utils/number.ts:58](https://github.com/feds01/Graphika/blob/main/src/utils/number.ts#L58)
 
 Check if the given object is a number and is not NaN.
 
@@ -88,7 +88,7 @@ Check if the given object is a number and is not NaN.
 function round(num, bound): number;
 ```
 
-Defined in: [utils/number.ts:34](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/utils/number.ts#L34)
+Defined in: [utils/number.ts:34](https://github.com/feds01/Graphika/blob/main/src/utils/number.ts#L34)
 
 Function to round a number to the nearest boundary. For example, round a 5 to a boundary
 of 8 would round the number to 8. Rounding the number 11 with a boundary of 8 would round

@@ -14,7 +14,7 @@
 function convertFromNumerical(num): string;
 ```
 
-Defined in: [utils/conversions.ts:24](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/utils/conversions.ts#L24)
+Defined in: [utils/conversions.ts:24](https://github.com/feds01/Graphika/blob/main/src/utils/conversions.ts#L24)
 
 Function converts a number into a string representation of the number in a
 more human readable format.
