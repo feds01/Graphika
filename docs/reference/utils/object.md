@@ -14,7 +14,7 @@
 function expr<T>(cb): T;
 ```
 
-Defined in: [utils/object.ts:40](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/utils/object.ts#L40)
+Defined in: [utils/object.ts:40](https://github.com/feds01/Graphika/blob/main/src/utils/object.ts#L40)
 
 #### Type Parameters
 
@@ -40,7 +40,7 @@ Defined in: [utils/object.ts:40](https://github.com/feds01/Graphika/blob/05ccf91
 function isDef<T>(o): o is T;
 ```
 
-Defined in: [utils/object.ts:36](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/utils/object.ts#L36)
+Defined in: [utils/object.ts:36](https://github.com/feds01/Graphika/blob/main/src/utils/object.ts#L36)
 
 Check whether some item is not null and not undefined.
 
@@ -70,7 +70,7 @@ Whether the item is defined, as a type assertion.
 function merge<T>(target, source): T;
 ```
 
-Defined in: [utils/object.ts:19](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/utils/object.ts#L19)
+Defined in: [utils/object.ts:19](https://github.com/feds01/Graphika/blob/main/src/utils/object.ts#L19)
 
 Combine two objects into one.
 

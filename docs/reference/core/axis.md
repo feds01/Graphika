@@ -10,7 +10,7 @@
 
 ### default
 
-Defined in: [core/axis.ts:37](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/core/axis.ts#L37)
+Defined in: [core/axis.ts:37](https://github.com/feds01/Graphika/blob/main/src/core/axis.ts#L37)
 
 #### Constructors
 
@@ -23,7 +23,7 @@ new default(
    options): default;
 ```
 
-Defined in: [core/axis.ts:45](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/core/axis.ts#L45)
+Defined in: [core/axis.ts:45](https://github.com/feds01/Graphika/blob/main/src/core/axis.ts#L45)
 
 ###### Parameters
 
@@ -39,10 +39,10 @@ Defined in: [core/axis.ts:45](https://github.com/feds01/Graphika/blob/05ccf91755
 
 #### Properties
 
-| Property                     | Modifier | Type     | Default value | Defined in                                                                                                               |
-| ---------------------------- | -------- | -------- | ------------- | ------------------------------------------------------------------------------------------------------------------------ |
-| <a id="start"></a> `start`   | `public` | `number` | `0`           | [core/axis.ts:39](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/core/axis.ts#L39) |
-| <a id="ystart"></a> `yStart` | `public` | `number` | `0`           | [core/axis.ts:38](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/core/axis.ts#L38) |
+| Property                     | Modifier | Type     | Default value | Defined in                                                                           |
+| ---------------------------- | -------- | -------- | ------------- | ------------------------------------------------------------------------------------ |
+| <a id="start"></a> `start`   | `public` | `number` | `0`           | [core/axis.ts:39](https://github.com/feds01/Graphika/blob/main/src/core/axis.ts#L39) |
+| <a id="ystart"></a> `yStart` | `public` | `number` | `0`           | [core/axis.ts:38](https://github.com/feds01/Graphika/blob/main/src/core/axis.ts#L38) |
 
 #### Accessors
 
@@ -54,7 +54,7 @@ Defined in: [core/axis.ts:45](https://github.com/feds01/Graphika/blob/05ccf91755
 get max(): number;
 ```
 
-Defined in: [core/axis.ts:148](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/core/axis.ts#L148)
+Defined in: [core/axis.ts:148](https://github.com/feds01/Graphika/blob/main/src/core/axis.ts#L148)
 
 ###### Returns
 
@@ -68,7 +68,7 @@ Defined in: [core/axis.ts:148](https://github.com/feds01/Graphika/blob/05ccf9175
 get min(): number;
 ```
 
-Defined in: [core/axis.ts:140](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/core/axis.ts#L140)
+Defined in: [core/axis.ts:140](https://github.com/feds01/Graphika/blob/main/src/core/axis.ts#L140)
 
 ###### Returns
 
@@ -82,7 +82,7 @@ Defined in: [core/axis.ts:140](https://github.com/feds01/Graphika/blob/05ccf9175
 get roundedMin(): number;
 ```
 
-Defined in: [core/axis.ts:144](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/core/axis.ts#L144)
+Defined in: [core/axis.ts:144](https://github.com/feds01/Graphika/blob/main/src/core/axis.ts#L144)
 
 ###### Returns
 
@@ -96,7 +96,7 @@ Defined in: [core/axis.ts:144](https://github.com/feds01/Graphika/blob/05ccf9175
 get scaleLabels(): string[];
 ```
 
-Defined in: [core/axis.ts:152](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/core/axis.ts#L152)
+Defined in: [core/axis.ts:152](https://github.com/feds01/Graphika/blob/main/src/core/axis.ts#L152)
 
 ###### Returns
 
@@ -110,7 +110,7 @@ Defined in: [core/axis.ts:152](https://github.com/feds01/Graphika/blob/05ccf9175
 get scaleStep(): number;
 ```
 
-Defined in: [core/axis.ts:136](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/core/axis.ts#L136)
+Defined in: [core/axis.ts:136](https://github.com/feds01/Graphika/blob/main/src/core/axis.ts#L136)
 
 ###### Returns
 
@@ -124,7 +124,7 @@ Defined in: [core/axis.ts:136](https://github.com/feds01/Graphika/blob/05ccf9175
 determineAxisPosition(): void;
 ```
 
-Defined in: [core/axis.ts:66](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/core/axis.ts#L66)
+Defined in: [core/axis.ts:66](https://github.com/feds01/Graphika/blob/main/src/core/axis.ts#L66)
 
 ###### Returns
 
@@ -140,7 +140,7 @@ v0.0.1 Takes in input as the lengths object from a graph object.
 draw(): void;
 ```
 
-Defined in: [core/axis.ts:165](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/core/axis.ts#L165)
+Defined in: [core/axis.ts:165](https://github.com/feds01/Graphika/blob/main/src/core/axis.ts#L165)
 
 ###### Returns
 
@@ -152,7 +152,7 @@ Defined in: [core/axis.ts:165](https://github.com/feds01/Graphika/blob/05ccf9175
 generateScaleNumbers(): string[];
 ```
 
-Defined in: [core/axis.ts:112](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/core/axis.ts#L112)
+Defined in: [core/axis.ts:112](https://github.com/feds01/Graphika/blob/main/src/core/axis.ts#L112)
 
 ###### Returns
 
@@ -175,20 +175,20 @@ type AxisOptions = {
 };
 ```
 
-Defined in: [core/axis.ts:26](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/core/axis.ts#L26)
+Defined in: [core/axis.ts:26](https://github.com/feds01/Graphika/blob/main/src/core/axis.ts#L26)
 
 #### Properties
 
-| Property                                      | Type       | Defined in                                                                                                               |
-| --------------------------------------------- | ---------- | ------------------------------------------------------------------------------------------------------------------------ |
-| <a id="axiscolour"></a> `axisColour`          | `string`   | [core/axis.ts:27](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/core/axis.ts#L27) |
-| <a id="drawlabels"></a> `drawLabels?`         | `boolean`  | [core/axis.ts:28](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/core/axis.ts#L28) |
-| <a id="drawticks"></a> `drawTicks?`           | `boolean`  | [core/axis.ts:29](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/core/axis.ts#L29) |
-| <a id="labeldirection"></a> `labelDirection?` | `string`   | [core/axis.ts:30](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/core/axis.ts#L30) |
-| <a id="optimiseticks"></a> `optimiseTicks?`   | `boolean`  | [core/axis.ts:31](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/core/axis.ts#L31) |
-| <a id="startatzero"></a> `startAtZero?`       | `boolean`  | [core/axis.ts:32](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/core/axis.ts#L32) |
-| <a id="ticklabels"></a> `tickLabels?`         | `string`[] | [core/axis.ts:33](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/core/axis.ts#L33) |
-| <a id="ticks"></a> `ticks`                    | `number`   | [core/axis.ts:34](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/core/axis.ts#L34) |
+| Property                                      | Type       | Defined in                                                                           |
+| --------------------------------------------- | ---------- | ------------------------------------------------------------------------------------ |
+| <a id="axiscolour"></a> `axisColour`          | `string`   | [core/axis.ts:27](https://github.com/feds01/Graphika/blob/main/src/core/axis.ts#L27) |
+| <a id="drawlabels"></a> `drawLabels?`         | `boolean`  | [core/axis.ts:28](https://github.com/feds01/Graphika/blob/main/src/core/axis.ts#L28) |
+| <a id="drawticks"></a> `drawTicks?`           | `boolean`  | [core/axis.ts:29](https://github.com/feds01/Graphika/blob/main/src/core/axis.ts#L29) |
+| <a id="labeldirection"></a> `labelDirection?` | `string`   | [core/axis.ts:30](https://github.com/feds01/Graphika/blob/main/src/core/axis.ts#L30) |
+| <a id="optimiseticks"></a> `optimiseTicks?`   | `boolean`  | [core/axis.ts:31](https://github.com/feds01/Graphika/blob/main/src/core/axis.ts#L31) |
+| <a id="startatzero"></a> `startAtZero?`       | `boolean`  | [core/axis.ts:32](https://github.com/feds01/Graphika/blob/main/src/core/axis.ts#L32) |
+| <a id="ticklabels"></a> `tickLabels?`         | `string`[] | [core/axis.ts:33](https://github.com/feds01/Graphika/blob/main/src/core/axis.ts#L33) |
+| <a id="ticks"></a> `ticks`                    | `number`   | [core/axis.ts:34](https://github.com/feds01/Graphika/blob/main/src/core/axis.ts#L34) |
 
 ---
 
@@ -198,4 +198,4 @@ Defined in: [core/axis.ts:26](https://github.com/feds01/Graphika/blob/05ccf91755
 type AxisType = "x" | "y";
 ```
 
-Defined in: [core/axis.ts:24](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/core/axis.ts#L24)
+Defined in: [core/axis.ts:24](https://github.com/feds01/Graphika/blob/main/src/core/axis.ts#L24)

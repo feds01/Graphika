@@ -14,7 +14,7 @@
 function fillRange(size): number[];
 ```
 
-Defined in: [utils/arrays.ts:20](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/utils/arrays.ts#L20)
+Defined in: [utils/arrays.ts:20](https://github.com/feds01/Graphika/blob/main/src/utils/arrays.ts#L20)
 
 fills an empty array from 0 to size with integers and then returns the new array.
 
@@ -38,7 +38,7 @@ array with numbers 0 up to size.
 function findClosestIndex(arr, value): [number, number];
 ```
 
-Defined in: [utils/arrays.ts:153](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/utils/arrays.ts#L153)
+Defined in: [utils/arrays.ts:153](https://github.com/feds01/Graphika/blob/main/src/utils/arrays.ts#L153)
 
 Find the index or indices or the closest elements to a given
 values in an array. For example:
@@ -73,7 +73,7 @@ The indices of the closest element to the given value.
 function getMax(arr): number;
 ```
 
-Defined in: [utils/arrays.ts:92](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/utils/arrays.ts#L92)
+Defined in: [utils/arrays.ts:92](https://github.com/feds01/Graphika/blob/main/src/utils/arrays.ts#L92)
 
 Function to get maximum element within array, we don't want to
 use Math.max if it is a large array.
@@ -98,7 +98,7 @@ largest number in the array.
 function getMin(arr): number;
 ```
 
-Defined in: [utils/arrays.ts:108](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/utils/arrays.ts#L108)
+Defined in: [utils/arrays.ts:108](https://github.com/feds01/Graphika/blob/main/src/utils/arrays.ts#L108)
 
 Function to get maximum element within array.
 
@@ -125,7 +125,7 @@ function getMinMax(arr): {
 };
 ```
 
-Defined in: [utils/arrays.ts:124](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/utils/arrays.ts#L124)
+Defined in: [utils/arrays.ts:124](https://github.com/feds01/Graphika/blob/main/src/utils/arrays.ts#L124)
 
 Function to get maximum and minimum element within array.
 
@@ -146,10 +146,10 @@ Function to get maximum and minimum element within array.
 
 smallest and largest numbers within the array.
 
-| Name  | Type     | Defined in                                                                                                                       |
-| ----- | -------- | -------------------------------------------------------------------------------------------------------------------------------- |
-| `max` | `number` | [utils/arrays.ts:124](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/utils/arrays.ts#L124) |
-| `min` | `number` | [utils/arrays.ts:124](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/utils/arrays.ts#L124) |
+| Name  | Type     | Defined in                                                                                   |
+| ----- | -------- | -------------------------------------------------------------------------------------------- |
+| `max` | `number` | [utils/arrays.ts:124](https://github.com/feds01/Graphika/blob/main/src/utils/arrays.ts#L124) |
+| `min` | `number` | [utils/arrays.ts:124](https://github.com/feds01/Graphika/blob/main/src/utils/arrays.ts#L124) |
 
 ---
 
@@ -159,7 +159,7 @@ smallest and largest numbers within the array.
 function getNext<T>(index, arr): T;
 ```
 
-Defined in: [utils/arrays.ts:59](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/utils/arrays.ts#L59)
+Defined in: [utils/arrays.ts:59](https://github.com/feds01/Graphika/blob/main/src/utils/arrays.ts#L59)
 
 Get the next element of an array, this method is also a safety wrapper function, if the
 given index is equal to the length of the array - 1, or larger, return the last element
@@ -192,7 +192,7 @@ the previous item from the array, the same one if the index is length of the arr
 function getPrevious<T>(index, data): T;
 ```
 
-Defined in: [utils/arrays.ts:46](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/utils/arrays.ts#L46)
+Defined in: [utils/arrays.ts:46](https://github.com/feds01/Graphika/blob/main/src/utils/arrays.ts#L46)
 
 Get the previous element of an array, this method is created for safety, if the
 given index is zero or less than zero, the function will return the element at zero
@@ -225,7 +225,7 @@ the previous item from the array, the same one if the index is 0.
 function longest(arr): string;
 ```
 
-Defined in: [utils/arrays.ts:31](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/utils/arrays.ts#L31)
+Defined in: [utils/arrays.ts:31](https://github.com/feds01/Graphika/blob/main/src/utils/arrays.ts#L31)
 
 Returns the longest string within a given array. It does not return the actual length
 of the longest item, just the longest item.
@@ -250,7 +250,7 @@ Longest string from the array.
 function negativeValues(arr): NumberArray;
 ```
 
-Defined in: [utils/arrays.ts:69](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/utils/arrays.ts#L69)
+Defined in: [utils/arrays.ts:69](https://github.com/feds01/Graphika/blob/main/src/utils/arrays.ts#L69)
 
 Get all only negative values from a given array.
 
@@ -274,7 +274,7 @@ Negative only items.
 function nonNegativeValues(array): NumberArray;
 ```
 
-Defined in: [utils/arrays.ts:196](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/utils/arrays.ts#L196)
+Defined in: [utils/arrays.ts:196](https://github.com/feds01/Graphika/blob/main/src/utils/arrays.ts#L196)
 
 Get all only positive and zero values from a given array.
 
@@ -298,7 +298,7 @@ the array with only natural numbers.
 function sum(arr): number;
 ```
 
-Defined in: [utils/arrays.ts:186](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/utils/arrays.ts#L186)
+Defined in: [utils/arrays.ts:186](https://github.com/feds01/Graphika/blob/main/src/utils/arrays.ts#L186)
 
 Array sum function.
 
@@ -322,7 +322,7 @@ sum of the array.
 function uniqueValues<T>(arr): Set<T>;
 ```
 
-Defined in: [utils/arrays.ts:81](https://github.com/feds01/Graphika/blob/05ccf9175507ac60868838979a0155d2250fcd21/src/utils/arrays.ts#L81)
+Defined in: [utils/arrays.ts:81](https://github.com/feds01/Graphika/blob/main/src/utils/arrays.ts#L81)
 
 Get all unique values from a given array.
 

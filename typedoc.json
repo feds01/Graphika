@@ -3,6 +3,7 @@
     "entryPoints": ["./src/**/*.ts"],
     "entryPointStrategy": "expand",
     "out": "./docs/reference",
+    "gitRevision": "main",
     "plugin": ["typedoc-plugin-markdown"],
     "outputFileStrategy": "modules",
     "excludePrivate": true,
