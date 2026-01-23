@@ -32,7 +32,7 @@
         "docs:typedoc": "typedoc"
     },
     "devDependencies": {
-        "globals": "^17.0.0",
+        "globals": "^17.1.0",
         "oxfmt": "^0.24.0",
         "oxlint": "^1.39.0",
         "rolldown": "^1.0.0-beta.60",
