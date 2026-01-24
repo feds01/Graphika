@@ -78,14 +78,14 @@ class LegendManager {
                 this.requiredSpace = this.boxSize + this.graph.padding.base;
                 break;
             case "left":
-            case "right":
+            case "right": {
                 // determine the relevant size that the padding needs to increase by based on the position
                 // of the legend. If the orientation of the legend is vertical, only the 'max width' matters,
                 // and if the orientation is horizontal, only the height of the legend matters.
                 const longestItem = arrays.longest(this.data.map((item) => item.label));
-
                 this.requiredSpace = this.getRequiredSpaceFor(longestItem);
                 break;
+            }
         }
     }
 
@@ -135,11 +135,11 @@ class LegendManager {
         let { orientation, xBegin, yBegin } = (() => {
             switch (this.position) {
                 case "top": {
-                    let yBegin = 0;
+                    let yBegin = this.graph.padding.base;
 
                     const isTopTitle = this.graph.options.title.draw && this.graph.options.title.position === "top";
                     if (isTopTitle) {
-                        yBegin += (this.graph.options.title.fontSize ?? 24) + this.graph.padding.textPadding + this.graph.padding.base;
+                        yBegin += (this.graph.options.title.fontSize ?? 24) + this.graph.padding.textPadding;
                     }
 
                     return {
