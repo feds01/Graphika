@@ -356,7 +356,7 @@ class BasicGraph {
 
     /**
      * @since v0.0.1
-     * 
+     *
      * This method is used to fetch all line labels that are present on this graph.
      * */
     getLineLabels() {
@@ -414,33 +414,38 @@ class BasicGraph {
         let labelXOffset = 0;
         let labelYOffset = 0;
 
+        const hasXLabel = this.options.x_label && this.options.x_label.length > 0;
+        const hasYLabel = this.options.y_label && this.options.y_label.length > 0;
+
         // check if we need to offset the x-label
         if (this.legendManager) {
-            if (this.options.legend.draw && this.legendManager.position === "bottom") {
+            if (this.options.legend.draw && hasXLabel && this.legendManager.position === "bottom") {
                 labelXOffset += this.legendManager.requiredSpace;
             }
 
             // check if we need to offset the y-label
-            if (this.options.legend.draw && this.legendManager.position === "left") {
+            if (this.options.legend.draw && hasYLabel && this.legendManager.position === "left") {
                 labelYOffset += this.legendManager.requiredSpace;
             }
         }
 
-        // add x-axis label
-        this.drawer.text(
-            this.options.x_label,
-            this.lengths.xCenter,
-            this.drawer.height - (this.fontSize() / 2 + this.padding.textPadding + labelXOffset),
-            this.fontSize(),
-            config.axisColour,
-        );
+        if (hasXLabel) {
+            this.drawer.text(
+                this.options.x_label,
+                this.lengths.xCenter,
+                this.drawer.height - (this.fontSize() / 2 + this.padding.textPadding + labelXOffset),
+                this.fontSize(),
+                config.axisColour,
+            );
+        }
 
-        // add y-axis label
-        this.ctx.save();
-        this.ctx.translate(this.fontSize() + labelYOffset, this.lengths.yCenter);
-        this.ctx.rotate(-Math.PI / 2);
-        this.ctx.fillText(this.options.y_label, 0, 0);
-        this.ctx.restore();
+        if (hasYLabel) {
+            this.ctx.save();
+            this.ctx.translate(this.fontSize() + labelYOffset, this.lengths.yCenter);
+            this.ctx.rotate(-Math.PI / 2);
+            this.ctx.fillText(this.options.y_label, 0, 0);
+            this.ctx.restore();
+        }
     }
 
     #drawAxisGrid() {
@@ -529,6 +534,9 @@ class BasicGraph {
      *  */
     calculatePadding() {
         const { legend, title } = this.options;
+
+        // 1. Calculate the `top` padding adjustments.
+        //
         // get the specified font size for title and the standard text padding so there
         // is a gap between the graph (and maybe a legend)
         const titleFontSize = title.fontSize ?? DEFAULT_TITLE_FONT_SIZE;
@@ -536,31 +544,42 @@ class BasicGraph {
             this.padding.top += titleFontSize + this.padding.textPadding;
         }
 
+        // 2. Calculate the `bottom` padding adjustments.
+        const tickHeight = 9;
+        const labelSpacing = this.options.labelFontSize + this.padding.textPadding;
+
+        // Automatically add spacing for the tick and the labels on the axis.
+        //
+        // @@Todo: maybe move this to `Axis` responsibility?
+        this.padding.bottom += labelSpacing + tickHeight;
+
+        // Add spacing for the label if we have one.
+        const hasXLabel = this.options.x_label && this.options.x_label.length > 0;
+        if (hasXLabel) {
+            this.padding.bottom += this.options.labelFontSize + this.padding.textPadding;
+        }
+
+        // 3. Calculate the `left` padding adjustments.
+        //
+        // Include space for: y-axis title + gap + tick labels + ticks + padding
         const { yAxis, xAxis } = this.axisManager;
         const longestItem = arrays.longest(yAxis.scaleLabels);
 
         // Set the config font size of axis labels, and then we can effectively 'measure' the width of the text
         this.drawer.toTextMode(config.axisLabelFontSize, config.axisColour);
-        // Include space for: y-axis title + gap + tick labels + ticks + padding
-        const yAxisLabelWidth = this.options.labelFontSize;
+        this.padding.left += Math.ceil(this.ctx.measureText(longestItem).width);
 
-        this.padding.left += Math.ceil(
-             yAxisLabelWidth + this.padding.textPadding + this.ctx.measureText(longestItem).width,
-        );
-
-        // if we don't have a legend on the right hand side of the table, we might need to add some padding
-        // to the right hand-side of the graph.
-        if (!legend.draw || legend.position !== "right") {
-            const lastItemOnXAxis = xAxis.scaleLabels.at(-1)!;
-            this.padding.right = Math.ceil(this.ctx.measureText(lastItemOnXAxis).width);
+        // Add space for the y-label if we have one.
+        const hasYLabel = this.options.y_label && this.options.y_label.length > 0;
+        if (hasYLabel) {
+            this.padding.left += this.options.labelFontSize + this.padding.textPadding;
         }
 
-        const tickHeight = 9;
-        this.padding.bottom += Math.ceil(
-            (2 * this.options.labelFontSize) + (2 * this.padding.textPadding) + tickHeight,
-        );
+        // 4. Calculate the `right` padding adjustments.
+        const lastItemOnXAxis = xAxis.scaleLabels.at(-1)!;
+        this.padding.right += Math.ceil(this.ctx.measureText(lastItemOnXAxis).width);
 
-        // apply legend padding if legends are enabled.
+        // 5. Apply legend padding if legends are enabled.
         if (legend.draw && isDef(this.legendManager)) {
             this.padding[this.legendManager.position] += this.legendManager.requiredSpace;
 
@@ -692,7 +711,7 @@ class BasicGraph {
         const { duration, easing } = {
             duration: 800,
             easing: easeOutCubic,
-            ...this.options.animation
+            ...this.options.animation,
         };
         const startTime = performance.now();
 
