@@ -13,7 +13,6 @@
  */
 
 import config from "../config";
-import { assert } from "../utils/assert";
 import * as arrays from "../utils/arrays";
 import colours from "../utils/colours";
 import BasicGraph from "../basic.graph";
@@ -60,23 +59,33 @@ class LegendManager {
         private readonly graph: BasicGraph,
         private readonly data: DataSource[],
     ) {
-        /* Position of the legend container on the graph object */
         this.position = this.graph.options.legend.position ?? "top";
         this.alignment = this.graph.options.legend.alignment ?? "center";
 
         // the actual legend box size
         this.boxSize = this.graph.options.labelFontSize + 4; // 2px padding each side
 
-        // determine the relevant size that the padding needs to increase by based on the position
-        // of the legend. If the orientation of the legend is vertical, only the 'max width' matters,
-        // and if the orientation is horizontal, only the height of the legend matters.
-        if (this.position === "left" || this.position === "right") {
-            // get longest label
-            const longestItem = arrays.longest(this.data.map((item) => item.label));
-
-            this.requiredSpace = this.getRequiredSpaceFor(longestItem);
-        } else {
-            this.requiredSpace = this.graph.fontSize();
+        switch (this.position) {
+            // @@Todo: if the `title` position changes here, we may or may not need to
+            // account for the `base` padding, since it means that the drawn legend
+            // item is between the title and the graph area.
+            case "top":
+                this.requiredSpace = this.boxSize;
+                break;
+            case "bottom":
+                // We need to account for the offset of the `base` padding that is
+                // applied to the graph.
+                this.requiredSpace = this.boxSize + this.graph.padding.base;
+                break;
+            case "left":
+            case "right": {
+                // determine the relevant size that the padding needs to increase by based on the position
+                // of the legend. If the orientation of the legend is vertical, only the 'max width' matters,
+                // and if the orientation is horizontal, only the height of the legend matters.
+                const longestItem = arrays.longest(this.data.map((item) => item.label));
+                this.requiredSpace = this.getRequiredSpaceFor(longestItem);
+                break;
+            }
         }
     }
 
@@ -123,42 +132,46 @@ class LegendManager {
      * Function that draws this component.
      */
     draw() {
-        let orientation = "",
-            xBegin = this.graph.lengths.xBegin,
-            yBegin =
-                LegendManager.PADDING +
-                (this.graph.options.title.draw
-                    ? this.graph.options.title.fontSize + this.graph.padding.textPadding
-                    : 0);
+        let { orientation, xBegin, yBegin } = (() => {
+            switch (this.position) {
+                case "top": {
+                    let yBegin = this.graph.padding.base;
 
-        switch (this.position) {
-            case "top":
-                orientation = "horizontal";
-                break;
-            case "bottom": {
-                orientation = "horizontal";
+                    const isTopTitle = this.graph.options.title.draw && this.graph.options.title.position === "top";
+                    if (isTopTitle) {
+                        yBegin += (this.graph.options.title.fontSize ?? 24) + this.graph.padding.textPadding;
+                    }
 
-                // offset the requiredSpace by textPadding so we avoid not having any padding
-                // between the legend and the x-axis label.
-                yBegin = this.graph.canvas.height - this.requiredSpace + this.graph.padding.textPadding;
-                break;
+                    return {
+                        orientation: "horizontal" as const,
+                        xBegin: this.graph.lengths.xBegin,
+                        yBegin,
+                    };
+                }
+                case "bottom": {
+                    return {
+                        orientation: "horizontal" as const,
+                        // offset the requiredSpace by textPadding so we avoid not having any padding
+                        // between the legend and the x-axis label.
+                        yBegin: this.graph.canvas.height - this.requiredSpace + this.graph.padding.textPadding,
+                        xBegin: this.graph.lengths.xBegin,
+                    };
+                }
+                case "left":
+                    return {
+                        orientation: "vertical" as const,
+                        xBegin: LegendManager.PADDING,
+                        yBegin: this.graph.lengths.yBegin,
+                    };
+                case "right": {
+                    return {
+                        orientation: "vertical" as const,
+                        xBegin: this.graph.lengths.xEnd + LegendManager.PADDING * 2,
+                        yBegin: this.graph.lengths.yBegin,
+                    };
+                }
             }
-            case "left":
-                orientation = "vertical";
-                xBegin = LegendManager.PADDING;
-                yBegin = this.graph.lengths.yBegin;
-                break;
-            case "right": {
-                orientation = "vertical";
-                xBegin = this.graph.lengths.xEnd + LegendManager.PADDING * 2;
-                yBegin = this.graph.lengths.yBegin;
-                break;
-            }
-            default: {
-                assert(false, "Invalid legend position");
-                return;
-            }
-        }
+        })();
 
         // pre-compute all the required space per legend
         const requiredSpaces = this.data.map((item, index) => {

@@ -10,21 +10,50 @@
  */
 
 /**
- * Combine two objects into one.
+ * Deep clone an object.
+ */
+function deepClone<T>(obj: T): T {
+    if (obj === null || typeof obj !== "object") {
+        return obj;
+    }
+    if (Array.isArray(obj)) {
+        return obj.map((item) => deepClone(item)) as T;
+    }
+    const cloned = {} as T;
+    for (const key of Object.keys(obj)) {
+        // @ts-expect-error - We know that the key exists
+        cloned[key] = deepClone(obj[key]);
+    }
+    return cloned;
+}
+
+/**
+ * Combine two objects into one without mutating the originals.
  *
- * @param target The initial object that will be used as a based to merge.
+ * @param target The initial object that will be used as a base to merge.
  * @param source The object that will be merged into target.
- * @return A merged object from target and source.
+ * @return A new merged object from target and source.
  *  */
 export function merge<T extends object>(target: T, source: T): T {
+    // Deep clone target to avoid mutating the original
+    const result = deepClone(target);
+
     for (const key of Object.keys(source)) {
         // @ts-expect-error - We know that the key exists
-        if (source[key] instanceof Object) Object.assign(source[key], merge(target[key], source[key]));
+        const sourceValue = source[key];
+        // @ts-expect-error - We know that the key exists
+        const targetValue = result[key];
+
+        if (sourceValue instanceof Object && targetValue instanceof Object && !Array.isArray(sourceValue)) {
+            // @ts-expect-error - We know that the key exists
+            result[key] = merge(targetValue, sourceValue);
+        } else {
+            // @ts-expect-error - We know that the key exists
+            result[key] = deepClone(sourceValue);
+        }
     }
 
-    // Join `target` and modified `source`
-    Object.assign(target || {}, source);
-    return target;
+    return result;
 }
 
 /**

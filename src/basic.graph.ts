@@ -24,7 +24,7 @@ import LegendManager, { LegendOptions } from "./legend/manager";
 import { AxisOptions } from "./core/axis";
 import { EasingAnimationFn, easeOutCubic } from "./core/animation";
 
-type GridOptions = {
+export type GridOptions = {
     gridded: boolean;
     gridLineStyle: string;
     optimiseSquareSize: boolean;
@@ -33,29 +33,41 @@ type GridOptions = {
 };
 
 /** Animation options for the graph. */
-type AnimationOptions = {
+export type AnimationOptions = {
     /** Whether to animate the lines when drawing. */
     enabled: boolean;
     /** Duration of the animation in milliseconds. */
-    duration: number;
+    duration?: number;
     /** Easing function for the animation. */
-    easing: EasingAnimationFn;
+    easing?: EasingAnimationFn;
 };
 
-type BasicGraphOptions = {
-    debug: boolean;
+export type BasicGraphOptions = {
+    /** Padding around the graph content. */
+    padding?: number;
+
+    // @@TODO: move this potentially into `AxisOptions.LabelOptions`
     x_label: string;
+
+    // @@TODO: move this potentially into `AxisOptions.LabelOptions`
     y_label: string;
-    padding: number;
 
     // @@TODO: move this potentially into `AxisOptions.LabelOptions`
     labelFont: string;
 
     // @@TODO: move this potentially into `AxisOptions.LabelOptions`
     labelFontSize: number;
+
+    /** Colour of the axes. */
     axisColour: string;
+
+    /** Grid options for the graph. */
     grid: GridOptions;
+
+    /** Title options for the graph. */
     title: TitleOptions;
+
+    /** Scale options for the graph axes. */
     scale: {
         shorthandNumerics: boolean;
         x: AxisOptions;
@@ -67,22 +79,31 @@ type BasicGraphOptions = {
 
     /** Animation settings for the graph. */
     animation: AnimationOptions;
+
+    /** Debug mode for the graph. Enables additional logging and visual aids for development. */
+    debug?: boolean;
 };
 
-type TitleOptions = {
-    draw: boolean;
+export type TitleOptions = {
+    draw?: boolean;
     content: string;
-    position: TitlePosition;
-    alignment: TitleAlignment;
-    fontFamily: string;
-    fontSize: number;
-    colour: string;
+    position?: TitlePosition;
+    alignment?: TitleAlignment;
+    fontFamily?: string;
+    fontSize?: number;
+    colour?: string;
 };
 
-type TitlePosition = "top";
-type TitleAlignment = "start" | "center" | "end";
+export type TitlePosition = "top";
+export type TitleAlignment = "start" | "center" | "end";
 
 type Padding = {
+    /**
+     * The base amount of padding that is applied around the border of the
+     * graph canvas.
+     */
+    base: number;
+
     top: number;
     left: number;
     right: number;
@@ -101,6 +122,9 @@ type Lengths = {
     yLength: number;
 };
 
+const DEFAULT_PADDING = 8;
+const DEFAULT_TITLE_FONT_SIZE = 24;
+
 /**
  * @since v0.0.1 Default values for options within the object, however this will
  * soon be phased out in favour of core/config * */
@@ -111,7 +135,7 @@ const defaultConfig: BasicGraphOptions = {
     // general graph settings
     x_label: "",
     y_label: "",
-    padding: 8,
+    padding: DEFAULT_PADDING,
 
     title: {
         draw: true,
@@ -256,19 +280,25 @@ class BasicGraph {
 
         this.axisManager = new AxisManager(this);
 
-        // check if we need to draw the legend for this graph.
+        // 1. Initial padding configuration. This is a rudimentary padding setup, the actual
+        // calculation of padding is done in `calculatePadding()`.
+        const base = this.options.padding ?? DEFAULT_PADDING;
+        this.padding = {
+            base,
+            top: base,
+            left: base,
+            right: base,
+            bottom: base,
+            textPadding: 4,
+        };
+
+        // 2. Initialise the `LegendManager` if legends are enabled.
+        //
+        // We do this after we've set up the basic `padding` as the `LegendManager` may need to
+        // perform initial calculations based on the padding.
         if (this.options.legend.draw) {
             this.legendManager = new LegendManager(this, this.dataManager.generateLegendInfo());
         }
-
-        // initial padding configuration
-        this.padding = {
-            top: this.options.padding,
-            left: 0,
-            right: this.options.padding,
-            bottom: 0,
-            textPadding: 4,
-        };
 
         // @@Cleanup: move all this stuff into `draw()`
         this.calculatePadding();
@@ -298,16 +328,16 @@ class BasicGraph {
     }
 
     fontSize() {
-        return parseInt(this.ctx.font.substr(0, 2), 10);
+        return parseInt(this.ctx.font.substring(0, 2), 10);
     }
 
     /**
      * @since v0.0.1
-     * @API This method is used to remove a line by a given 'label' which is present with every line that
+     *
+     * This method is used to remove a line by a given 'label' which is present with every line that
      * is present on the graph. If the developer does not specify a label, a random string is generated and that
      * is used as a label instead.
      * */
-    // TODO: most likely not random string, just use incremental labeling like 'line_2', 'line_3' etc.
     removeLineByLabel(label: string) {
         let foundLine = false;
 
@@ -326,8 +356,8 @@ class BasicGraph {
 
     /**
      * @since v0.0.1
-     * @API This method is used to fetch all line labels that are present on this graph.
      *
+     * This method is used to fetch all line labels that are present on this graph.
      * */
     getLineLabels() {
         return this.dataManager.data.map((lineData) => {
@@ -362,13 +392,18 @@ class BasicGraph {
 
         this.ctx.save();
 
+        const legendOffset =
+            this.legendManager && this.options.legend.position === "top"
+                ? this.legendManager.requiredSpace + 2 * this.padding.textPadding
+                : 0;
+
         // add the title
         this.drawer.text(
             this.options.title.content,
             offset,
-            (this.options.title.fontSize + this.padding.textPadding) / 2, // so the text is vertically centred
-            this.options.title.fontSize,
-            this.options.title.colour,
+            (this.padding.top - legendOffset) / 2, // so the text is vertically centred
+            this.options.title.fontSize ?? DEFAULT_TITLE_FONT_SIZE,
+            this.options.title.colour ?? this.options.axisColour,
             alignment,
         );
 
@@ -379,33 +414,38 @@ class BasicGraph {
         let labelXOffset = 0;
         let labelYOffset = 0;
 
+        const hasXLabel = this.options.x_label && this.options.x_label.length > 0;
+        const hasYLabel = this.options.y_label && this.options.y_label.length > 0;
+
         // check if we need to offset the x-label
         if (this.legendManager) {
-            if (this.options.legend.draw && this.legendManager.position === "bottom") {
-                labelXOffset = this.legendManager.requiredSpace;
+            if (this.options.legend.draw && hasXLabel && this.legendManager.position === "bottom") {
+                labelXOffset += this.legendManager.requiredSpace;
             }
 
             // check if we need to offset the y-label
-            if (this.options.legend.draw && this.legendManager.position === "left") {
-                labelYOffset = this.legendManager.requiredSpace;
+            if (this.options.legend.draw && hasYLabel && this.legendManager.position === "left") {
+                labelYOffset += this.legendManager.requiredSpace;
             }
         }
 
-        // add x-axis label
-        this.drawer.text(
-            this.options.x_label,
-            this.lengths.xCenter,
-            this.drawer.height - (this.fontSize() / 2 + this.padding.textPadding + labelXOffset),
-            this.fontSize(),
-            config.axisColour,
-        );
+        if (hasXLabel) {
+            this.drawer.text(
+                this.options.x_label,
+                this.lengths.xCenter,
+                this.drawer.height - (this.fontSize() / 2 + this.padding.textPadding + labelXOffset),
+                this.fontSize(),
+                config.axisColour,
+            );
+        }
 
-        // add y-axis label
-        this.ctx.save();
-        this.ctx.translate(this.fontSize() + labelYOffset, this.lengths.yCenter);
-        this.ctx.rotate(-Math.PI / 2);
-        this.ctx.fillText(this.options.y_label, 0, 0);
-        this.ctx.restore();
+        if (hasYLabel) {
+            this.ctx.save();
+            this.ctx.translate(this.fontSize() + labelYOffset, this.lengths.yCenter);
+            this.ctx.rotate(-Math.PI / 2);
+            this.ctx.fillText(this.options.y_label, 0, 0);
+            this.ctx.restore();
+        }
     }
 
     #drawAxisGrid() {
@@ -494,35 +534,59 @@ class BasicGraph {
      *  */
     calculatePadding() {
         const { legend, title } = this.options;
+
+        // 1. Calculate the `top` padding adjustments.
+        //
         // get the specified font size for title and the standard text padding so there
         // is a gap between the graph (and maybe a legend)
-        this.padding.top += title.draw ? title.fontSize + this.padding.textPadding : 0;
+        const titleFontSize = title.fontSize ?? DEFAULT_TITLE_FONT_SIZE;
+        if (title.draw) {
+            this.padding.top += titleFontSize + this.padding.textPadding;
+        }
 
+        // 2. Calculate the `bottom` padding adjustments.
+        const tickHeight = 9;
+        const labelSpacing = this.options.labelFontSize + this.padding.textPadding;
+
+        // Automatically add spacing for the tick and the labels on the axis.
+        //
+        // @@Todo: maybe move this to `Axis` responsibility?
+        this.padding.bottom += labelSpacing + tickHeight;
+
+        // Add spacing for the label if we have one.
+        const hasXLabel = this.options.x_label && this.options.x_label.length > 0;
+        if (hasXLabel) {
+            this.padding.bottom += this.options.labelFontSize + this.padding.textPadding;
+        }
+
+        // 3. Calculate the `left` padding adjustments.
+        //
+        // Include space for: y-axis title + gap + tick labels + ticks + padding
         const { yAxis, xAxis } = this.axisManager;
         const longestItem = arrays.longest(yAxis.scaleLabels);
 
         // Set the config font size of axis labels, and then we can effectively 'measure' the width of the text
         this.drawer.toTextMode(config.axisLabelFontSize, config.axisColour);
-        this.padding.left = Math.ceil(
-            this.options.padding + 2 * this.padding.textPadding + this.ctx.measureText(longestItem).width,
-        );
+        this.padding.left += Math.ceil(this.ctx.measureText(longestItem).width);
 
-        // if we don't have a legend on the right hand side of the table, we might need to add some padding
-        // to the right hand-side of the graph.
-        if (!legend.draw || legend.position !== "right") {
-            const lastItemOnXAxis = xAxis.scaleLabels.at(-1)!;
-            this.padding.right = Math.ceil(this.ctx.measureText(lastItemOnXAxis).width);
+        // Add space for the y-label if we have one.
+        const hasYLabel = this.options.y_label && this.options.y_label.length > 0;
+        if (hasYLabel) {
+            this.padding.left += this.options.labelFontSize + this.padding.textPadding;
         }
 
-        // measure the right padding to determine if we need to add padding to
-        // fit in the last scale label if it goes out of bounds.
+        // 4. Calculate the `right` padding adjustments.
+        const lastItemOnXAxis = xAxis.scaleLabels.at(-1)!;
+        this.padding.right += Math.ceil(this.ctx.measureText(lastItemOnXAxis).width);
 
-        // @@TODO: convert magic const '9' or the tick length into const
-        this.padding.bottom = Math.ceil(9 + 2 * this.options.labelFontSize + 3 * this.padding.textPadding);
-
-        // apply legend padding if legends are enabled
+        // 5. Apply legend padding if legends are enabled.
         if (legend.draw && isDef(this.legendManager)) {
             this.padding[this.legendManager.position] += this.legendManager.requiredSpace;
+
+            // If the legend is in the same place as the title, we need to add extra padding to account for both.
+            if (title.draw && title.position === legend.position) {
+                this.padding[this.legendManager.position] += this.padding.textPadding;
+            }
         }
     }
 
@@ -642,7 +706,13 @@ class BasicGraph {
      * Runs the animation loop for drawing lines.
      */
     #runAnimation() {
-        const { duration, easing } = this.options.animation;
+        // @@Todo: move this kind of prop type resolution out of here, i.e. we should work with different types
+        // so we don't have to adjust and check for defaults here.
+        const { duration, easing } = {
+            duration: 800,
+            easing: easeOutCubic,
+            ...this.options.animation,
+        };
         const startTime = performance.now();
 
         const animate = (currentTime: number) => {
