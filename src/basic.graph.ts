@@ -382,12 +382,12 @@ class BasicGraph {
         // check if we need to offset the x-label
         if (this.legendManager) {
             if (this.options.legend.draw && this.legendManager.position === "bottom") {
-                labelXOffset = this.legendManager.requiredSpace;
+                labelXOffset += this.legendManager.requiredSpace;
             }
 
             // check if we need to offset the y-label
             if (this.options.legend.draw && this.legendManager.position === "left") {
-                labelYOffset = this.legendManager.requiredSpace;
+                labelYOffset += this.legendManager.requiredSpace;
             }
         }
 
@@ -503,8 +503,11 @@ class BasicGraph {
 
         // Set the config font size of axis labels, and then we can effectively 'measure' the width of the text
         this.drawer.toTextMode(config.axisLabelFontSize, config.axisColour);
+        // Include space for: y-axis title + gap + tick labels + ticks + padding
+        const yAxisLabelWidth = this.options.labelFontSize
+
         this.padding.left = Math.ceil(
-            this.options.padding + 2 * this.padding.textPadding + this.ctx.measureText(longestItem).width,
+            this.options.padding + yAxisLabelWidth + this.padding.textPadding + this.ctx.measureText(longestItem).width,
         );
 
         // if we don't have a legend on the right hand side of the table, we might need to add some padding
@@ -514,11 +517,8 @@ class BasicGraph {
             this.padding.right = Math.ceil(this.ctx.measureText(lastItemOnXAxis).width);
         }
 
-        // measure the right padding to determine if we need to add padding to
-        // fit in the last scale label if it goes out of bounds.
-
-        // @@TODO: convert magic const '9' or the tick length into const
-        this.padding.bottom = Math.ceil(9 + 2 * this.options.labelFontSize + 3 * this.padding.textPadding);
+        const tickHeight = 9;
+        this.padding.bottom = Math.ceil(this.options.padding + this.options.labelFontSize + 3 * this.padding.textPadding + tickHeight);
 
         // apply legend padding if legends are enabled
         if (legend.draw && isDef(this.legendManager)) {

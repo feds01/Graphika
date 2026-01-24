@@ -206,10 +206,10 @@ class Axis {
                         9,
                     );
 
-                    // draw the text
+                    // draw the text (add extra padding between tick and label)
                     this.graph.drawer.text(
                         number,
-                        this.graph.lengths.xBegin - 9 - this.graph.padding.textPadding,
+                        this.graph.lengths.xBegin - 9 - this.graph.padding.textPadding * 2,
                         this.graph.padding.top + this.graph.lengths.yLength - y_offset,
                         config.scaleLabelFontSize,
                         this.options.axisColour,
