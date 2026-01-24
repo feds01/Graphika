@@ -1,93 +1,106 @@
-# Legend Options
+# Legend
 
-Configure the legend appearance and position.
+Display a legend to identify multiple data series.
 
-::: tip Type Reference
-For the full type definition, see [`LegendOptions`](/reference/legend/manager#legendoptions).
-:::
-
-## Sample
-
-```ts
-let graph = new Graph(
-    "g",
-    {
-        legend: {
-            draw: true,
-            position: "top",
-            alignment: "center",
-        },
-    },
-    [
-        /* lines */
-    ],
-);
-```
+<GraphDemo
+    :options="{
+        title: { content: 'Multi-Series Comparison', alignment: 'center' },
+        x_label: 'Week',
+        y_label: 'Value',
+        grid: { gridded: true },
+        legend: { draw: true, position: 'right', alignment: 'center' }
+    }"
+    :lines="[
+        { label: 'A', interpolation: 'linear', data: [12, 18, 15, 22, 20, 25], colour: '#FF6782' },
+        { label: 'B', interpolation: 'linear', data: [10, 15, 12, 18, 16, 20], colour: '#009FE5' },
+        { label: 'C', interpolation: 'linear', data: [8, 12, 10, 15, 14, 18], colour: '#008816' },
+        { label: 'D', interpolation: 'linear', data: [14, 20, 17, 24, 22, 28], colour: '#800080' },
+        { label: 'E', interpolation: 'linear', data: [6, 10, 8, 12, 11, 15], colour: '#FF8C00' },
+        { label: 'F', interpolation: 'linear', data: [16, 22, 19, 26, 24, 30], colour: '#4169E1' },
+        { label: 'G', interpolation: 'linear', data: [9, 14, 11, 17, 15, 19], colour: '#DC143C' },
+        { label: 'H', interpolation: 'linear', data: [11, 16, 13, 19, 17, 22], colour: '#2E8B57' },
+        { label: 'I', interpolation: 'linear', data: [7, 11, 9, 13, 12, 16], colour: '#9932CC' },
+        { label: 'J', interpolation: 'linear', data: [13, 19, 16, 23, 21, 27], colour: '#20B2AA' }
+    ]"
+    :height="400"
+/>
 
 ## Options
 
-| Name        | Type                       | Default  | Description                                  |
-| ----------- | -------------------------- | -------- | -------------------------------------------- |
-| `draw`      | `boolean`                  | `false`  | Whether to draw the legend.                  |
-| `position`  | `top\|right\|bottom\|left` | `top`    | Position of the legend on the graph.         |
-| `alignment` | `start\|center\|end`       | `center` | Alignment of the legend within its position. |
+| Option      | Type                       | Default  | Description               |
+| ----------- | -------------------------- | -------- | ------------------------- |
+| `draw`      | `boolean`                  | `false`  | Show/hide the legend      |
+| `position`  | `top\|right\|bottom\|left` | `top`    | Legend placement          |
+| `alignment` | `start\|center\|end`       | `center` | Alignment within position |
 
-## Example
+## Position
 
-A graph with a legend showing two data series:
+| Value    | Description               |
+| -------- | ------------------------- |
+| `top`    | Above the graph (default) |
+| `right`  | Right side of graph       |
+| `bottom` | Below the graph           |
+| `left`   | Left side of graph        |
 
-```ts
-let graph = new Graph(
-    "graph",
-    {
-        x_label: "Months",
-        y_label: "Time procrastinating (hours)",
-        title: {
-            content: "Procrastinating statistics",
-            alignment: "center",
-        },
-        scale: {
-            x: {
-                ticks: 12,
-                tickLabels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
-            },
-        },
-        legend: {
-            draw: true,
-            position: "top",
-            alignment: "center",
-        },
-    },
-    [
-        {
-            style: "dashed",
-            label: "You",
-            interpolation: "cubic",
-            data: dataset[0],
-            annotatePoints: true,
-            colour: Graph.Colours.FLAMINGO_RED,
-            area: {
-                fill: true,
-                colour: Graph.Colours.FLAMINGO_RED,
-            },
-        },
-        {
-            label: "Average",
-            interpolation: "cubic",
-            data: dataset[1],
-            colour: Graph.Colours.DEEP_PURPLE,
-            annotatePoints: true,
-            area: {
-                fill: true,
-                colour: Graph.Colours.DEEP_PURPLE,
-            },
-        },
-    ],
-);
+<GraphDemo
+    :options="{
+        title: { content: 'Top', alignment: 'center' },
+        grid: { gridded: true },
+        legend: { draw: true, position: 'top' }
+    }"
+    :lines="[
+        { label: 'A', data: [10, 25, 18, 32, 28, 40], colour: '#FF6782' },
+        { label: 'B', data: [8, 20, 15, 28, 22, 35], colour: '#009FE5' }
+    ]"
+    :height="280"
+/>
 
-graph.draw();
-```
+<GraphDemo
+    :options="{
+        title: { content: 'Right', alignment: 'center' },
+        grid: { gridded: true },
+        legend: { draw: true, position: 'right' }
+    }"
+    :lines="[
+        { label: 'A', data: [10, 25, 18, 32, 28, 40], colour: '#FF6782' },
+        { label: 'B', data: [8, 20, 15, 28, 22, 35], colour: '#009FE5' }
+    ]"
+    :height="280"
+/>
 
-Result:
+<GraphDemo
+    :options="{
+        title: { content: 'Bottom', alignment: 'center' },
+        grid: { gridded: true },
+        legend: { draw: true, position: 'bottom' }
+    }"
+    :lines="[
+        { label: 'A', data: [10, 25, 18, 32, 28, 40], colour: '#FF6782' },
+        { label: 'B', data: [8, 20, 15, 28, 22, 35], colour: '#009FE5' }
+    ]"
+    :height="280"
+/>
 
-![chart_with_legend](/img/legend/default.png)
+## Multi-Series Comparison
+
+Legends are essential for comparing multiple data series:
+
+<GraphDemo
+    :options="{
+        title: { content: 'Sprint Velocity by Team', alignment: 'center' },
+        x_label: 'Sprint',
+        y_label: 'Story Points',
+        grid: { gridded: true },
+        legend: { draw: true, position: 'top' }
+    }"
+    :lines="[
+        { label: 'Frontend', interpolation: 'cubic', data: [21, 25, 28, 24, 30, 32, 28, 35], colour: '#FF6782' },
+        { label: 'Backend', interpolation: 'cubic', data: [18, 22, 25, 28, 26, 30, 32, 34], colour: '#009FE5' },
+        { label: 'DevOps', interpolation: 'cubic', data: [12, 15, 18, 16, 20, 22, 24, 26], colour: '#008816' },
+        { label: 'QA', interpolation: 'cubic', data: [15, 18, 20, 22, 24, 26, 25, 28], colour: '#800080' }
+    ]"
+/>
+
+::: tip Type Reference
+See [`LegendOptions`](/reference/legend/manager#legendoptions) for full TypeScript definitions.
+:::
