@@ -38,7 +38,9 @@
                 1: getRandomArray(21, 1000, 2000).sort(),
             };
 
-            const graph = new Graph.Graph(
+            const { Colours, Graph: LineGraph } = Graph.default;
+
+            const graph = new LineGraph(
                 "graph",
                 {
                     x_label: "X-Label",
@@ -74,18 +76,18 @@
                         label: "student_1",
                         interpolation: "linear",
                         data: dataset[0],
-                        colour: Graph.Colours.FLAMINGO_RED,
+                        colour: Colours.FLAMINGO_RED,
                         area: {
-                            fill: Graph.Colours.FLAMINGO_RED,
+                            fill: Colours.FLAMINGO_RED,
                         },
                     },
                     {
                         label: "student_2",
                         interpolation: "cubic",
                         data: dataset[1],
-                        colour: Graph.Colours.ELECTRIC_BLUE,
+                        colour: Colours.ELECTRIC_BLUE,
                         area: {
-                            fill: Graph.Colours.ELECTRIC_BLUE,
+                            fill: Colours.ELECTRIC_BLUE,
                         },
                     },
                 ],
