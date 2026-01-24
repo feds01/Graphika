@@ -91,13 +91,22 @@ class Axis {
 
     #computeAxisScale(): Scale {
         if (this.type === "x") {
+            const dataLen = this.graph.dataManager.maxLen();
+
+            // When optimiseTicks is enabled, limit ticks to the actual data length
+            // so we don't show empty ticks beyond the data range
+            let tickCount = this.options.ticks - 1;
+            if (this.options.optimiseTicks) {
+                tickCount = Math.min(tickCount, dataLen - 1);
+            }
+
             // we want to set the minimum scale step to 1 since we don't care about numerics on this
             // axis scale.
             return new Scale({
                 min: 0,
-                max: this.graph.dataManager.maxLen() - 1,
+                max: dataLen - 1,
                 // Subtract one here since we are counting the axis as a tick as well
-                tickCount: this.options.ticks - 1,
+                tickCount,
                 // bound the minimum step to one!
                 minimumScaleStep: 1,
             });
