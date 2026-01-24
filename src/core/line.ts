@@ -139,10 +139,10 @@ class Line {
 
         ctx.lineJoin = "round";
         ctx.lineWidth = config.lineWidth;
-        ctx.fillStyle = rgba(this.options.colour, 100);
-        ctx.strokeStyle = rgba(this.options.colour, 40);
+        ctx.fillStyle = rgba(this.options.colour, 40);
+        ctx.strokeStyle = rgba(this.options.colour, 100);
         ctx.setLineDash(this.options.style === "dashed" ? [5, 5] : []);
-
+ 
         return ctx;
     }
 
