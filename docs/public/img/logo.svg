@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
+  <!-- Background circle -->
+  <circle cx="16" cy="16" r="15" fill="#009FE5" fill-opacity="0.1" stroke="#009FE5" stroke-width="1.5"/>
+
+  <!-- Axes -->
+  <path d="M8 24V8M8 24H24" stroke="#5e5e5e" stroke-width="1.5" stroke-linecap="round"/>
+
+  <!-- Line graph -->
+  <path d="M10 20L14 14L18 17L22 10" stroke="#009FE5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- Data points -->
+  <circle cx="10" cy="20" r="1.5" fill="#009FE5"/>
+  <circle cx="14" cy="14" r="1.5" fill="#009FE5"/>
+  <circle cx="18" cy="17" r="1.5" fill="#009FE5"/>
+  <circle cx="22" cy="10" r="1.5" fill="#009FE5"/>
+</svg>
