@@ -11,7 +11,20 @@
  */
 
 export function rgba(hex: string, opacity: number): string {
-    return hex.replace(")", `,${parseFloat((opacity / 100).toFixed(2))})`);
+    // Remove the leading '#' if present
+    let h = hex.replace(/^#/, "");
+
+    // Expand shorthand form (e.g. "eee" -> "eeeeee")
+    if (h.length === 3) {
+        h = h[0] + h[0] + h[1] + h[1] + h[2] + h[2];
+    }
+
+    const r = parseInt(h.substring(0, 2), 16);
+    const g = parseInt(h.substring(2, 4), 16);
+    const b = parseInt(h.substring(4, 6), 16);
+    const a = parseFloat((opacity / 100).toFixed(2));
+
+    return `rgba(${r}, ${g}, ${b}, ${a})`;
 }
 
 export default {
