@@ -221,8 +221,8 @@ class Axis {
             );
             this.graph.ctx.textBaseline = "middle";
 
-            for (const number of this.scaleLabels) {
-                if (!(this.manager.sharedAxisZero && number.toString() === "0")) {
+            for (const label of this.scaleLabels) {
+                if (!(this.manager.sharedAxisZero && label.toString() === "0")) {
                     const y_offset = offset * this.graph.gridRectSize.y;
 
                     // tick drawing
@@ -234,7 +234,7 @@ class Axis {
 
                     // draw the text (add extra padding between tick and label)
                     this.graph.drawer.text(
-                        number,
+                        label,
                         this.graph.lengths.xBegin - 9 - this.graph.padding.textPadding * 2,
                         this.graph.padding.top + this.graph.lengths.yLength - y_offset,
                         config.scaleLabelFontSize,
@@ -263,24 +263,24 @@ class Axis {
                 );
             }
 
-            const scale_offset = this.graph.padding.textPadding + this.graph.fontSize() / 2;
+            const scaleOffset = this.graph.padding.textPadding + this.graph.fontSize() / 2;
 
             for (const label of this.scaleLabels) {
                 // if sharedAxisZero isn't enabled and the number isn't zero, draw the number label
                 if (!(this.manager.sharedAxisZero && label === "0")) {
-                    const x_offset = offset * this.graph.gridRectSize.x;
+                    const xOffset = offset * this.graph.gridRectSize.x;
 
                     // draw the tick
                     this.graph.drawer.verticalLine(
-                        this.graph.lengths.xBegin + x_offset,
+                        this.graph.lengths.xBegin + xOffset,
                         this.graph.lengths.yLength + this.graph.padding.top,
                         9,
                     );
 
                     this.graph.drawer.text(
                         label,
-                        this.graph.lengths.xBegin + x_offset,
-                        this.graph.lengths.yLength + 9 + this.graph.padding.top + scale_offset,
+                        this.graph.lengths.xBegin + xOffset,
+                        this.graph.lengths.yLength + 9 + this.graph.padding.top + scaleOffset,
                         config.scaleLabelFontSize,
                         axisColour,
                         "center",
