@@ -98,6 +98,12 @@ export type TitlePosition = "top";
 export type TitleAlignment = "start" | "center" | "end";
 
 type Padding = {
+    /**
+     * The base amount of padding that is applied around the border of the
+     * graph canvas.
+     */
+    base: number;
+
     top: number;
     left: number;
     right: number;
@@ -274,19 +280,25 @@ class BasicGraph {
 
         this.axisManager = new AxisManager(this);
 
-        // check if we need to draw the legend for this graph.
+        // 1. Initial padding configuration. This is a rudimentary padding setup, the actual
+        // calculation of padding is done in `calculatePadding()`.
+        const base = this.options.padding ?? DEFAULT_PADDING;
+        this.padding = {
+            base,
+            top: base,
+            left: base,
+            right: base,
+            bottom: base,
+            textPadding: 4,
+        };
+
+        // 2. Initialise the `LegendManager` if legends are enabled.
+        //
+        // We do this after we've set up the basic `padding` as the `LegendManager` may need to
+        // perform initial calculations based on the padding.
         if (this.options.legend.draw) {
             this.legendManager = new LegendManager(this, this.dataManager.generateLegendInfo());
         }
-
-        // initial padding configuration
-        this.padding = {
-            top: this.options.padding ?? DEFAULT_PADDING,
-            left: 0,
-            right: this.options.padding ?? DEFAULT_PADDING,
-            bottom: 0,
-            textPadding: 4,
-        };
 
         // @@Cleanup: move all this stuff into `draw()`
         this.calculatePadding();
@@ -531,10 +543,9 @@ class BasicGraph {
         this.drawer.toTextMode(config.axisLabelFontSize, config.axisColour);
         // Include space for: y-axis title + gap + tick labels + ticks + padding
         const yAxisLabelWidth = this.options.labelFontSize;
-        const padding = this.options.padding ?? DEFAULT_PADDING;
 
-        this.padding.left = Math.ceil(
-            padding + yAxisLabelWidth + this.padding.textPadding + this.ctx.measureText(longestItem).width,
+        this.padding.left += Math.ceil(
+             yAxisLabelWidth + this.padding.textPadding + this.ctx.measureText(longestItem).width,
         );
 
         // if we don't have a legend on the right hand side of the table, we might need to add some padding
@@ -545,8 +556,8 @@ class BasicGraph {
         }
 
         const tickHeight = 9;
-        this.padding.bottom = Math.ceil(
-            padding + this.options.labelFontSize + 3 * this.padding.textPadding + tickHeight,
+        this.padding.bottom += Math.ceil(
+            (2 * this.options.labelFontSize) + (2 * this.padding.textPadding) + tickHeight,
         );
 
         // apply legend padding if legends are enabled.

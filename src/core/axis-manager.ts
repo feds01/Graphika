@@ -60,7 +60,7 @@ class AxisManager {
         if (this.sharedAxisZero) {
             this.graph.drawer.text(
                 "0",
-                this.graph.lengths.xBegin - this.graph.options.padding,
+                this.graph.lengths.xBegin - this.graph.padding.base,
                 this.graph.lengths.yLength + this.graph.padding.top + this.graph.fontSize(),
                 12,
                 config.axisColour,
