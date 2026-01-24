@@ -217,7 +217,7 @@ class Axis {
             this.graph.drawer.verticalLine(
                 this.graph.lengths.xBegin,
                 this.graph.lengths.yBegin,
-                this.graph.lengths.yLength + 9,
+                this.graph.lengths.yLength + config.tickLength,
             );
             this.graph.ctx.textBaseline = "middle";
 
@@ -235,7 +235,7 @@ class Axis {
                     // draw the text (add extra padding between tick and label)
                     this.graph.drawer.text(
                         label,
-                        this.graph.lengths.xBegin - 9 - this.graph.padding.textPadding * 2,
+                        this.graph.lengths.xBegin - config.tickLength - this.graph.padding.textPadding * 2,
                         this.graph.padding.top + this.graph.lengths.yLength - y_offset,
                         config.scaleLabelFontSize,
                         axisColour,
@@ -246,9 +246,9 @@ class Axis {
             }
         } else {
             this.graph.drawer.horizontalLine(
-                this.graph.lengths.xBegin - 9,
+                this.graph.lengths.xBegin - config.tickLength,
                 this.yStart,
-                this.graph.lengths.xLength + 9,
+                this.graph.lengths.xLength + config.tickLength,
             );
 
             // We also need to draw a horizontal line at the bottom of the graph
@@ -280,7 +280,7 @@ class Axis {
                     this.graph.drawer.text(
                         label,
                         this.graph.lengths.xBegin + xOffset,
-                        this.graph.lengths.yLength + 9 + this.graph.padding.top + scaleOffset,
+                        this.graph.lengths.yLength + config.tickLength + this.graph.padding.top + scaleOffset,
                         config.scaleLabelFontSize,
                         axisColour,
                         "center",

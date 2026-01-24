@@ -17,6 +17,9 @@ export default {
     /* Debug flag for drawer calls, this will log all instructions the draw module gets */
     debug_draw: false,
 
+    /** The length of the tick that is is drawn on the axis */
+    tickLength: 9,
+
     /* this value is the default data-line width for a graph.
      * It may change depending on if there are more data points than
      * the default value of ticks on the x-axis. */

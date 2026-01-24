@@ -464,8 +464,8 @@ class BasicGraph {
         const xTicks = this.axisManager.xAxis.scaleLabels.length;
         const yTicks = this.axisManager.yAxis.scaleLabels.length;
 
-        const y_len = this.options.grid?.gridded ? 9 + this.lengths.yLength : 9;
-        const x_len = this.options.grid?.gridded ? 9 + this.lengths.xLength : 9;
+        const y_len = this.options.grid?.gridded ? config.tickLength + this.lengths.yLength : config.tickLength;
+        const x_len = this.options.grid?.gridded ? config.tickLength + this.lengths.xLength : config.tickLength;
 
         let offset = 0;
 
@@ -476,7 +476,7 @@ class BasicGraph {
                 this.drawer.verticalLine(
                     this.lengths.xBegin + x_offset,
                     this.lengths.yLength + this.padding.top,
-                    -y_len + 9,
+                    -y_len + config.tickLength,
                 );
             }
 
@@ -484,7 +484,7 @@ class BasicGraph {
             const isLast = offset === yTicks - 1;
             if (!isLast && offset < this.axisManager.yAxis.scaleLabels.length) {
                 const y_offset = offset * this.gridRectSize.y;
-                this.drawer.horizontalLine(this.lengths.xBegin, this.lengths.yBegin + y_offset, x_len - 9);
+                this.drawer.horizontalLine(this.lengths.xBegin, this.lengths.yBegin + y_offset, x_len - config.tickLength);
             }
             offset++;
         }
@@ -552,14 +552,13 @@ class BasicGraph {
         }
 
         // 2. Calculate the `bottom` padding adjustments.
-        const tickHeight = 9;
         const labelFontSize = this.options.labelFontSize ?? defaultConfig.labelFontSize!;
         const labelSpacing = labelFontSize + this.padding.textPadding;
 
         // Automatically add spacing for the tick and the labels on the axis.
         //
         // @@Todo: maybe move this to `Axis` responsibility?
-        this.padding.bottom += labelSpacing + tickHeight;
+        this.padding.bottom += labelSpacing + config.tickLength;
 
         // Add spacing for the label if we have one.
         const hasXLabel = this.options.x_label && this.options.x_label.length > 0;
