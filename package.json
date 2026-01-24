@@ -32,15 +32,15 @@
         "docs:typedoc": "typedoc"
     },
     "devDependencies": {
-        "globals": "^17.0.0",
-        "oxfmt": "^0.24.0",
-        "oxlint": "^1.39.0",
-        "rolldown": "^1.0.0-beta.60",
+        "globals": "^17.1.0",
+        "oxfmt": "^0.26.0",
+        "oxlint": "^1.41.0",
+        "rolldown": "^1.0.0-rc.1",
         "tslib": "^2.8.1",
         "typedoc": "^0.28.16",
         "typedoc-plugin-markdown": "^4.9.0",
         "typescript": "^5.9.3",
-        "typescript-eslint": "^8.53.0",
+        "typescript-eslint": "^8.53.1",
         "vitepress": "^1.6.4"
     }
 }
