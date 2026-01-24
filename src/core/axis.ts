@@ -224,13 +224,17 @@ class Axis {
             for (const label of this.scaleLabels) {
                 if (!(this.manager.sharedAxisZero && label.toString() === "0")) {
                     const y_offset = offset * this.graph.gridRectSize.y;
+                    const tickY = this.graph.lengths.yBegin + y_offset;
+                    const xAxisY = this.graph.padding.top + this.graph.lengths.yLength;
 
-                    // tick drawing
-                    this.graph.drawer.horizontalLine(
-                        this.graph.lengths.xBegin - 9,
-                        this.graph.lengths.yBegin + y_offset,
-                        9,
-                    );
+                    // tick drawing (skip if at the bottom where X-axis line exists)
+                    if (tickY < xAxisY - 1) {
+                        this.graph.drawer.horizontalLine(
+                            this.graph.lengths.xBegin - config.tickLength,
+                            tickY,
+                            config.tickLength,
+                        );
+                    }
 
                     // draw the text (add extra padding between tick and label)
                     this.graph.drawer.text(
@@ -270,12 +274,14 @@ class Axis {
                 if (!(this.manager.sharedAxisZero && label === "0")) {
                     const xOffset = offset * this.graph.gridRectSize.x;
 
-                    // draw the tick
-                    this.graph.drawer.verticalLine(
-                        this.graph.lengths.xBegin + xOffset,
-                        this.graph.lengths.yLength + this.graph.padding.top,
-                        9,
-                    );
+                    // draw the tick (skip at offset=0 where Y-axis line already exists)
+                    if (offset > 0) {
+                        this.graph.drawer.verticalLine(
+                            this.graph.lengths.xBegin + xOffset,
+                            this.graph.lengths.yLength + this.graph.padding.top,
+                            config.tickLength,
+                        );
+                    }
 
                     this.graph.drawer.text(
                         label,
