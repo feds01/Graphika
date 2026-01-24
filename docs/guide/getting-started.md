@@ -1,28 +1,34 @@
 # Getting Started
 
-Graphika is a fast JavaScript library to draw elegant graphs in the browser. This guide will help you get up and running quickly.
+Graphika is a fast JavaScript library to draw elegant graphs in the browser.
 
 ## Installation
 
-### Via NPM
+::: code-group
 
-```bash
+```bash [npm]
 npm install @feds01/graphika
 ```
 
-### Via Script Tag
+```bash [yarn]
+yarn add @feds01/graphika
+```
 
-Include the minified version directly in your HTML:
+```bash [pnpm]
+pnpm add @feds01/graphika
+```
+
+:::
+
+Or include via script tag:
 
 ```html
 <script src="path/to/graphika.min.js"></script>
 ```
 
-## Basic Setup
+## Quick Start
 
 ### 1. Create a Container
-
-Add a container element with a canvas in your HTML:
 
 ```html
 <div id="graph">
@@ -30,71 +36,68 @@ Add a container element with a canvas in your HTML:
 </div>
 ```
 
-### 2. Initialize the Graph
-
-Create a new graph by providing the container ID, options, and line data:
+### 2. Initialize and Draw
 
 ```ts
-import * as Graph from "@feds01/graphika";
+import Graph from "@feds01/graphika";
 
-// Your data - can be loaded from CSV, API, etc.
-const dataset = [
-    [1, 5, 3, 8, 4, 9, 2, 7, 6, 10],
-    [2, 4, 6, 3, 8, 5, 9, 1, 7, 4],
-];
-
-// Create the graph
 const graph = new Graph.Graph(
-    "graph", // container element ID
+    "graph",
     {
-        title: {
-            content: "My First Graph",
-        },
+        title: { content: "My First Graph" },
         x_label: "X-Axis",
         y_label: "Y-Axis",
     },
     [
         {
-            style: "dashed",
-            label: "line-1",
-            interpolation: "cubic",
-            data: dataset[0],
-            annotatePoints: false,
+            label: "Series A",
+            data: [1, 5, 3, 8, 4, 9, 2, 7, 6, 10],
             colour: Graph.Colours.PURPLE,
-            area: {
-                fill: true,
-                colour: Graph.Colours.PURPLE,
-            },
-        },
-        {
-            label: "line-2",
             interpolation: "cubic",
-            data: dataset[1],
-            colour: Graph.Colours.EMERALD_GREEN,
-            annotatePoints: true,
-            area: {
-                fill: true,
-                colour: Graph.Colours.EMERALD_GREEN,
-            },
         },
     ],
 );
 
-// Draw the graph
 graph.draw();
 ```
 
 ### Result
 
-![Example Graph](/img/intro.png)
+<GraphDemo
+    :options="{
+        title: { content: 'My First Graph', alignment: 'center' },
+        x_label: 'X-Axis',
+        y_label: 'Y-Axis',
+        grid: { gridded: true },
+        legend: { draw: true, position: 'top' }
+    }"
+    :lines="[
+        {
+            label: 'Series A',
+            interpolation: 'cubic',
+            data: [1, 5, 3, 8, 4, 9, 2, 7, 6, 10],
+            colour: '#800080',
+            style: 'dashed',
+            area: { fill: true }
+        },
+        {
+            label: 'Series B',
+            interpolation: 'cubic',
+            data: [2, 4, 6, 3, 8, 5, 9, 1, 7, 4],
+            colour: '#008816',
+            annotatePoints: true,
+            area: { fill: true }
+        }
+    ]"
+/>
 
 ## Next Steps
 
-- Learn about [basic usage patterns](./basic.md)
-- Explore the [API Reference](/api/graph) for all configuration options
-- Check out customization options for:
-    - [Lines](/api/line-options)
-    - [Grids](/api/grid-options)
-    - [Scales](/api/scale-options)
-    - [Titles](/api/title-options)
-    - [Legends](/api/legend-options)
+- Explore more [examples](./basic)
+- Try the interactive [playground](./playground)
+- Learn about configuration options:
+    - [Lines](/api/line-options) - Colors, styles, interpolation
+    - [Grid](/api/grid-options) - Background grid options
+    - [Scale](/api/scale-options) - Axis ticks and labels
+    - [Title](/api/title-options) - Title text and alignment
+    - [Legend](/api/legend-options) - Legend display options

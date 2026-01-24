@@ -5,38 +5,75 @@ export default defineConfig({
     description: "A fast JavaScript library to draw elegant graphs",
     base: "/Graphika/",
 
+    vite: {
+        resolve: {
+            alias: {
+                // Relative path from docs/.vitepress/ to src/
+                "@feds01/graphika": "../../src/index.ts",
+            },
+        },
+    },
+
     head: [["link", { rel: "icon", href: "/Graphika/favicon.ico" }]],
 
     themeConfig: {
-        logo: "/img/front.png",
+        logo: "/img/logo.svg",
 
         nav: [
             { text: "Home", link: "/" },
-            { text: "Guide", link: "/guide/getting-started" },
-            { text: "API", link: "/api/graph" },
+            { text: "Docs", link: "/guide/getting-started" },
+            { text: "Playground", link: "/guide/playground" },
             { text: "Reference", link: "/reference/" },
         ],
 
         sidebar: {
             "/guide/": [
                 {
-                    text: "Introduction",
+                    text: "Getting Started",
                     items: [
-                        { text: "Getting Started", link: "/guide/getting-started" },
-                        { text: "Basic Usage", link: "/guide/basic" },
+                        { text: "Installation", link: "/guide/getting-started" },
+                        { text: "Examples", link: "/guide/basic" },
+                        { text: "Playground", link: "/guide/playground" },
+                    ],
+                },
+                {
+                    text: "Graph Types",
+                    items: [{ text: "Line Graphs", link: "/api/line-options" }],
+                },
+                {
+                    text: "Configuration",
+                    items: [
+                        { text: "Graph", link: "/api/graph" },
+                        { text: "Linees", link: "/api/line-options" },
+                        { text: "Grid", link: "/api/grid-options" },
+                        { text: "Scale", link: "/api/scale-options" },
+                        { text: "Title", link: "/api/title-options" },
+                        { text: "Legend", link: "/api/legend-options" },
                     ],
                 },
             ],
             "/api/": [
                 {
-                    text: "API Reference",
+                    text: "Getting Started",
+                    items: [
+                        { text: "Installation", link: "/guide/getting-started" },
+                        { text: "Examples", link: "/guide/basic" },
+                        { text: "Playground", link: "/guide/playground" },
+                    ],
+                },
+                {
+                    text: "Graph Types",
+                    items: [{ text: "Line Graphs", link: "/api/line-options" }],
+                },
+                {
+                    text: "Configuration",
                     items: [
                         { text: "Graph", link: "/api/graph" },
-                        { text: "Line Options", link: "/api/line-options" },
-                        { text: "Grid Options", link: "/api/grid-options" },
-                        { text: "Scale Options", link: "/api/scale-options" },
-                        { text: "Title Options", link: "/api/title-options" },
-                        { text: "Legend Options", link: "/api/legend-options" },
+                        { text: "Lines", link: "/api/line-options" },
+                        { text: "Grid", link: "/api/grid-options" },
+                        { text: "Scale", link: "/api/scale-options" },
+                        { text: "Title", link: "/api/title-options" },
+                        { text: "Legend", link: "/api/legend-options" },
                     ],
                 },
             ],
