@@ -60,7 +60,6 @@ class LegendManager {
         private readonly graph: BasicGraph,
         private readonly data: DataSource[],
     ) {
-        /* Position of the legend container on the graph object */
         this.position = this.graph.options.legend.position ?? "top";
         this.alignment = this.graph.options.legend.alignment ?? "center";
 
