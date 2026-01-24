@@ -19,9 +19,9 @@ import BasicGraph from "../basic.graph";
 import { DataSource } from "../core/data-manager";
 
 export type LegendOptions = {
-    draw: boolean;
-    position: LegendPosition;
-    alignment: LegendAlignment;
+    draw?: boolean;
+    position?: LegendPosition;
+    alignment?: LegendAlignment;
 };
 
 export type LegendAlignment = "start" | "center" | "end";
@@ -59,11 +59,12 @@ class LegendManager {
         private readonly graph: BasicGraph,
         private readonly data: DataSource[],
     ) {
-        this.position = this.graph.options.legend.position ?? "top";
-        this.alignment = this.graph.options.legend.alignment ?? "center";
+        this.position = this.graph.options.legend?.position ?? "top";
+        this.alignment = this.graph.options.legend?.alignment ?? "center";
 
         // the actual legend box size
-        this.boxSize = this.graph.options.labelFontSize + 4; // 2px padding each side
+        const labelFontSize = this.graph.options.labelFontSize ?? config.axisLabelFontSize;
+        this.boxSize = labelFontSize + 4; // 2px padding each side
 
         switch (this.position) {
             // @@Todo: if the `title` position changes here, we may or may not need to
@@ -108,7 +109,7 @@ class LegendManager {
      * @param {number} y - y coordinate of where to draw the label
      *  */
     drawLegend(label: string, colour: string, style: LegendBoxBorderStyle, x: number, y: number) {
-        const labelFontSize = this.graph.options.labelFontSize;
+        const labelFontSize = this.graph.options.labelFontSize ?? config.axisLabelFontSize;
         const { ctx, drawer } = this.graph;
 
         // Setup colour and style
@@ -137,9 +138,9 @@ class LegendManager {
                 case "top": {
                     let yBegin = this.graph.padding.base;
 
-                    const isTopTitle = this.graph.options.title.draw && this.graph.options.title.position === "top";
+                    const isTopTitle = this.graph.options.title?.draw && this.graph.options.title.position === "top";
                     if (isTopTitle) {
-                        yBegin += (this.graph.options.title.fontSize ?? 24) + this.graph.padding.textPadding;
+                        yBegin += (this.graph.options.title?.fontSize ?? 24) + this.graph.padding.textPadding;
                     }
 
                     return {
@@ -247,7 +248,7 @@ class LegendManager {
         for (let idx = 0; idx < this.data.length; idx++) {
             const item = this.data[idx];
 
-            this.drawLegend(item.label, item.colour, item.style, xBegin, yBegin);
+            this.drawLegend(item.label, item.colour, item.style ?? "solid", xBegin, yBegin);
 
             // compute new offsets
             if (orientation === "horizontal") {

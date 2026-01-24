@@ -25,11 +25,11 @@ import { AxisOptions } from "./core/axis";
 import { EasingAnimationFn, easeOutCubic } from "./core/animation";
 
 export type GridOptions = {
-    gridded: boolean;
-    gridLineStyle: string;
-    optimiseSquareSize: boolean;
-    sharedAxisZero: boolean;
-    strict: boolean;
+    gridded?: boolean;
+    gridLineStyle?: string;
+    optimiseSquareSize?: boolean;
+    sharedAxisZero?: boolean;
+    strict?: boolean;
 };
 
 /** Animation options for the graph. */
@@ -47,38 +47,38 @@ export type BasicGraphOptions = {
     padding?: number;
 
     // @@TODO: move this potentially into `AxisOptions.LabelOptions`
-    x_label: string;
+    x_label?: string;
 
     // @@TODO: move this potentially into `AxisOptions.LabelOptions`
-    y_label: string;
+    y_label?: string;
 
     // @@TODO: move this potentially into `AxisOptions.LabelOptions`
-    labelFont: string;
+    labelFont?: string;
 
     // @@TODO: move this potentially into `AxisOptions.LabelOptions`
-    labelFontSize: number;
+    labelFontSize?: number;
 
     /** Colour of the axes. */
-    axisColour: string;
+    axisColour?: string;
 
     /** Grid options for the graph. */
-    grid: GridOptions;
+    grid?: GridOptions;
 
     /** Title options for the graph. */
-    title: TitleOptions;
+    title?: TitleOptions;
 
     /** Scale options for the graph axes. */
-    scale: {
-        shorthandNumerics: boolean;
-        x: AxisOptions;
-        y: AxisOptions;
+    scale?: {
+        shorthandNumerics?: boolean;
+        x?: AxisOptions;
+        y?: AxisOptions;
     };
 
     /** Legend options for the graph. */
-    legend: LegendOptions;
+    legend?: LegendOptions;
 
     /** Animation settings for the graph. */
-    animation: AnimationOptions;
+    animation?: AnimationOptions;
 
     /** Debug mode for the graph. Enables additional logging and visual aids for development. */
     debug?: boolean;
@@ -133,8 +133,6 @@ const defaultConfig: BasicGraphOptions = {
     debug: false,
 
     // general graph settings
-    x_label: "",
-    y_label: "",
     padding: DEFAULT_PADDING,
 
     title: {
@@ -193,7 +191,7 @@ const defaultConfig: BasicGraphOptions = {
         duration: 1000,
         easing: easeOutCubic,
     },
-}; // TODO: create a validation schema function
+} as const; // TODO: create a validation schema function
 
 /**
  * Class that represent the basis graph drawing option
@@ -275,7 +273,9 @@ class BasicGraph {
         this.canvas = canvas;
         this.ctx = utils.setupCanvas(canvas);
 
-        this.drawer = new Drawer(this.canvas, this.ctx, { labelFont: this.options.labelFont });
+        const labelFont = this.options.labelFont ?? defaultConfig.labelFont!;
+        const labelFontSize = this.options.labelFontSize ?? defaultConfig.labelFontSize!;
+        this.drawer = new Drawer(this.canvas, this.ctx, { labelFont });
         this.drawer.toTextMode(16, this.options.axisColour);
 
         this.axisManager = new AxisManager(this);
@@ -296,14 +296,13 @@ class BasicGraph {
         //
         // We do this after we've set up the basic `padding` as the `LegendManager` may need to
         // perform initial calculations based on the padding.
-        if (this.options.legend.draw) {
+        if (this.options.legend?.draw) {
             this.legendManager = new LegendManager(this, this.dataManager.generateLegendInfo());
         }
 
         // @@Cleanup: move all this stuff into `draw()`
         this.calculatePadding();
-        this.lengths.xLength =
-            this.canvas.clientWidth - (this.padding.right + this.padding.left + this.options.labelFontSize);
+        this.lengths.xLength = this.canvas.clientWidth - (this.padding.right + this.padding.left + labelFontSize);
         this.lengths.yLength = this.canvas.clientHeight - (this.padding.top + this.padding.bottom);
 
         // Subtract a 1 from each length because we actually don't need to worry about the first
@@ -316,7 +315,7 @@ class BasicGraph {
 
         // if 'strict' grid mode is enabled, we select the smallest grid size out of x and y
         // and set this to being the grid size lengths
-        if (this.options.grid.strict) {
+        if (this.options.grid?.strict) {
             const gridRectLength = Math.min(this.gridRectSize.x, this.gridRectSize.y);
 
             this.gridRectSize.x = gridRectLength;
@@ -366,7 +365,10 @@ class BasicGraph {
     }
 
     #determinePositionFromSetting(): { offset: number; alignment: CanvasTextAlign } {
-        const { alignment, position } = this.options.title;
+        const { alignment, position } = this.options.title ?? {
+            alignment: defaultConfig.title!.alignment!,
+            position: defaultConfig.title!.position!,
+        };
 
         // @@Future: support `left`, `right`, and `bottom` positions
         assert(position === "top", "Only top position is supported for title");
@@ -383,7 +385,7 @@ class BasicGraph {
     }
 
     #drawTitle() {
-        if (!this.options.title.draw) {
+        if (!this.options.title?.draw) {
             return;
         }
 
@@ -393,7 +395,7 @@ class BasicGraph {
         this.ctx.save();
 
         const legendOffset =
-            this.legendManager && this.options.legend.position === "top"
+            this.legendManager && this.options.legend?.position === "top"
                 ? this.legendManager.requiredSpace + 2 * this.padding.textPadding
                 : 0;
 
@@ -403,7 +405,7 @@ class BasicGraph {
             offset,
             (this.padding.top - legendOffset) / 2, // so the text is vertically centred
             this.options.title.fontSize ?? DEFAULT_TITLE_FONT_SIZE,
-            this.options.title.colour ?? this.options.axisColour,
+            this.options.title.colour ?? this.options.axisColour!,
             alignment,
         );
 
@@ -419,19 +421,19 @@ class BasicGraph {
 
         // check if we need to offset the x-label
         if (this.legendManager) {
-            if (this.options.legend.draw && hasXLabel && this.legendManager.position === "bottom") {
+            if (this.options.legend?.draw && hasXLabel && this.legendManager.position === "bottom") {
                 labelXOffset += this.legendManager.requiredSpace;
             }
 
             // check if we need to offset the y-label
-            if (this.options.legend.draw && hasYLabel && this.legendManager.position === "left") {
+            if (this.options.legend?.draw && hasYLabel && this.legendManager.position === "left") {
                 labelYOffset += this.legendManager.requiredSpace;
             }
         }
 
         if (hasXLabel) {
             this.drawer.text(
-                this.options.x_label,
+                this.options.x_label!,
                 this.lengths.xCenter,
                 this.drawer.height - (this.fontSize() / 2 + this.padding.textPadding + labelXOffset),
                 this.fontSize(),
@@ -443,7 +445,7 @@ class BasicGraph {
             this.ctx.save();
             this.ctx.translate(this.fontSize() + labelYOffset, this.lengths.yCenter);
             this.ctx.rotate(-Math.PI / 2);
-            this.ctx.fillText(this.options.y_label, 0, 0);
+            this.ctx.fillText(this.options.y_label!, 0, 0);
             this.ctx.restore();
         }
     }
@@ -452,14 +454,14 @@ class BasicGraph {
         this.ctx.lineWidth = config.gridLineWidth;
         this.ctx.strokeStyle = rgba(config.axisColour, 40);
 
-        this.ctx.setLineDash(this.options.grid.gridLineStyle === "dashed" ? [5, 5] : []);
+        this.ctx.setLineDash(this.options.grid?.gridLineStyle === "dashed" ? [5, 5] : []);
 
         // get the number of ticks on the axis
         const xTicks = this.axisManager.xAxis.scaleLabels.length;
         const yTicks = this.axisManager.yAxis.scaleLabels.length;
 
-        const y_len = this.options.grid.gridded ? 9 + this.lengths.yLength : 9;
-        const x_len = this.options.grid.gridded ? 9 + this.lengths.xLength : 9;
+        const y_len = this.options.grid?.gridded ? 9 + this.lengths.yLength : 9;
+        const x_len = this.options.grid?.gridded ? 9 + this.lengths.xLength : 9;
 
         let offset = 0;
 
@@ -496,7 +498,7 @@ class BasicGraph {
             if (lineData.data.constructor === Float64Array && lineData.data.length > 0) {
                 lines.push(
                     new Line(data, this, {
-                        style,
+                        style: style ?? "solid",
                         area,
                         colour,
                         interpolation,
@@ -511,17 +513,17 @@ class BasicGraph {
     }
 
     calculateLengths() {
-        const xLength = this.canvas.clientWidth - (this.padding.right + this.padding.left + this.options.labelFontSize);
-        const yLength =
-            this.canvas.clientHeight - (this.padding.top + this.padding.bottom + this.options.labelFontSize);
+        const labelFontSize = this.options.labelFontSize ?? defaultConfig.labelFontSize!;
+        const xLength = this.canvas.clientWidth - (this.padding.right + this.padding.left + labelFontSize);
+        const yLength = this.canvas.clientHeight - (this.padding.top + this.padding.bottom + labelFontSize);
 
         this.lengths = {
-            xBegin: this.padding.left + this.options.labelFontSize,
+            xBegin: this.padding.left + labelFontSize,
             yBegin: this.padding.top,
             xEnd: this.drawer.width - this.padding.right,
             yEnd: this.drawer.height - this.padding.bottom,
-            xCenter: this.padding.left + this.options.labelFontSize + xLength / 2,
-            yCenter: this.padding.top + this.options.labelFontSize / 2 + yLength / 2,
+            xCenter: this.padding.left + labelFontSize + xLength / 2,
+            yCenter: this.padding.top + labelFontSize / 2 + yLength / 2,
             xLength,
             yLength,
         };
@@ -539,14 +541,15 @@ class BasicGraph {
         //
         // get the specified font size for title and the standard text padding so there
         // is a gap between the graph (and maybe a legend)
-        const titleFontSize = title.fontSize ?? DEFAULT_TITLE_FONT_SIZE;
-        if (title.draw) {
+        const titleFontSize = title?.fontSize ?? DEFAULT_TITLE_FONT_SIZE;
+        if (title?.draw) {
             this.padding.top += titleFontSize + this.padding.textPadding;
         }
 
         // 2. Calculate the `bottom` padding adjustments.
         const tickHeight = 9;
-        const labelSpacing = this.options.labelFontSize + this.padding.textPadding;
+        const labelFontSize = this.options.labelFontSize ?? defaultConfig.labelFontSize!;
+        const labelSpacing = labelFontSize + this.padding.textPadding;
 
         // Automatically add spacing for the tick and the labels on the axis.
         //
@@ -556,7 +559,7 @@ class BasicGraph {
         // Add spacing for the label if we have one.
         const hasXLabel = this.options.x_label && this.options.x_label.length > 0;
         if (hasXLabel) {
-            this.padding.bottom += this.options.labelFontSize + this.padding.textPadding;
+            this.padding.bottom += labelFontSize + this.padding.textPadding;
         }
 
         // 3. Calculate the `left` padding adjustments.
@@ -572,7 +575,7 @@ class BasicGraph {
         // Add space for the y-label if we have one.
         const hasYLabel = this.options.y_label && this.options.y_label.length > 0;
         if (hasYLabel) {
-            this.padding.left += this.options.labelFontSize + this.padding.textPadding;
+            this.padding.left += labelFontSize + this.padding.textPadding;
         }
 
         // 4. Calculate the `right` padding adjustments.
@@ -580,11 +583,11 @@ class BasicGraph {
         this.padding.right += Math.ceil(this.ctx.measureText(lastItemOnXAxis).width);
 
         // 5. Apply legend padding if legends are enabled.
-        if (legend.draw && isDef(this.legendManager)) {
+        if (legend?.draw && isDef(this.legendManager)) {
             this.padding[this.legendManager.position] += this.legendManager.requiredSpace;
 
             // If the legend is in the same place as the title, we need to add extra padding to account for both.
-            if (title.draw && title.position === legend.position) {
+            if (title?.draw && title.position === legend.position) {
                 this.padding[this.legendManager.position] += this.padding.textPadding;
             }
         }
@@ -595,9 +598,10 @@ class BasicGraph {
      */
     #setupDraw() {
         // optimise x-square-size if float
-        if (this.options.grid.optimiseSquareSize && this.gridRectSize.x % 1 !== 0) {
+        if (this.options.grid?.optimiseSquareSize && this.gridRectSize.x % 1 !== 0) {
             let preferredSquareSize = Math.round(this.gridRectSize.x);
             const numberOfSquares = this.axisManager.xAxis.scaleLabels.length - 1;
+            const labelFontSize = this.options.labelFontSize ?? defaultConfig.labelFontSize!;
 
             // If the square size was some round up, rather than down, we need to check if
             // we can actually apply the 'scale' up with the padding space available to the right
@@ -622,8 +626,7 @@ class BasicGraph {
             this.padding.right =
                 this.canvas.clientWidth - (this.gridRectSize.x * numberOfSquares + this.lengths.xBegin);
 
-            this.lengths.xLength =
-                this.canvas.clientWidth - (this.padding.right + this.padding.left + this.options.labelFontSize);
+            this.lengths.xLength = this.canvas.clientWidth - (this.padding.right + this.padding.left + labelFontSize);
         }
 
         this.calculateLengths();
@@ -659,7 +662,7 @@ class BasicGraph {
         this.lines = this.#createLines();
 
         // If animation is enabled, run the animation loop
-        if (this.options.animation.enabled) {
+        if (this.options.animation?.enabled) {
             this.#runAnimation();
         } else {
             // Otherwise draw lines immediately
