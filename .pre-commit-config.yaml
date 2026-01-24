@@ -13,6 +13,13 @@ repos:
             types: [ts]
             entry: npm run lint
             always_run: false
+          - id: test
+            name: Test
+            language: system
+            types: [ts]
+            entry: npm test
+            pass_filenames: false
+            always_run: false
           - id: tsc
             name: Build
             language: system
