@@ -174,7 +174,21 @@ class Axis {
         return scaleNumericsToDraw;
     }
 
+    getColour(): string {
+        const base = (() => {
+            // Use inheritance or option override for axis colour.
+            if (this.options.axisColour) return this.options.axisColour;
+            if (this.graph.options.axisColour) return this.graph.options.axisColour;
+
+            return config.axisColour;
+        })();
+
+        return rgba(base, 40);
+    }
+
     draw() {
+        const axisColour = this.getColour();
+
         // determine the positions of the x-axis
         this.determineAxisPosition();
 
@@ -195,9 +209,8 @@ class Axis {
         let offset = this.manager.sharedAxisZero ? 1 : 0;
 
         // get the context ready to draw
-        const axisColour = this.options.axisColour ?? config.axisColour;
         this.graph.ctx.lineWidth = config.gridLineWidth;
-        this.graph.ctx.strokeStyle = rgba(axisColour, 60);
+        this.graph.ctx.strokeStyle = axisColour;
 
         // Y-Axis Drawing !
         if (this.type === "y") {

@@ -20,7 +20,7 @@ export type DataSource = {
     label: string;
     colour: string;
     style?: LegendBoxBorderStyle;
-    area: {
+    area?: {
         fill?: boolean;
         opacity?: number;
     };

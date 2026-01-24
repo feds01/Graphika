@@ -431,13 +431,15 @@ class BasicGraph {
             }
         }
 
+        const axisColour = this.options.axisColour ?? config.axisColour;
+
         if (hasXLabel) {
             this.drawer.text(
                 this.options.x_label!,
                 this.lengths.xCenter,
                 this.drawer.height - (this.fontSize() / 2 + this.padding.textPadding + labelXOffset),
                 this.fontSize(),
-                config.axisColour,
+                axisColour,
             );
         }
 
@@ -451,8 +453,10 @@ class BasicGraph {
     }
 
     #drawAxisGrid() {
+        const axisColour = this.options.axisColour ?? config.axisColour;
+
         this.ctx.lineWidth = config.gridLineWidth;
-        this.ctx.strokeStyle = rgba(config.axisColour, 40);
+        this.ctx.strokeStyle = rgba(axisColour, 40);
 
         this.ctx.setLineDash(this.options.grid?.gridLineStyle === "dashed" ? [5, 5] : []);
 
@@ -467,7 +471,7 @@ class BasicGraph {
 
         while (offset <= Math.max(yTicks - 1, xTicks)) {
             // The X-Axis drawing
-            if (offset < xTicks) {
+            if (offset > 0 && offset < xTicks) {
                 const x_offset = offset * this.gridRectSize.x;
                 this.drawer.verticalLine(
                     this.lengths.xBegin + x_offset,
@@ -477,7 +481,8 @@ class BasicGraph {
             }
 
             // The Y-Axis drawing
-            if (offset < this.axisManager.yAxis.scaleLabels.length) {
+            const isLast = offset === yTicks - 1;
+            if (!isLast && offset < this.axisManager.yAxis.scaleLabels.length) {
                 const y_offset = offset * this.gridRectSize.y;
                 this.drawer.horizontalLine(this.lengths.xBegin, this.lengths.yBegin + y_offset, x_len - 9);
             }
@@ -568,8 +573,11 @@ class BasicGraph {
         const { yAxis, xAxis } = this.axisManager;
         const longestItem = arrays.longest(yAxis.scaleLabels);
 
+        const axisLabelFontSize = this.options.labelFontSize ?? defaultConfig.labelFontSize!;
+        const axisColour = this.options.axisColour ?? config.axisColour;
+
         // Set the config font size of axis labels, and then we can effectively 'measure' the width of the text
-        this.drawer.toTextMode(config.axisLabelFontSize, config.axisColour);
+        this.drawer.toTextMode(axisLabelFontSize, axisColour);
         this.padding.left += Math.ceil(this.ctx.measureText(longestItem).width);
 
         // Add space for the y-label if we have one.
@@ -643,9 +651,10 @@ class BasicGraph {
     draw() {
         // Reset transform (preserving DPI scale) and clear the rectangle
         const scale = window.devicePixelRatio || 1;
+        const axisColour = this.options.axisColour ?? config.axisColour;
         this.ctx.setTransform(scale, 0, 0, scale, 0, 0);
         this.ctx.clearRect(0, 0, this.drawer.width, this.drawer.height);
-        this.ctx.strokeStyle = config.axisColour;
+        this.ctx.strokeStyle = axisColour;
         this.ctx.fillStyle = colours.BLACK;
         this.ctx.translate(0.5, 0.5);
 
@@ -679,9 +688,10 @@ class BasicGraph {
      */
     #clearAndResetContext() {
         const scale = window.devicePixelRatio || 1;
+        const axisColour = this.options.axisColour ?? config.axisColour;
         this.ctx.setTransform(scale, 0, 0, scale, 0, 0);
         this.ctx.clearRect(0, 0, this.drawer.width, this.drawer.height);
-        this.ctx.strokeStyle = config.axisColour;
+        this.ctx.strokeStyle = axisColour;
         this.ctx.fillStyle = colours.BLACK;
         this.ctx.translate(0.5, 0.5);
     }

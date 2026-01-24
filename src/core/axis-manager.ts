@@ -13,6 +13,7 @@
 import Axis from "./axis";
 import BasicGraph from "../basic.graph";
 import config from "./../config";
+import { rgba } from "../utils/colours";
 
 class AxisManager {
     public xAxis: Axis;
@@ -50,6 +51,17 @@ class AxisManager {
         }
     }
 
+    getColour(): string {
+        const base = (() => {
+            // Use inheritance or option override for axis colour.
+            if (this.graph.options.axisColour) return this.graph.options.axisColour;
+
+            return config.axisColour;
+        })();
+
+        return rgba(base, 40);
+    }
+
     /**
      * Method to draw on axis on the current graph. Takes into account graph settings
      * and then invokes the draw method on the individual drawing methods for each axis.
@@ -63,7 +75,7 @@ class AxisManager {
                 this.graph.lengths.xBegin - this.graph.padding.base,
                 this.graph.lengths.yLength + this.graph.padding.top + this.graph.fontSize(),
                 12,
-                config.axisColour,
+                this.getColour(),
             );
         }
 
