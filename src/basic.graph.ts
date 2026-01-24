@@ -37,9 +37,9 @@ export type AnimationOptions = {
     /** Whether to animate the lines when drawing. */
     enabled: boolean;
     /** Duration of the animation in milliseconds. */
-    duration: number;
+    duration?: number;
     /** Easing function for the animation. */
-    easing: EasingAnimationFn;
+    easing?: EasingAnimationFn;
 };
 
 export type BasicGraphOptions = {
@@ -316,16 +316,16 @@ class BasicGraph {
     }
 
     fontSize() {
-        return parseInt(this.ctx.font.substr(0, 2), 10);
+        return parseInt(this.ctx.font.substring(0, 2), 10);
     }
 
     /**
      * @since v0.0.1
-     * @API This method is used to remove a line by a given 'label' which is present with every line that
+     *
+     * This method is used to remove a line by a given 'label' which is present with every line that
      * is present on the graph. If the developer does not specify a label, a random string is generated and that
      * is used as a label instead.
      * */
-    // TODO: most likely not random string, just use incremental labeling like 'line_2', 'line_3' etc.
     removeLineByLabel(label: string) {
         let foundLine = false;
 
@@ -344,8 +344,8 @@ class BasicGraph {
 
     /**
      * @since v0.0.1
-     * @API This method is used to fetch all line labels that are present on this graph.
-     *
+     * 
+     * This method is used to fetch all line labels that are present on this graph.
      * */
     getLineLabels() {
         return this.dataManager.data.map((lineData) => {
@@ -676,7 +676,13 @@ class BasicGraph {
      * Runs the animation loop for drawing lines.
      */
     #runAnimation() {
-        const { duration, easing } = this.options.animation;
+        // @@Todo: move this kind of prop type resolution out of here, i.e. we should work with different types
+        // so we don't have to adjust and check for defaults here.
+        const { duration, easing } = {
+            duration: 800,
+            easing: easeOutCubic,
+            ...this.options.animation
+        };
         const startTime = performance.now();
 
         const animate = (currentTime: number) => {
