@@ -110,6 +110,7 @@ class LegendManager {
      *  */
     drawLegend(label: string, colour: string, style: LegendBoxBorderStyle, x: number, y: number) {
         const labelFontSize = this.graph.options.labelFontSize ?? config.axisLabelFontSize;
+        const axisColour = this.graph.options.axisColour ?? config.axisColour;
         const { ctx, drawer } = this.graph;
 
         // Setup colour and style
@@ -126,7 +127,7 @@ class LegendManager {
         ctx.fillRect(x, y, labelFontSize, labelFontSize);
 
         // move by the fontSize + 8 as the padding
-        drawer.text(label, x + labelFontSize + 8, y + labelFontSize / 2, labelFontSize, config.axisColour, "left");
+        drawer.text(label, x + labelFontSize + 8, y + labelFontSize / 2, labelFontSize, axisColour, "left");
     }
 
     /**
