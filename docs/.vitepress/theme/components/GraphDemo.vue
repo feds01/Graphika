@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, shallowRef, onMounted, watch, watchEffect, computed } from "vue";
 import type { PropType } from "vue";
+import { useData } from "vitepress";
 
 import * as Graphika from "../../../../src/index";
 import { highlightCode } from "../utils/highlight";
@@ -53,6 +54,8 @@ const props = defineProps({
     },
 });
 
+const { isDark } = useData();
+
 const containerId = ref(`graph-${Math.random().toString(36).slice(2, 9)}`);
 const showCode = ref(false);
 const showDebug = ref(false);
@@ -76,14 +79,21 @@ const computedOptions = computed(() => {
         baseOptions.animation = { enabled: true, duration: 800 };
     }
 
-    // Optimise x-axis ticks by default
-    if (!baseOptions.scale) {
-        baseOptions.scale = {};
+    // Build scale options with x-axis tick optimization
+    const darkAxisColour = isDark.value ? { axisColour: "#dfdfd6" } : {};
+    baseOptions.scale = {
+        ...baseOptions.scale,
+        x: { ...baseOptions.scale?.x, optimiseTicks: true, ...darkAxisColour },
+        y: { ...baseOptions.scale?.y, ...darkAxisColour },
+    };
+
+    // Apply dark mode styling
+    if (isDark.value) {
+        baseOptions.axisColour = "#dfdfd6";
+        if (baseOptions.title) {
+            baseOptions.title = { ...baseOptions.title, colour: "#dfdfd6" };
+        }
     }
-    if (!baseOptions.scale?.x) {
-        baseOptions.scale.x = {};
-    }
-    baseOptions.scale.x.optimiseTicks = true;
 
     return baseOptions;
 });
@@ -181,9 +191,9 @@ onMounted(() => {
     renderGraph();
 });
 
-// Re-render when props change
+// Re-render when props change or dark mode toggles
 watch(
-    () => [props.options, props.lines],
+    () => [props.options, props.lines, isDark.value],
     () => {
         renderGraph();
     },
