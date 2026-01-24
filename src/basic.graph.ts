@@ -580,7 +580,8 @@ class BasicGraph {
 
         // 4. Calculate the `right` padding adjustments.
         const lastItemOnXAxis = xAxis.scaleLabels.at(-1)!;
-        this.padding.right += Math.ceil(this.ctx.measureText(lastItemOnXAxis).width);
+        const lastWidthCenter = Math.ceil(this.ctx.measureText(lastItemOnXAxis).width / 2);
+        this.padding.right += lastWidthCenter;
 
         // 5. Apply legend padding if legends are enabled.
         if (legend?.draw && isDef(this.legendManager)) {
