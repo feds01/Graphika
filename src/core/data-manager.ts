@@ -19,10 +19,10 @@ export type DataSource = {
     data: number[] | Float64Array;
     label: string;
     colour: string;
-    style: LegendBoxBorderStyle;
+    style?: LegendBoxBorderStyle;
     area: {
-        fill: boolean;
-        opacity: number;
+        fill?: boolean;
+        opacity?: number;
     };
     annotatePoints?: boolean;
     interpolation: "linear" | "cubic";

@@ -19,7 +19,7 @@ import { EasingAnimationFn, splitCubicAt, splitQuadraticAt, Vec2 } from "./anima
 
 /** Options for the line area. */
 export type LineAreaOptions = {
-    fill: boolean;
+    fill?: boolean;
     colour?: string;
 };
 
@@ -45,7 +45,7 @@ export type LineOptions = {
     colour: string;
 
     /** Style of the line: 'solid' or 'dashed'. */
-    style: string;
+    style?: string;
 
     /** Interpolation type for the line. */
     interpolation: InterpolationKind;
