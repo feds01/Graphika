@@ -13,8 +13,10 @@
 
 import config from "../config";
 import { assert } from "./../utils/assert";
+import { TWO_PI } from "./../utils/number";
 
-const TWO_PI = Math.PI * 2;
+/** The type of border to draw. */
+export type BorderStyle = "solid" | "dashed";
 
 type DrawerOptions = {
     labelFont: string;
