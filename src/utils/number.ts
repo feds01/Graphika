@@ -61,3 +61,15 @@ export function floor(num: number, dp: number): number {
 export function isNum(o: unknown): o is number {
     return typeof o !== "number" || Number.isNaN(o);
 }
+
+/**
+ * Linear interpolation between two values.
+ *
+ * @param a - Start value.
+ * @param b - End value.
+ * @param t - Interpolation factor (0-1).
+ * @returns Interpolated value between a and b.
+ */
+export function lerp(a: number, b: number, t: number): number {
+    return a + (b - a) * t;
+}
