@@ -13,6 +13,7 @@
 import Axis from "./axis";
 import BasicGraph from "../basic.graph";
 import config from "./../config";
+import { rgba } from "../utils/colours";
 
 class AxisManager {
     public xAxis: Axis;
@@ -28,8 +29,8 @@ class AxisManager {
         this.negativeScale = this.data.some((item) => item < 0);
 
         // initialise the y-axis & x-axis
-        this.yAxis = new Axis(this, "y", this.graph.options.scale.y);
-        this.xAxis = new Axis(this, "x", this.graph.options.scale.x);
+        this.yAxis = new Axis(this, "y", this.graph.options.scale?.y ?? {});
+        this.xAxis = new Axis(this, "x", this.graph.options.scale?.x ?? {});
 
         // The scale numbers of the x-axis & y-axis in object
         this.scaleNumbers = {
@@ -42,12 +43,23 @@ class AxisManager {
         // (excluding negative scales), don't draw the 0 on the first tick and remove it from
         // scaleNumbers for the time being.
         if (
-            this.graph.options.grid.sharedAxisZero &&
+            this.graph.options.grid?.sharedAxisZero &&
             this.scaleNumbers.x.indexOf("0") === 0 &&
             this.scaleNumbers.y.indexOf("0") === 0
         ) {
             this.sharedAxisZero = true;
         }
+    }
+
+    getColour(): string {
+        const base = (() => {
+            // Use inheritance or option override for axis colour.
+            if (this.graph.options.axisColour) return this.graph.options.axisColour;
+
+            return config.axisColour;
+        })();
+
+        return rgba(base, 40);
     }
 
     /**
@@ -63,7 +75,7 @@ class AxisManager {
                 this.graph.lengths.xBegin - this.graph.padding.base,
                 this.graph.lengths.yLength + this.graph.padding.top + this.graph.fontSize(),
                 12,
-                config.axisColour,
+                this.getColour(),
             );
         }
 

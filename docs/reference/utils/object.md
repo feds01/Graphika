@@ -14,7 +14,7 @@
 function expr<T>(cb): T;
 ```
 
-Defined in: [utils/object.ts:40](https://github.com/feds01/Graphika/blob/main/src/utils/object.ts#L40)
+Defined in: [utils/object.ts:69](https://github.com/feds01/Graphika/blob/main/src/utils/object.ts#L69)
 
 #### Type Parameters
 
@@ -40,7 +40,7 @@ Defined in: [utils/object.ts:40](https://github.com/feds01/Graphika/blob/main/sr
 function isDef<T>(o): o is T;
 ```
 
-Defined in: [utils/object.ts:36](https://github.com/feds01/Graphika/blob/main/src/utils/object.ts#L36)
+Defined in: [utils/object.ts:65](https://github.com/feds01/Graphika/blob/main/src/utils/object.ts#L65)
 
 Check whether some item is not null and not undefined.
 
@@ -70,9 +70,9 @@ Whether the item is defined, as a type assertion.
 function merge<T>(target, source): T;
 ```
 
-Defined in: [utils/object.ts:19](https://github.com/feds01/Graphika/blob/main/src/utils/object.ts#L19)
+Defined in: [utils/object.ts:37](https://github.com/feds01/Graphika/blob/main/src/utils/object.ts#L37)
 
-Combine two objects into one.
+Combine two objects into one without mutating the originals.
 
 #### Type Parameters
 
@@ -82,13 +82,13 @@ Combine two objects into one.
 
 #### Parameters
 
-| Parameter | Type | Description                                               |
-| --------- | ---- | --------------------------------------------------------- |
-| `target`  | `T`  | The initial object that will be used as a based to merge. |
-| `source`  | `T`  | The object that will be merged into target.               |
+| Parameter | Type | Description                                              |
+| --------- | ---- | -------------------------------------------------------- |
+| `target`  | `T`  | The initial object that will be used as a base to merge. |
+| `source`  | `T`  | The object that will be merged into target.              |
 
 #### Returns
 
 `T`
 
-A merged object from target and source.
+A new merged object from target and source.

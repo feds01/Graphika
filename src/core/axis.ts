@@ -24,14 +24,14 @@ import { isDef } from "../utils/object";
 export type AxisType = "x" | "y";
 
 export type AxisOptions = {
-    axisColour: string;
+    axisColour?: string;
     drawLabels?: boolean;
     drawTicks?: boolean;
     labelDirection?: string;
     optimiseTicks?: boolean;
     startAtZero?: boolean;
     tickLabels?: string[];
-    ticks: number;
+    ticks?: number;
 };
 
 class Axis {
@@ -52,7 +52,10 @@ class Axis {
 
         // Ensure that minTicks & maxTicks don't overflow and aren't negative, otherwise they would cause a
         // DivisionByZero or Infinity issues
-        assert(this.options.ticks > 0, `${this.type} cannot have zero or negative tick count`);
+        assert(
+            isDef(this.options.ticks) && this.options.ticks > 0,
+            `${this.type} cannot have zero or negative tick count`,
+        );
 
         // we have negative values in the data set and therefore will require two
         // different scales
@@ -95,7 +98,7 @@ class Axis {
 
             // When optimiseTicks is enabled, limit ticks to the actual data length
             // so we don't show empty ticks beyond the data range
-            let tickCount = this.options.ticks - 1;
+            let tickCount = this.options.ticks ?? config.xTicks - 1;
             if (this.options.optimiseTicks) {
                 tickCount = Math.min(tickCount, dataLen - 1);
             }
@@ -113,7 +116,7 @@ class Axis {
         } else {
             return new Scale({
                 ...arrays.getMinMax(this.data),
-                tickCount: this.options.ticks,
+                tickCount: this.options.ticks ?? config.yTicks,
             });
         }
     }
@@ -161,7 +164,7 @@ class Axis {
     get scaleLabels(): string[] {
         let scaleNumericsToDraw = this.generateScaleNumbers();
 
-        if (this.graph.options.scale.shorthandNumerics) {
+        if (this.graph.options.scale?.shorthandNumerics) {
             scaleNumericsToDraw = scaleNumericsToDraw.map((numeric) => {
                 // TODO: unhandled case where we have a float that is larger than log(n) > 1
                 return convertFromNumerical(numeric);
@@ -171,7 +174,24 @@ class Axis {
         return scaleNumericsToDraw;
     }
 
+    getColour(): string {
+        const base = (() => {
+            // Use inheritance or option override for axis colour.
+            if (this.options.axisColour) return this.options.axisColour;
+            if (this.graph.options.axisColour) return this.graph.options.axisColour;
+
+            return config.axisColour;
+        })();
+
+        return rgba(base, 40);
+    }
+
     draw() {
+        const axisColour = this.getColour();
+
+        // Configure the `ctx` for drawing the axis.
+        this.graph.ctx.setLineDash([]);
+
         // determine the positions of the x-axis
         this.determineAxisPosition();
 
@@ -193,35 +213,39 @@ class Axis {
 
         // get the context ready to draw
         this.graph.ctx.lineWidth = config.gridLineWidth;
-        this.graph.ctx.strokeStyle = rgba(this.options.axisColour, 60);
+        this.graph.ctx.strokeStyle = axisColour;
 
         // Y-Axis Drawing !
         if (this.type === "y") {
             this.graph.drawer.verticalLine(
                 this.graph.lengths.xBegin,
                 this.graph.lengths.yBegin,
-                this.graph.lengths.yLength + 9,
+                this.graph.lengths.yLength + config.tickLength,
             );
             this.graph.ctx.textBaseline = "middle";
 
-            for (const number of this.scaleLabels) {
-                if (!(this.manager.sharedAxisZero && number.toString() === "0")) {
+            for (const label of this.scaleLabels) {
+                if (!(this.manager.sharedAxisZero && label.toString() === "0")) {
                     const y_offset = offset * this.graph.gridRectSize.y;
+                    const tickY = this.graph.lengths.yBegin + y_offset;
+                    const xAxisY = this.graph.padding.top + this.graph.lengths.yLength;
 
-                    // tick drawing
-                    this.graph.drawer.horizontalLine(
-                        this.graph.lengths.xBegin - 9,
-                        this.graph.lengths.yBegin + y_offset,
-                        9,
-                    );
+                    // tick drawing (skip if at the bottom where X-axis line exists)
+                    if (tickY < xAxisY - 1) {
+                        this.graph.drawer.horizontalLine(
+                            this.graph.lengths.xBegin - config.tickLength,
+                            tickY,
+                            config.tickLength,
+                        );
+                    }
 
                     // draw the text (add extra padding between tick and label)
                     this.graph.drawer.text(
-                        number,
-                        this.graph.lengths.xBegin - 9 - this.graph.padding.textPadding * 2,
+                        label,
+                        this.graph.lengths.xBegin - config.tickLength - this.graph.padding.textPadding * 2,
                         this.graph.padding.top + this.graph.lengths.yLength - y_offset,
                         config.scaleLabelFontSize,
-                        this.options.axisColour,
+                        axisColour,
                         "right",
                     );
                     offset++;
@@ -229,16 +253,16 @@ class Axis {
             }
         } else {
             this.graph.drawer.horizontalLine(
-                this.graph.lengths.xBegin - 9,
+                this.graph.lengths.xBegin - config.tickLength,
                 this.yStart,
-                this.graph.lengths.xLength + 9,
+                this.graph.lengths.xLength + config.tickLength,
             );
 
             // We also need to draw a horizontal line at the bottom of the graph
             // if it includes a negative quadrant. We can check this by accessing the
             // manager.negativeScale constant, if so draw the horizontal line at the
             // bottom of the graph.
-            if (this.manager.negativeScale && !this.graph.options.grid.gridded) {
+            if (this.manager.negativeScale && !this.graph.options.grid?.gridded) {
                 this.graph.drawer.horizontalLine(
                     this.graph.lengths.xBegin,
                     this.graph.lengths.yLength + this.graph.padding.top,
@@ -246,26 +270,28 @@ class Axis {
                 );
             }
 
-            const scale_offset = this.graph.padding.textPadding + this.graph.fontSize() / 2;
+            const scaleOffset = this.graph.padding.textPadding + this.graph.fontSize() / 2;
 
             for (const label of this.scaleLabels) {
                 // if sharedAxisZero isn't enabled and the number isn't zero, draw the number label
                 if (!(this.manager.sharedAxisZero && label === "0")) {
-                    const x_offset = offset * this.graph.gridRectSize.x;
+                    const xOffset = offset * this.graph.gridRectSize.x;
 
-                    // draw the tick
-                    this.graph.drawer.verticalLine(
-                        this.graph.lengths.xBegin + x_offset,
-                        this.graph.lengths.yLength + this.graph.padding.top,
-                        9,
-                    );
+                    // draw the tick (skip at offset=0 where Y-axis line already exists)
+                    if (offset > 0) {
+                        this.graph.drawer.verticalLine(
+                            this.graph.lengths.xBegin + xOffset,
+                            this.graph.lengths.yLength + this.graph.padding.top,
+                            config.tickLength,
+                        );
+                    }
 
                     this.graph.drawer.text(
                         label,
-                        this.graph.lengths.xBegin + x_offset,
-                        this.graph.lengths.yLength + 9 + this.graph.padding.top + scale_offset,
+                        this.graph.lengths.xBegin + xOffset,
+                        this.graph.lengths.yLength + config.tickLength + this.graph.padding.top + scaleOffset,
                         config.scaleLabelFontSize,
-                        this.options.axisColour,
+                        axisColour,
                         "center",
                     );
                     offset++;

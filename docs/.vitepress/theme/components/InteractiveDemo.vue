@@ -1,14 +1,9 @@
 <script setup lang="ts">
-import { ref, reactive, onMounted, watch, watchEffect, computed } from "vue";
+import { ref, reactive, watchEffect, computed } from "vue";
 
-// Import Graphika library
 import * as Graphika from "../../../../src/index";
 import { highlightCode } from "../utils/highlight";
-
-const Graph = Graphika.Graph.default;
-
-const containerId = ref(`graph-${Math.random().toString(36).slice(2, 9)}`);
-let graphInstance: InstanceType<typeof Graph> | null = null;
+import GraphDemo from "./GraphDemo.vue";
 
 const showCode = ref(false);
 const copied = ref(false);
@@ -94,26 +89,29 @@ const graphOptions = computed(() => ({
 }));
 
 // Computed lines
-const lines = computed(() => [
-    {
-        label: "Series A",
-        data: line1Data,
-        colour: controls.line1Color,
-        interpolation: controls.line1Interpolation,
-        style: controls.line1Style,
-        annotatePoints: controls.line1AnnotatePoints,
-        area: controls.line1AreaFill ? { fill: true } : undefined,
-    },
-    {
-        label: "Series B",
-        data: line2Data,
-        colour: controls.line2Color,
-        interpolation: controls.line2Interpolation,
-        style: controls.line2Style,
-        annotatePoints: controls.line2AnnotatePoints,
-        area: controls.line2AreaFill ? { fill: true } : undefined,
-    },
-]);
+const lines = computed(
+    () =>
+        [
+            {
+                label: "Series A",
+                data: line1Data,
+                colour: controls.line1Color,
+                interpolation: controls.line1Interpolation,
+                style: controls.line1Style,
+                annotatePoints: controls.line1AnnotatePoints,
+                ...(controls.line1AreaFill && { area: { fill: true } }),
+            },
+            {
+                label: "Series B",
+                data: line2Data,
+                colour: controls.line2Color,
+                interpolation: controls.line2Interpolation,
+                style: controls.line2Style,
+                annotatePoints: controls.line2AnnotatePoints,
+                ...(controls.line2AreaFill && { area: { fill: true } }),
+            },
+        ] satisfies Graphika.DataSource[],
+);
 
 // Generate code string for display
 const codeString = computed(() => {
@@ -187,46 +185,20 @@ async function copyCode() {
         console.error("Failed to copy code");
     }
 }
-
-function renderGraph() {
-    const container = document.getElementById(containerId.value);
-    if (!container) return;
-
-    const canvas = container.querySelector("canvas");
-    if (canvas) {
-        const ctx = canvas.getContext("2d");
-        if (ctx) {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-        }
-        canvas.width = 600;
-        canvas.height = 380;
-    }
-
-    graphInstance = new Graph(containerId.value, graphOptions.value, lines.value);
-    graphInstance.draw();
-}
-
-onMounted(() => {
-    renderGraph();
-});
-
-watch(
-    [graphOptions, lines],
-    () => {
-        renderGraph();
-    },
-    { deep: true },
-);
 </script>
 
 <template>
     <div class="interactive-demo">
         <div class="interactive-demo-content">
-            <!-- Graph Preview -->
+            <!-- Graph Preview (using GraphDemo component) -->
             <div class="interactive-demo-preview">
-                <div :id="containerId" class="graph-container">
-                    <canvas width="600" height="380" />
-                </div>
+                <GraphDemo
+                    :options="graphOptions"
+                    :lines="lines"
+                    :animate="controls.animate"
+                    :height="380"
+                    :widgets="{ copy: false, codeView: false, debugPanel: false }"
+                />
             </div>
 
             <!-- Actions Bar -->
