@@ -189,6 +189,9 @@ class Axis {
     draw() {
         const axisColour = this.getColour();
 
+        // Configure the `ctx` for drawing the axis.
+        this.graph.ctx.setLineDash([]);
+
         // determine the positions of the x-axis
         this.determineAxisPosition();
 
