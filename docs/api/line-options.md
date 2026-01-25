@@ -164,27 +164,3 @@ Show markers at each data point with `annotatePoints: true`:
     ]"
     :height="280"
 />
-
-## Available Colors
-
-Graphika provides preset colors:
-
-| Name            | Value     | Preview |
-| --------------- | --------- | ------- |
-| `FLAMINGO_RED`  | `#FF6782` | 🔴      |
-| `ELECTRIC_BLUE` | `#009FE5` | 🔵      |
-| `EMERALD_GREEN` | `#008816` | 🟢      |
-| `DEEP_PURPLE`   | `#3a243b` | 🟣      |
-| `PURPLE`        | `#800080` | 🟣      |
-| `GREY`          | `#5e5e5e` | ⚫      |
-
-```ts
-import Graph from "@feds01/graphika";
-
-// Use preset colors
-colour: Graph.Colours.ELECTRIC_BLUE;
-```
-
-::: tip Type Reference
-See [`LineOptions`](/reference/core/line#lineoptions) for full TypeScript definitions.
-:::

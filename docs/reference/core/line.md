@@ -96,7 +96,7 @@ Options for line animation.
 ```ts
 type LineAreaOptions = {
     colour?: string;
-    fill: boolean;
+    fill?: boolean;
 };
 ```
 
@@ -109,7 +109,7 @@ Options for the line area.
 | Property                      | Type      | Defined in                                                                           |
 | ----------------------------- | --------- | ------------------------------------------------------------------------------------ |
 | <a id="colour"></a> `colour?` | `string`  | [core/line.ts:23](https://github.com/feds01/Graphika/blob/main/src/core/line.ts#L23) |
-| <a id="fill"></a> `fill`      | `boolean` | [core/line.ts:22](https://github.com/feds01/Graphika/blob/main/src/core/line.ts#L22) |
+| <a id="fill"></a> `fill?`     | `boolean` | [core/line.ts:22](https://github.com/feds01/Graphika/blob/main/src/core/line.ts#L22) |
 
 ---
 
@@ -123,7 +123,7 @@ type LineOptions = {
     colour: string;
     interpolation: InterpolationKind;
     label?: string;
-    style: string;
+    style?: string;
 };
 ```
 
@@ -141,4 +141,4 @@ Options for a line on a graph.
 | <a id="colour-1"></a> `colour`               | `string`                                                  | Colour of the line.                       | [core/line.ts:45](https://github.com/feds01/Graphika/blob/main/src/core/line.ts#L45) |
 | <a id="interpolation"></a> `interpolation`   | [`InterpolationKind`](interpolation.md#interpolationkind) | Interpolation type for the line.          | [core/line.ts:51](https://github.com/feds01/Graphika/blob/main/src/core/line.ts#L51) |
 | <a id="label"></a> `label?`                  | `string`                                                  | Optional label for the line.              | [core/line.ts:60](https://github.com/feds01/Graphika/blob/main/src/core/line.ts#L60) |
-| <a id="style"></a> `style`                   | `string`                                                  | Style of the line: 'solid' or 'dashed'.   | [core/line.ts:48](https://github.com/feds01/Graphika/blob/main/src/core/line.ts#L48) |
+| <a id="style"></a> `style?`                  | `string`                                                  | Style of the line: 'solid' or 'dashed'.   | [core/line.ts:48](https://github.com/feds01/Graphika/blob/main/src/core/line.ts#L48) |

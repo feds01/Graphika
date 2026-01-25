@@ -1,21 +1,17 @@
 <script setup lang="ts">
 import { ref, shallowRef, onMounted, watch, watchEffect, computed } from "vue";
 import type { PropType } from "vue";
+import { useData } from "vitepress";
 
-// Import Graphika library
 import * as Graphika from "../../../../src/index";
 import { highlightCode } from "../utils/highlight";
 
 const Graph = Graphika.Graph.default;
 
-interface LineOptions {
-    data: number[];
-    colour?: string;
-    label?: string;
-    style?: "solid" | "dashed";
-    interpolation?: "linear" | "cubic";
-    annotatePoints?: boolean;
-    area?: boolean | { colour?: string; opacity?: number };
+interface WidgetOptions {
+    copy?: boolean;
+    codeView?: boolean;
+    debugPanel?: boolean;
 }
 
 const props = defineProps({
@@ -24,9 +20,17 @@ const props = defineProps({
         type: Object as PropType<Graphika.Graph.BasicGraphOptions>,
         default: () => ({}),
     },
+    widgets: {
+        type: Object as PropType<WidgetOptions>,
+        default: () => ({
+            copy: true,
+            codeView: true,
+            debugPanel: true,
+        }),
+    },
     /** Line data configurations */
     lines: {
-        type: Array as PropType<LineOptions[]>,
+        type: Array as PropType<Graphika.DataSource[]>,
         required: true,
     },
     /** Optional title override for the demo */
@@ -39,12 +43,18 @@ const props = defineProps({
         type: Number,
         default: 350,
     },
+    width: {
+        type: Number,
+        default: 600,
+    },
     /** Enable animation on render */
     animate: {
         type: Boolean,
         default: true,
     },
 });
+
+const { isDark } = useData();
 
 const containerId = ref(`graph-${Math.random().toString(36).slice(2, 9)}`);
 const showCode = ref(false);
@@ -69,14 +79,21 @@ const computedOptions = computed(() => {
         baseOptions.animation = { enabled: true, duration: 800 };
     }
 
-    // Optimise x-axis ticks by default
-    if (!baseOptions.scale) {
-        baseOptions.scale = {};
+    // Build scale options with x-axis tick optimization
+    const darkAxisColour = isDark.value ? { axisColour: "#dfdfd6" } : {};
+    baseOptions.scale = {
+        ...baseOptions.scale,
+        x: { ...baseOptions.scale?.x, optimiseTicks: true, ...darkAxisColour },
+        y: { ...baseOptions.scale?.y, ...darkAxisColour },
+    };
+
+    // Apply dark mode styling
+    if (isDark.value) {
+        baseOptions.axisColour = "#dfdfd6";
+        if (baseOptions.title) {
+            baseOptions.title = { ...baseOptions.title, colour: "#dfdfd6" };
+        }
     }
-    if (!baseOptions.scale.x) {
-        baseOptions.scale.x = {};
-    }
-    baseOptions.scale.x.optimiseTicks = true;
 
     return baseOptions;
 });
@@ -123,7 +140,7 @@ function renderGraph() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
         }
         // Reset canvas dimensions (removes any scaling applied)
-        canvas.width = 600;
+        canvas.width = props.width;
         canvas.height = props.height;
     }
 
@@ -174,9 +191,9 @@ onMounted(() => {
     renderGraph();
 });
 
-// Re-render when props change
+// Re-render when props change or dark mode toggles
 watch(
-    () => [props.options, props.lines],
+    () => [props.options, props.lines, isDark.value],
     () => {
         renderGraph();
     },
@@ -194,8 +211,8 @@ watch(
         </div>
 
         <!-- Actions Bar -->
-        <div class="graph-demo-actions">
-            <button :class="{ copied }" @click="copyCode">
+        <div v-if="widgets.copy || widgets.codeView || widgets.debugPanel" class="graph-demo-actions">
+            <button v-if="widgets.copy" :class="{ copied }" @click="copyCode">
                 <svg
                     v-if="!copied"
                     width="16"
@@ -221,14 +238,14 @@ watch(
                 </svg>
                 {{ copied ? "Copied!" : "Copy" }}
             </button>
-            <button @click="toggleCode">
+            <button v-if="widgets.codeView" @click="toggleCode">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <polyline points="16 18 22 12 16 6" />
                     <polyline points="8 6 2 12 8 18" />
                 </svg>
                 {{ showCode ? "Hide Code" : "View Code" }}
             </button>
-            <button @click="toggleDebug">
+            <button v-if="widgets.debugPanel" @click="toggleDebug">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <circle cx="12" cy="12" r="10" />
                     <line x1="12" y1="16" x2="12" y2="12" />
