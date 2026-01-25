@@ -243,7 +243,8 @@ Customize the grid appearance with `gridLineStyle`:
             label: 'Data',
             interpolation: 'cubic',
             data: [15, 28, 22, 35, 30, 42, 38, 50, 45, 55],
-            colour: '#3a243b'
+            colour: '#ae143a',
+            area: { fill: true }
         }
     ]"
 />
