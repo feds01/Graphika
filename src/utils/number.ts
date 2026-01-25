@@ -11,6 +11,9 @@
 
 import { assert } from "./assert";
 
+/** Pre-computed constant for 2π, commonly used in arc/circle drawing. */
+export const TWO_PI = Math.PI * 2;
+
 /**
  * Returns a number whose value is limited to the given range.
  *
