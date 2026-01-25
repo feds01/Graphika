@@ -142,7 +142,7 @@ class Line {
         ctx.fillStyle = rgba(this.options.colour, 40);
         ctx.strokeStyle = rgba(this.options.colour, 100);
         ctx.setLineDash(this.options.style === "dashed" ? [5, 5] : []);
- 
+
         return ctx;
     }
 
