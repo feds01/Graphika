@@ -97,18 +97,34 @@ export type TitleOptions = {
 export type TitlePosition = "top";
 export type TitleAlignment = "start" | "center" | "end";
 
+/** The current padding static of the graph. */
 type Padding = {
     /**
      * The base amount of padding that is applied around the border of the
      * graph canvas.
+     *
+     * This will be static after initial calculation.
      */
     base: number;
 
-    top: number;
-    left: number;
-    right: number;
-    bottom: number;
+    /**
+     * Padding between text elements and other graph elements.
+     *
+     * This will be static after initial calculation.
+     * */
     textPadding: number;
+
+    /** Padding at the top of the graph. */
+    top: number;
+
+    /** Padding at the left of the graph. */
+    left: number;
+
+    /** Padding at the right of the graph. */
+    right: number;
+
+    /** Padding at the bottom of the graph. */
+    bottom: number;
 };
 
 type Lengths = {
@@ -285,10 +301,10 @@ class BasicGraph {
         const base = this.options.padding ?? DEFAULT_PADDING;
         this.padding = {
             base,
-            top: base,
-            left: base,
+            top: base * 2,
+            left: base * 2,
             right: base,
-            bottom: base,
+            bottom: base * 2,
             textPadding: 4,
         };
 
@@ -484,7 +500,11 @@ class BasicGraph {
             const isLast = offset === yTicks - 1;
             if (!isLast && offset < this.axisManager.yAxis.scaleLabels.length) {
                 const y_offset = offset * this.gridRectSize.y;
-                this.drawer.horizontalLine(this.lengths.xBegin, this.lengths.yBegin + y_offset, x_len - config.tickLength);
+                this.drawer.horizontalLine(
+                    this.lengths.xBegin,
+                    this.lengths.yBegin + y_offset,
+                    x_len - config.tickLength,
+                );
             }
             offset++;
         }
@@ -572,7 +592,7 @@ class BasicGraph {
         const { yAxis, xAxis } = this.axisManager;
         const longestItem = arrays.longest(yAxis.scaleLabels);
 
-        const axisLabelFontSize = this.options.labelFontSize ?? defaultConfig.labelFontSize!;
+        const axisLabelFontSize = this.options.labelFontSize ?? config.scaleLabelFontSize;
         const axisColour = this.options.axisColour ?? config.axisColour;
 
         // Set the config font size of axis labels, and then we can effectively 'measure' the width of the text
@@ -582,7 +602,7 @@ class BasicGraph {
         // Add space for the y-label if we have one.
         const hasYLabel = this.options.y_label && this.options.y_label.length > 0;
         if (hasYLabel) {
-            this.padding.left += labelFontSize + this.padding.textPadding;
+            this.padding.left += labelFontSize + this.padding.base;
         }
 
         // 4. Calculate the `right` padding adjustments.
@@ -678,7 +698,6 @@ class BasicGraph {
             this.#drawLinesWithProgress(1);
         }
 
-        // Debug overlay
         this.#drawDebugOverlay();
     }
 
