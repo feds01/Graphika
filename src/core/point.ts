@@ -33,6 +33,7 @@
 
 import BasicGraph from "../basic.graph";
 import config from "./../config";
+import { createCoordinateContext, dataXToCanvasX, dataYToCanvasY } from "./../utils/coordinates";
 
 class Point {
     /**
@@ -49,32 +50,9 @@ class Point {
         public readonly data: { x: number; y: number },
         private readonly graph: BasicGraph,
     ) {
-        const manager = graph.axisManager;
-
-        // 1. calculate the number of tick lengths we are away from the "axis" origin.
-        //
-        // N.B. We must adjust for the minimum value of the axis, as the axis may not start at 0.
-        let relX = Math.abs(data.x);
-        if (manager.xAxis.roundedMin > 0) {
-            relX -= manager.xAxis.roundedMin;
-        }
-
-        const xScalar = relX / manager.xAxis.scaleStep;
-
-        let relY = Math.abs(data.y);
-
-        if (manager.yAxis.roundedMin > 0) {
-            relY -= manager.yAxis.roundedMin;
-        }
-
-        const yScalar = relY / manager.yAxis.scaleStep;
-
-        // 2. Apply the direction of the x and y axis
-        const xDirection = data.x < 0 ? -1 : 1;
-        this.x = graph.lengths.xBegin + xDirection * xScalar * graph.gridRectSize.x;
-
-        const yDirection = data.y < 0 ? -1 : 1;
-        this.y = manager.xAxis.yStart - yDirection * yScalar * graph.gridRectSize.y;
+        const ctx = createCoordinateContext(graph);
+        this.x = dataXToCanvasX(ctx, data.x);
+        this.y = dataYToCanvasY(ctx, data.y);
     }
 
     /**
