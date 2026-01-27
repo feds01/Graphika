@@ -48,6 +48,9 @@ export default {
     /* font size of X-Axis & Y-Axis labels */
     axisLabelFontSize: 14,
 
+    /* Default font for labels */
+    labelFont: '"Roboto Mono", monospace',
+
     /* font size of X-Axis & Y-Axis scale labels */
     scaleLabelFontSize: 12,
 
