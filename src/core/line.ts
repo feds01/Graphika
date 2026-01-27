@@ -505,7 +505,7 @@ class Line {
             if (index > maxIndex) return;
 
             if (index === this.points.length - 1 || (point.data.x / this.graph.axisManager.xAxis.scaleStep) % 1 === 0) {
-                point.draw();
+                this.graph.drawer.pointIndicator(point.x, point.y, config.pointIndicatorRadius, this.options.colour);
             }
         });
     }

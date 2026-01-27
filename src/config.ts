@@ -25,6 +25,9 @@ export default {
      * the default value of ticks on the x-axis. */
     lineWidth: 2,
 
+    /* Default radius for point indicators (used for line annotations and tooltip indicators) */
+    pointIndicatorRadius: 4,
+
     /* this value is the default axis, scale & grid line width for a graph, This value
      *  may be overridden by providing the value within a Graph(...) object constructor.
      * */
