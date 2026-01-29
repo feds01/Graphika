@@ -36,7 +36,7 @@
         "globals": "^17.1.0",
         "oxfmt": "^0.26.0",
         "oxlint": "^1.41.0",
-        "rolldown": "^1.0.0-rc.1",
+        "rolldown": "^1.0.0-rc.2",
         "tslib": "^2.8.1",
         "typedoc": "^0.28.16",
         "typedoc-plugin-markdown": "^4.9.0",
