@@ -176,8 +176,11 @@ export class CanvasTooltipRenderer implements TooltipRenderer {
         ctx.shadowOffsetX = 0;
         ctx.shadowOffsetY = 0;
 
-        // Draw border
-        ctx.strokeStyle = "rgba(0, 0, 0, 0.1)";
+        // Draw border (adapt to background brightness)
+        const borderColor = this.#isDarkBackground(content.backgroundColor)
+            ? "rgba(255, 255, 255, 0.15)"
+            : "rgba(0, 0, 0, 0.1)";
+        ctx.strokeStyle = borderColor;
         ctx.lineWidth = 1;
         ctx.setLineDash([]);
         this.#roundRect(ctx, boxX, boxY, boxWidth, boxHeight, content.borderRadius);
@@ -189,6 +192,25 @@ export class CanvasTooltipRenderer implements TooltipRenderer {
             this.#drawLegendItemAt(line.text, line.colour, boxX + boxInnerPadding, y);
             y += lineHeight;
         }
+    }
+
+    /**
+     * Check if a color string represents a dark background.
+     * Simple heuristic based on rgba values.
+     */
+    #isDarkBackground(color: string): boolean {
+        // Parse rgba or rgb colors
+        const match = color.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/);
+        if (match) {
+            const r = parseInt(match[1], 10);
+            const g = parseInt(match[2], 10);
+            const b = parseInt(match[3], 10);
+            // Calculate relative luminance (simplified)
+            const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+            return luminance < 0.5;
+        }
+        // Default to light background if can't parse
+        return false;
     }
 
     /**

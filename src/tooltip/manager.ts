@@ -155,9 +155,14 @@ class TooltipManager {
         const graphCtx = createCoordinateContext(this.graph);
         const rect = this.graph.canvas.getBoundingClientRect();
 
-        // Get position relative to canvas (in CSS pixels)
-        const canvasX = event.clientX - rect.left;
-        const canvasY = event.clientY - rect.top;
+        // Calculate scale factor to handle CSS-scaled canvases
+        // (when CSS width/height differs from canvas pixel dimensions)
+        const scaleX = this.graph.canvas.width / rect.width;
+        const scaleY = this.graph.canvas.height / rect.height;
+
+        // Get position relative to canvas, scaled to internal canvas coordinates
+        const canvasX = (event.clientX - rect.left) * scaleX;
+        const canvasY = (event.clientY - rect.top) * scaleY;
 
         // Store mouse Y for animation updates
         this.lastMouseCanvasY = canvasY;
