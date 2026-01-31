@@ -10,7 +10,7 @@
 
 ### default
 
-Defined in: [core/drawing.ts:28](https://github.com/feds01/Graphika/blob/main/src/core/drawing.ts#L28)
+Defined in: [core/drawing.ts:30](https://github.com/feds01/Graphika/blob/main/src/core/drawing.ts#L30)
 
 Utility class for drawing items on the canvas.
 
@@ -25,7 +25,7 @@ new default(
    options): default;
 ```
 
-Defined in: [core/drawing.ts:29](https://github.com/feds01/Graphika/blob/main/src/core/drawing.ts#L29)
+Defined in: [core/drawing.ts:31](https://github.com/feds01/Graphika/blob/main/src/core/drawing.ts#L31)
 
 ###### Parameters
 
@@ -49,7 +49,7 @@ Defined in: [core/drawing.ts:29](https://github.com/feds01/Graphika/blob/main/sr
 get ctx(): CanvasRenderingContext2D;
 ```
 
-Defined in: [core/drawing.ts:129](https://github.com/feds01/Graphika/blob/main/src/core/drawing.ts#L129)
+Defined in: [core/drawing.ts:167](https://github.com/feds01/Graphika/blob/main/src/core/drawing.ts#L167)
 
 ###### Returns
 
@@ -63,7 +63,7 @@ Defined in: [core/drawing.ts:129](https://github.com/feds01/Graphika/blob/main/s
 get height(): number;
 ```
 
-Defined in: [core/drawing.ts:125](https://github.com/feds01/Graphika/blob/main/src/core/drawing.ts#L125)
+Defined in: [core/drawing.ts:163](https://github.com/feds01/Graphika/blob/main/src/core/drawing.ts#L163)
 
 ###### Returns
 
@@ -77,7 +77,7 @@ Defined in: [core/drawing.ts:125](https://github.com/feds01/Graphika/blob/main/s
 get width(): number;
 ```
 
-Defined in: [core/drawing.ts:121](https://github.com/feds01/Graphika/blob/main/src/core/drawing.ts#L121)
+Defined in: [core/drawing.ts:159](https://github.com/feds01/Graphika/blob/main/src/core/drawing.ts#L159)
 
 ###### Returns
 
@@ -91,7 +91,7 @@ Defined in: [core/drawing.ts:121](https://github.com/feds01/Graphika/blob/main/s
 _coordinateSafetyCheck(x, y): void;
 ```
 
-Defined in: [core/drawing.ts:35](https://github.com/feds01/Graphika/blob/main/src/core/drawing.ts#L35)
+Defined in: [core/drawing.ts:37](https://github.com/feds01/Graphika/blob/main/src/core/drawing.ts#L37)
 
 ###### Parameters
 
@@ -113,7 +113,7 @@ circle(
    rad): void;
 ```
 
-Defined in: [core/drawing.ts:40](https://github.com/feds01/Graphika/blob/main/src/core/drawing.ts#L40)
+Defined in: [core/drawing.ts:42](https://github.com/feds01/Graphika/blob/main/src/core/drawing.ts#L42)
 
 ###### Parameters
 
@@ -136,7 +136,7 @@ horizontalLine(
    len): void;
 ```
 
-Defined in: [core/drawing.ts:50](https://github.com/feds01/Graphika/blob/main/src/core/drawing.ts#L50)
+Defined in: [core/drawing.ts:88](https://github.com/feds01/Graphika/blob/main/src/core/drawing.ts#L88)
 
 ###### Parameters
 
@@ -145,6 +145,37 @@ Defined in: [core/drawing.ts:50](https://github.com/feds01/Graphika/blob/main/sr
 | `x`       | `number` |
 | `y`       | `number` |
 | `len`     | `number` |
+
+###### Returns
+
+`void`
+
+##### pointIndicator()
+
+```ts
+pointIndicator(
+   x,
+   y,
+   radius,
+   fillColour,
+   borderColour,
+   borderWidth): void;
+```
+
+Defined in: [core/drawing.ts:62](https://github.com/feds01/Graphika/blob/main/src/core/drawing.ts#L62)
+
+Draw a point indicator with a filled circle and border for visibility.
+
+###### Parameters
+
+| Parameter      | Type     | Default value | Description                                       |
+| -------------- | -------- | ------------- | ------------------------------------------------- |
+| `x`            | `number` | `undefined`   | X coordinate of the center.                       |
+| `y`            | `number` | `undefined`   | Y coordinate of the center.                       |
+| `radius`       | `number` | `undefined`   | Radius of the indicator circle.                   |
+| `fillColour`   | `string` | `undefined`   | Fill colour of the indicator.                     |
+| `borderColour` | `string` | `"white"`     | Border colour (defaults to white for visibility). |
+| `borderWidth`  | `number` | `1.5`         | Width of the border (defaults to 1.5).            |
 
 ###### Returns
 
@@ -162,7 +193,7 @@ text(
    alignment): void;
 ```
 
-Defined in: [core/drawing.ts:109](https://github.com/feds01/Graphika/blob/main/src/core/drawing.ts#L109)
+Defined in: [core/drawing.ts:147](https://github.com/feds01/Graphika/blob/main/src/core/drawing.ts#L147)
 
 ###### Parameters
 
@@ -196,7 +227,7 @@ toTextMode(
    alignment): void;
 ```
 
-Defined in: [core/drawing.ts:84](https://github.com/feds01/Graphika/blob/main/src/core/drawing.ts#L84)
+Defined in: [core/drawing.ts:122](https://github.com/feds01/Graphika/blob/main/src/core/drawing.ts#L122)
 
 ###### Parameters
 
@@ -228,7 +259,7 @@ verticalLine(
    len): void;
 ```
 
-Defined in: [core/drawing.ts:61](https://github.com/feds01/Graphika/blob/main/src/core/drawing.ts#L61)
+Defined in: [core/drawing.ts:99](https://github.com/feds01/Graphika/blob/main/src/core/drawing.ts#L99)
 
 ###### Parameters
 
@@ -244,10 +275,22 @@ Defined in: [core/drawing.ts:61](https://github.com/feds01/Graphika/blob/main/sr
 
 ## Type Aliases
 
+### BorderStyle
+
+```ts
+type BorderStyle = "solid" | "dashed";
+```
+
+Defined in: [core/drawing.ts:19](https://github.com/feds01/Graphika/blob/main/src/core/drawing.ts#L19)
+
+The type of border to draw.
+
+---
+
 ### CanvasTextAlign
 
 ```ts
 type CanvasTextAlign = "center" | "end" | "left" | "right" | "start";
 ```
 
-Defined in: [core/drawing.ts:23](https://github.com/feds01/Graphika/blob/main/src/core/drawing.ts#L23)
+Defined in: [core/drawing.ts:25](https://github.com/feds01/Graphika/blob/main/src/core/drawing.ts#L25)

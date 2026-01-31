@@ -21,6 +21,8 @@ import Drawer, { CanvasTextAlign } from "./core/drawing";
 import AxisManager from "./core/axis-manager";
 import DataManager, { DataSource } from "./core/data-manager";
 import LegendManager, { LegendOptions } from "./legend/manager";
+import TooltipManager from "./tooltip/manager";
+import { TooltipOptions } from "./tooltip/types";
 import { AxisOptions } from "./core/axis";
 import { EasingAnimationFn, easeOutCubic } from "./core/animation";
 
@@ -79,6 +81,9 @@ export type BasicGraphOptions = {
 
     /** Animation settings for the graph. */
     animation?: AnimationOptions;
+
+    /** Tooltip settings for interactive data display. */
+    tooltip?: TooltipOptions;
 
     /** Debug mode for the graph. Enables additional logging and visual aids for development. */
     debug?: boolean;
@@ -230,6 +235,11 @@ class BasicGraph {
     private legendManager?: LegendManager;
 
     /**
+     * TooltipManager handles interactive tooltip display on the graph.
+     */
+    private tooltipManager?: TooltipManager;
+
+    /**
      * @since v0.0.1 AxisManager object is a manager class for the Axis objects of this Graph object,
      * The AxisManager contains the xAxis & yAxis objects, it also handles the synchronisation of scales &
      * negative axis modes.
@@ -260,6 +270,18 @@ class BasicGraph {
      * The Line instances created for this graph. These are populated during draw().
      */
     private lines: Line[] = [];
+
+    /**
+     * Tracks whether the initial animation has completed.
+     * Once true, subsequent draw() calls will not re-trigger animation.
+     */
+    private animationCompleted: boolean = false;
+
+    /**
+     * Tracks whether an animation is currently in progress.
+     * Prevents multiple animation loops from running simultaneously.
+     */
+    private isAnimating: boolean = false;
 
     lengths: Lengths = {
         xBegin: 0,
@@ -314,6 +336,11 @@ class BasicGraph {
         // perform initial calculations based on the padding.
         if (this.options.legend?.draw) {
             this.legendManager = new LegendManager(this, this.dataManager.generateLegendInfo());
+        }
+
+        // 3. Initialise the `TooltipManager` if tooltips are enabled.
+        if (this.options.tooltip?.enabled) {
+            this.tooltipManager = new TooltipManager(this, this.options.tooltip);
         }
 
         // @@Cleanup: move all this stuff into `draw()`
@@ -690,12 +717,14 @@ class BasicGraph {
         // Create line instances now (after all setup is complete)
         this.lines = this.#createLines();
 
-        // If animation is enabled, run the animation loop
-        if (this.options.animation?.enabled) {
+        // If animation is enabled, hasn't completed yet, and isn't already running, start it
+        if (this.options.animation?.enabled && !this.animationCompleted && !this.isAnimating) {
             this.#runAnimation();
-        } else {
-            // Otherwise draw lines immediately
+        } else if (!this.isAnimating) {
+            // Otherwise draw lines immediately (animation disabled or already completed)
             this.#drawLinesWithProgress(1);
+            // Draw tooltip overlay (after lines, only when not animating)
+            this.tooltipManager?.draw();
         }
 
         this.#drawDebugOverlay();
@@ -738,6 +767,9 @@ class BasicGraph {
      * Runs the animation loop for drawing lines.
      */
     #runAnimation() {
+        // Mark animation as in progress
+        this.isAnimating = true;
+
         // @@Todo: move this kind of prop type resolution out of here, i.e. we should work with different types
         // so we don't have to adjust and check for defaults here.
         const { duration, easing } = {
@@ -755,10 +787,15 @@ class BasicGraph {
             this.#clearAndResetContext();
             this.#drawBackground();
             this.#drawLinesWithProgress(progress);
+            this.tooltipManager?.draw();
             this.#drawDebugOverlay();
 
             if (rawProgress < 1) {
                 requestAnimationFrame(animate);
+            } else {
+                // Animation completed, mark it so subsequent draw() calls don't re-animate
+                this.isAnimating = false;
+                this.animationCompleted = true;
             }
         };
 
@@ -795,6 +832,16 @@ class BasicGraph {
 
         this.ctx.stroke();
         this.ctx.closePath();
+    }
+
+    /**
+     * Cleanup resources used by the graph.
+     *
+     * Call this method when the graph is no longer needed to remove event listeners
+     * and free up resources.
+     */
+    destroy() {
+        this.tooltipManager?.destroy();
     }
 }
 

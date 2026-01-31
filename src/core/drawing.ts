@@ -13,8 +13,10 @@
 
 import config from "../config";
 import { assert } from "./../utils/assert";
+import { TWO_PI } from "./../utils/number";
 
-const TWO_PI = Math.PI * 2;
+/** The type of border to draw. */
+export type BorderStyle = "solid" | "dashed";
 
 type DrawerOptions = {
     labelFont: string;
@@ -44,6 +46,42 @@ class Drawer {
         this.context.beginPath();
         this.context.arc(x, y, rad, 0, TWO_PI);
         this.context.fill();
+        this.context.closePath();
+    }
+
+    /**
+     * Draw a point indicator with a filled circle and border for visibility.
+     *
+     * @param x - X coordinate of the center.
+     * @param y - Y coordinate of the center.
+     * @param radius - Radius of the indicator circle.
+     * @param fillColour - Fill colour of the indicator.
+     * @param borderColour - Border colour (defaults to white for visibility).
+     * @param borderWidth - Width of the border (defaults to 1.5).
+     */
+    pointIndicator(
+        x: number,
+        y: number,
+        radius: number,
+        fillColour: string,
+        borderColour: string = "white",
+        borderWidth: number = 1.5,
+    ) {
+        this._coordinateSafetyCheck(x, y);
+
+        // Draw filled circle
+        this.context.beginPath();
+        this.context.fillStyle = fillColour;
+        this.context.arc(x, y, radius, 0, TWO_PI);
+        this.context.fill();
+        this.context.closePath();
+
+        // Draw border for visibility
+        this.context.beginPath();
+        this.context.strokeStyle = borderColour;
+        this.context.lineWidth = borderWidth;
+        this.context.arc(x, y, radius, 0, TWO_PI);
+        this.context.stroke();
         this.context.closePath();
     }
 

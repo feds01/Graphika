@@ -140,7 +140,7 @@ v0.0.1 Takes in input as the lengths object from a graph object.
 draw(): void;
 ```
 
-Defined in: [core/axis.ts:177](https://github.com/feds01/Graphika/blob/main/src/core/axis.ts#L177)
+Defined in: [core/axis.ts:189](https://github.com/feds01/Graphika/blob/main/src/core/axis.ts#L189)
 
 ###### Returns
 
@@ -157,6 +157,18 @@ Defined in: [core/axis.ts:124](https://github.com/feds01/Graphika/blob/main/src/
 ###### Returns
 
 `string`[]
+
+##### getColour()
+
+```ts
+getColour(): string;
+```
+
+Defined in: [core/axis.ts:177](https://github.com/feds01/Graphika/blob/main/src/core/axis.ts#L177)
+
+###### Returns
+
+`string`
 
 ## Type Aliases
 

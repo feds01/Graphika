@@ -17,6 +17,8 @@ import * as arrays from "../utils/arrays";
 import colours from "../utils/colours";
 import BasicGraph from "../basic.graph";
 import { DataSource } from "../core/data-manager";
+import { BorderStyle } from "../core/drawing";
+import { drawLegendItem } from "./draw-item";
 
 export type LegendOptions = {
     draw?: boolean;
@@ -26,7 +28,6 @@ export type LegendOptions = {
 
 export type LegendAlignment = "start" | "center" | "end";
 export type LegendPosition = "left" | "right" | "top" | "bottom";
-export type LegendBoxBorderStyle = "solid" | "dashed";
 
 class LegendManager {
     private static PADDING = 4;
@@ -100,34 +101,29 @@ class LegendManager {
     }
 
     /**
-     * Function to draw a label with a key box denoting one of the graph legends
+     * Function to draw a label with a key box denoting one of the graph legends.
      *
-     * @param {string} label - The name of the line that represents this legend
-     * @param {string} colour - The colour of the key box
-     * @param {solid|dashed} style - Border style of the key box
-     * @param {number} x - x coordinate of where to draw the label
-     * @param {number} y - y coordinate of where to draw the label
-     *  */
-    drawLegend(label: string, colour: string, style: LegendBoxBorderStyle, x: number, y: number) {
+     * @param label - The name of the line that represents this legend.
+     * @param colour - The colour of the key box.
+     * @param style - Border style of the key box.
+     * @param x - X coordinate of where to draw the label.
+     * @param y - Y coordinate of where to draw the label.
+     */
+    drawLegend(label: string, colour: string, style: BorderStyle, x: number, y: number) {
         const labelFontSize = this.graph.options.labelFontSize ?? config.axisLabelFontSize;
         const axisColour = this.graph.options.axisColour ?? config.axisColour;
-        const { ctx, drawer } = this.graph;
+        const labelFont = this.graph.options.labelFont ?? config.labelFont;
 
-        // Setup colour and style
-        ctx.lineWidth = 1;
-        ctx.strokeStyle = colour;
-        ctx.fillStyle = colour;
-
-        // set the line dash
-        ctx.setLineDash(style === "dashed" ? [4, 4] : []);
-        ctx.strokeRect(x, y, labelFontSize, labelFontSize);
-
-        // reduce the alpha to distinct fill between stroke
-        ctx.globalAlpha = 0.6;
-        ctx.fillRect(x, y, labelFontSize, labelFontSize);
-
-        // move by the fontSize + 8 as the padding
-        drawer.text(label, x + labelFontSize + 8, y + labelFontSize / 2, labelFontSize, axisColour, "left");
+        drawLegendItem(this.graph.ctx, {
+            label,
+            colour,
+            style,
+            x,
+            y,
+            fontSize: labelFontSize,
+            textColour: axisColour,
+            font: labelFont,
+        });
     }
 
     /**
