@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, shallowRef, onMounted, watch, watchEffect, computed } from "vue";
+import { ref, shallowRef, onMounted, watch, watchEffect, computed, nextTick } from "vue";
 import type { PropType } from "vue";
 import { useData } from "vitepress";
 
@@ -33,11 +33,6 @@ const props = defineProps({
         type: Array as PropType<Graphika.DataSource[]>,
         required: true,
     },
-    /** Optional title override for the demo */
-    title: {
-        type: String,
-        default: "",
-    },
     /** Height of the graph container */
     height: {
         type: Number,
@@ -61,6 +56,7 @@ const showCode = ref(false);
 const showDebug = ref(false);
 const copied = ref(false);
 const graphInstance = shallowRef<InstanceType<typeof Graph> | null>(null);
+const isClientReady = ref(false);
 
 // Debug metrics
 const debugMetrics = ref({
@@ -202,8 +198,11 @@ async function copyCode() {
     }
 }
 
-onMounted(() => {
-    renderGraph();
+onMounted(async () => {
+    // Render canvas via v-if, wait for DOM update, then draw after browser layout
+    isClientReady.value = true;
+    await nextTick();
+    requestAnimationFrame(() => renderGraph());
 });
 
 // Re-render when props change or dark mode toggles
@@ -219,7 +218,7 @@ watch(
 <template>
     <div class="graph-demo">
         <!-- Live Preview -->
-        <div class="graph-demo-preview">
+        <div v-if="isClientReady" class="graph-demo-preview">
             <div :id="containerId" class="graph-container" :style="{ height: `${height}px`, width: `${width}px` }">
                 <canvas :width="width" :height="height" />
             </div>
