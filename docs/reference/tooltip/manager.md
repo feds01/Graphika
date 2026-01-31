@@ -46,7 +46,7 @@ Defined in: [tooltip/manager.ts:109](https://github.com/feds01/Graphika/blob/mai
 destroy(): void;
 ```
 
-Defined in: [tooltip/manager.ts:376](https://github.com/feds01/Graphika/blob/main/src/tooltip/manager.ts#L376)
+Defined in: [tooltip/manager.ts:381](https://github.com/feds01/Graphika/blob/main/src/tooltip/manager.ts#L381)
 
 Cleanup resources.
 
@@ -60,7 +60,7 @@ Cleanup resources.
 draw(): void;
 ```
 
-Defined in: [tooltip/manager.ts:350](https://github.com/feds01/Graphika/blob/main/src/tooltip/manager.ts#L350)
+Defined in: [tooltip/manager.ts:355](https://github.com/feds01/Graphika/blob/main/src/tooltip/manager.ts#L355)
 
 Draw the tooltip. Called from BasicGraph.draw().
 
@@ -74,7 +74,7 @@ Draw the tooltip. Called from BasicGraph.draw().
 getState(): Readonly<TooltipState>;
 ```
 
-Defined in: [tooltip/manager.ts:362](https://github.com/feds01/Graphika/blob/main/src/tooltip/manager.ts#L362)
+Defined in: [tooltip/manager.ts:367](https://github.com/feds01/Graphika/blob/main/src/tooltip/manager.ts#L367)
 
 Get the current tooltip state.
 
@@ -88,7 +88,7 @@ Get the current tooltip state.
 isActive(): boolean;
 ```
 
-Defined in: [tooltip/manager.ts:369](https://github.com/feds01/Graphika/blob/main/src/tooltip/manager.ts#L369)
+Defined in: [tooltip/manager.ts:374](https://github.com/feds01/Graphika/blob/main/src/tooltip/manager.ts#L374)
 
 Check if the tooltip is currently active.
 
