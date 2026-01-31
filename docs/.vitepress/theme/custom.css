@@ -4,6 +4,9 @@
     border-radius: 8px;
     margin: 16px 0;
     overflow: hidden;
+    transition:
+        border-color 0.25s,
+        background-color 0.25s;
 }
 
 .graph-demo-preview {
@@ -16,9 +19,7 @@
 }
 
 .graph-demo-preview .graph-container {
-    width: 100%;
-    max-width: 600px;
-    height: 350px;
+    max-width: 100%;
     background: white;
     border-radius: 4px;
 }
@@ -92,9 +93,20 @@
     white-space: pre;
 }
 
-/* Dark mode adjustments */
+/* ===== Dark Mode Adjustments ===== */
+
+/* Graph container backgrounds */
 .dark .graph-demo-preview .graph-container {
-    background: #1a1a1a;
+    background: #1e1e1e;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.dark .graph-demo {
+    border-color: var(--vp-c-divider);
+}
+
+.dark .graph-demo-actions {
+    background: var(--vp-c-bg-alt);
 }
 
 /* Interactive Demo Component */
@@ -119,14 +131,50 @@
 }
 
 .interactive-demo-preview .graph-container {
-    width: 100%;
-    max-width: 600px;
+    max-width: 100%;
     background: white;
     border-radius: 4px;
 }
 
 .dark .interactive-demo-preview .graph-container {
-    background: #1a1a1a;
+    background: #1e1e1e;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.dark .interactive-demo {
+    border-color: var(--vp-c-divider);
+}
+
+.dark .interactive-demo-controls {
+    background: var(--vp-c-bg-alt);
+}
+
+.dark .interactive-demo-actions {
+    background: var(--vp-c-bg-alt);
+}
+
+/* Dark mode for control inputs */
+.dark .control-section {
+    background: var(--vp-c-bg);
+    border: 1px solid var(--vp-c-divider);
+}
+
+.dark .control-group input[type="text"],
+.dark .control-group select {
+    background: var(--vp-c-bg-alt);
+    border-color: var(--vp-c-divider);
+    color: var(--vp-c-text-1);
+}
+
+.dark .control-group input[type="text"]:focus,
+.dark .control-group select:focus {
+    border-color: var(--vp-c-brand-1);
+    box-shadow: 0 0 0 2px rgba(var(--vp-c-brand-1-rgb), 0.2);
+}
+
+.dark .control-group select option {
+    background: var(--vp-c-bg);
+    color: var(--vp-c-text-1);
 }
 
 .interactive-demo-controls {
@@ -296,6 +344,11 @@
     background-color: transparent;
 }
 
+/* Dark mode for debug panel */
+.dark .graph-demo-debug {
+    background: var(--vp-c-bg-alt);
+}
+
 /* Debug Panel Styles */
 .graph-demo-debug {
     overflow: hidden;
@@ -342,4 +395,159 @@
     font-weight: 500;
     color: var(--vp-c-text-1);
     font-family: var(--vp-font-family-mono);
+}
+
+/* ===== Mobile Responsive Styles ===== */
+
+/* Graph Demo Mobile */
+@media (max-width: 768px) {
+    .graph-demo {
+        margin: 12px 0;
+    }
+
+    .graph-demo-preview {
+        padding: 16px 12px;
+        min-height: auto;
+    }
+
+    .graph-demo-preview .graph-container {
+        max-width: 100%;
+        height: auto;
+        aspect-ratio: 16 / 10;
+        min-height: 250px;
+    }
+
+    .graph-demo-preview .graph-container canvas {
+        width: 100% !important;
+        height: 100% !important;
+    }
+
+    .graph-demo-actions {
+        padding: 6px 12px;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .graph-demo-actions button {
+        font-size: 12px;
+        padding: 6px 10px;
+    }
+
+    .graph-demo-code .code-wrapper pre {
+        padding: 12px 16px;
+        font-size: 12px;
+    }
+}
+
+/* Interactive Demo Mobile */
+@media (max-width: 768px) {
+    .interactive-demo {
+        margin: 12px 0;
+    }
+
+    .interactive-demo-preview {
+        padding: 16px 12px;
+    }
+
+    .interactive-demo-preview .graph-container {
+        max-width: 100%;
+        height: auto;
+        aspect-ratio: 16 / 10;
+        min-height: 280px;
+    }
+
+    .interactive-demo-preview .graph-container canvas {
+        width: 100% !important;
+        height: 100% !important;
+    }
+
+    .interactive-demo-preview .graph-demo {
+        border: none;
+        margin: 0;
+    }
+
+    .interactive-demo-preview .graph-demo-preview {
+        padding: 0;
+        background: transparent;
+    }
+
+    .interactive-demo-controls {
+        padding: 12px;
+    }
+
+    .interactive-demo-controls .control-sections {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .control-section {
+        padding: 10px;
+    }
+
+    .control-section h4 {
+        font-size: 12px;
+        margin-bottom: 10px;
+    }
+
+    .control-group {
+        gap: 6px;
+    }
+
+    .control-group label {
+        font-size: 12px;
+        flex-wrap: wrap;
+    }
+
+    .control-group label span {
+        min-width: 70px;
+    }
+
+    .control-group input[type="text"],
+    .control-group select {
+        font-size: 12px;
+        padding: 6px 8px;
+    }
+
+    .interactive-demo-actions {
+        padding: 6px 12px;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .interactive-demo-actions button {
+        font-size: 12px;
+        padding: 6px 10px;
+    }
+
+    .interactive-demo-code .code-wrapper pre {
+        padding: 12px 16px;
+        font-size: 11px;
+    }
+}
+
+/* Small mobile devices */
+@media (max-width: 480px) {
+    .graph-demo-preview .graph-container,
+    .interactive-demo-preview .graph-container {
+        min-height: 220px;
+    }
+
+    .interactive-demo-controls .control-sections {
+        gap: 10px;
+    }
+
+    .control-group label {
+        gap: 6px;
+    }
+
+    .control-group label span {
+        min-width: 60px;
+        font-size: 11px;
+    }
+
+    .control-group input[type="text"],
+    .control-group select {
+        font-size: 11px;
+        padding: 5px 6px;
+    }
 }

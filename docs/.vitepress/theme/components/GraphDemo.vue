@@ -93,6 +93,21 @@ const computedOptions = computed(() => {
         if (baseOptions.title) {
             baseOptions.title = { ...baseOptions.title, colour: "#dfdfd6" };
         }
+        // Apply dark mode tooltip styling
+        if (baseOptions.tooltip?.enabled) {
+            baseOptions.tooltip = {
+                ...baseOptions.tooltip,
+                trackingLine: {
+                    ...baseOptions.tooltip?.trackingLine,
+                    colour: baseOptions.tooltip?.trackingLine?.colour ?? "rgba(255, 255, 255, 0.5)",
+                },
+                content: {
+                    ...baseOptions.tooltip?.content,
+                    backgroundColor: baseOptions.tooltip?.content?.backgroundColor ?? "rgba(30, 30, 30, 0.95)",
+                    textColour: baseOptions.tooltip?.content?.textColour ?? "#dfdfd6",
+                },
+            };
+        }
     }
 
     return baseOptions;
@@ -160,7 +175,7 @@ function renderGraph() {
     // Update debug metrics
     debugMetrics.value = {
         renderTime: Math.round((endTime - startTime) * 100) / 100,
-        canvasWidth: 600,
+        canvasWidth: props.width,
         canvasHeight: props.height,
         dataPoints: totalDataPoints,
         seriesCount: props.lines.length,
@@ -205,8 +220,8 @@ watch(
     <div class="graph-demo">
         <!-- Live Preview -->
         <div class="graph-demo-preview">
-            <div :id="containerId" class="graph-container" :style="{ height: `${height}px` }">
-                <canvas :width="600" :height="height" />
+            <div :id="containerId" class="graph-container" :style="{ height: `${height}px`, width: `${width}px` }">
+                <canvas :width="width" :height="height" />
             </div>
         </div>
 
