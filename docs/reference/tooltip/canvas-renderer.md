@@ -53,7 +53,7 @@ Defined in: [tooltip/canvas-renderer.ts:30](https://github.com/feds01/Graphika/b
 clear(): void;
 ```
 
-Defined in: [tooltip/canvas-renderer.ts:221](https://github.com/feds01/Graphika/blob/main/src/tooltip/canvas-renderer.ts#L221)
+Defined in: [tooltip/canvas-renderer.ts:243](https://github.com/feds01/Graphika/blob/main/src/tooltip/canvas-renderer.ts#L243)
 
 Clear the tooltip (no-op for canvas renderer as it's cleared on redraw).
 
@@ -71,7 +71,7 @@ Clear the tooltip (no-op for canvas renderer as it's cleared on redraw).
 destroy(): void;
 ```
 
-Defined in: [tooltip/canvas-renderer.ts:228](https://github.com/feds01/Graphika/blob/main/src/tooltip/canvas-renderer.ts#L228)
+Defined in: [tooltip/canvas-renderer.ts:250](https://github.com/feds01/Graphika/blob/main/src/tooltip/canvas-renderer.ts#L250)
 
 Cleanup resources (no-op for canvas renderer).
 
