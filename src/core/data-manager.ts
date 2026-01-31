@@ -13,13 +13,13 @@
 
 import { assert } from "../utils/assert";
 import * as arrays from "../utils/arrays";
-import { LegendBoxBorderStyle } from "../legend/manager";
+import { BorderStyle } from "./drawing";
 
 export type DataSource = {
     data: number[] | Float64Array;
     label: string;
     colour: string;
-    style?: LegendBoxBorderStyle;
+    style?: BorderStyle;
     area?: {
         fill?: boolean;
         opacity?: number;
@@ -29,7 +29,7 @@ export type DataSource = {
 };
 
 type OptionalDataSource = DataSource & {
-    style?: LegendBoxBorderStyle;
+    style?: BorderStyle;
 };
 
 class DataManager {

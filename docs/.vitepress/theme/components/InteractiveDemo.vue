@@ -59,6 +59,10 @@ const controls = reactive({
 
     // Animation
     animate: true,
+
+    // Tooltip options
+    showTooltip: true,
+    tooltipMode: "nearest" as "nearest" | "interpolated",
 });
 
 // Sample data
@@ -85,6 +89,10 @@ const graphOptions = computed(() => ({
     animation: {
         enabled: controls.animate,
         duration: 800,
+    },
+    tooltip: {
+        enabled: controls.showTooltip,
+        mode: controls.tooltipMode,
     },
 }));
 
@@ -139,6 +147,14 @@ const graph = new Graph.Graph(
         legend: {
             draw: ${controls.showLegend},
             position: "${controls.legendPosition}",
+        },
+        tooltip: {
+            enabled: ${controls.showTooltip},
+            mode: "${controls.tooltipMode}",
+        },
+        animation: {
+            enabled: ${controls.animate},
+            duration: 800,
         },
     },
     [
@@ -299,6 +315,35 @@ async function copyCode() {
                                     <option value="bottom">Bottom</option>
                                     <option value="left">Left</option>
                                 </select>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Tooltip Section -->
+                    <div class="control-section">
+                        <h4>Tooltip</h4>
+                        <div class="control-group">
+                            <label class="checkbox">
+                                <input type="checkbox" v-model="controls.showTooltip" />
+                                <span>Enable Tooltip</span>
+                            </label>
+                            <label>
+                                <span>Mode</span>
+                                <select v-model="controls.tooltipMode" :disabled="!controls.showTooltip">
+                                    <option value="nearest">Nearest</option>
+                                    <option value="interpolated">Interpolated</option>
+                                </select>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Animation Section -->
+                    <div class="control-section">
+                        <h4>Animation</h4>
+                        <div class="control-group">
+                            <label class="checkbox">
+                                <input type="checkbox" v-model="controls.animate" />
+                                <span>Enable Animation</span>
                             </label>
                         </div>
                     </div>

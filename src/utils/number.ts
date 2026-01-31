@@ -11,6 +11,9 @@
 
 import { assert } from "./assert";
 
+/** Pre-computed constant for 2π, commonly used in arc/circle drawing. */
+export const TWO_PI = Math.PI * 2;
+
 /**
  * Returns a number whose value is limited to the given range.
  *
@@ -57,4 +60,16 @@ export function floor(num: number, dp: number): number {
  */
 export function isNum(o: unknown): o is number {
     return typeof o !== "number" || Number.isNaN(o);
+}
+
+/**
+ * Linear interpolation between two values.
+ *
+ * @param a - Start value.
+ * @param b - End value.
+ * @param t - Interpolation factor (0-1).
+ * @returns Interpolated value between a and b.
+ */
+export function lerp(a: number, b: number, t: number): number {
+    return a + (b - a) * t;
 }

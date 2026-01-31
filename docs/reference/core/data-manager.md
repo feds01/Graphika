@@ -146,7 +146,7 @@ Defined in: [core/data-manager.ts:77](https://github.com/feds01/Graphika/blob/ma
 ```ts
 type DataSource = {
     annotatePoints?: boolean;
-    area: {
+    area?: {
         fill?: boolean;
         opacity?: number;
     };
@@ -154,7 +154,7 @@ type DataSource = {
     data: number[] | Float64Array;
     interpolation: "linear" | "cubic";
     label: string;
-    style?: LegendBoxBorderStyle;
+    style?: BorderStyle;
 };
 ```
 
@@ -162,14 +162,14 @@ Defined in: [core/data-manager.ts:18](https://github.com/feds01/Graphika/blob/ma
 
 #### Properties
 
-| Property                                      | Type                                                                | Defined in                                                                                           |
-| --------------------------------------------- | ------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
-| <a id="annotatepoints"></a> `annotatePoints?` | `boolean`                                                           | [core/data-manager.ts:27](https://github.com/feds01/Graphika/blob/main/src/core/data-manager.ts#L27) |
-| <a id="area"></a> `area`                      | \{ `fill?`: `boolean`; `opacity?`: `number`; \}                     | [core/data-manager.ts:23](https://github.com/feds01/Graphika/blob/main/src/core/data-manager.ts#L23) |
-| `area.fill?`                                  | `boolean`                                                           | [core/data-manager.ts:24](https://github.com/feds01/Graphika/blob/main/src/core/data-manager.ts#L24) |
-| `area.opacity?`                               | `number`                                                            | [core/data-manager.ts:25](https://github.com/feds01/Graphika/blob/main/src/core/data-manager.ts#L25) |
-| <a id="colour"></a> `colour`                  | `string`                                                            | [core/data-manager.ts:21](https://github.com/feds01/Graphika/blob/main/src/core/data-manager.ts#L21) |
-| <a id="data-1"></a> `data`                    | `number`[] \| `Float64Array`                                        | [core/data-manager.ts:19](https://github.com/feds01/Graphika/blob/main/src/core/data-manager.ts#L19) |
-| <a id="interpolation"></a> `interpolation`    | `"linear"` \| `"cubic"`                                             | [core/data-manager.ts:28](https://github.com/feds01/Graphika/blob/main/src/core/data-manager.ts#L28) |
-| <a id="label"></a> `label`                    | `string`                                                            | [core/data-manager.ts:20](https://github.com/feds01/Graphika/blob/main/src/core/data-manager.ts#L20) |
-| <a id="style"></a> `style?`                   | [`LegendBoxBorderStyle`](../legend/manager.md#legendboxborderstyle) | [core/data-manager.ts:22](https://github.com/feds01/Graphika/blob/main/src/core/data-manager.ts#L22) |
+| Property                                      | Type                                            | Defined in                                                                                           |
+| --------------------------------------------- | ----------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| <a id="annotatepoints"></a> `annotatePoints?` | `boolean`                                       | [core/data-manager.ts:27](https://github.com/feds01/Graphika/blob/main/src/core/data-manager.ts#L27) |
+| <a id="area"></a> `area?`                     | \{ `fill?`: `boolean`; `opacity?`: `number`; \} | [core/data-manager.ts:23](https://github.com/feds01/Graphika/blob/main/src/core/data-manager.ts#L23) |
+| `area.fill?`                                  | `boolean`                                       | [core/data-manager.ts:24](https://github.com/feds01/Graphika/blob/main/src/core/data-manager.ts#L24) |
+| `area.opacity?`                               | `number`                                        | [core/data-manager.ts:25](https://github.com/feds01/Graphika/blob/main/src/core/data-manager.ts#L25) |
+| <a id="colour"></a> `colour`                  | `string`                                        | [core/data-manager.ts:21](https://github.com/feds01/Graphika/blob/main/src/core/data-manager.ts#L21) |
+| <a id="data-1"></a> `data`                    | `number`[] \| `Float64Array`                    | [core/data-manager.ts:19](https://github.com/feds01/Graphika/blob/main/src/core/data-manager.ts#L19) |
+| <a id="interpolation"></a> `interpolation`    | `"linear"` \| `"cubic"`                         | [core/data-manager.ts:28](https://github.com/feds01/Graphika/blob/main/src/core/data-manager.ts#L28) |
+| <a id="label"></a> `label`                    | `string`                                        | [core/data-manager.ts:20](https://github.com/feds01/Graphika/blob/main/src/core/data-manager.ts#L20) |
+| <a id="style"></a> `style?`                   | [`BorderStyle`](drawing.md#borderstyle)         | [core/data-manager.ts:22](https://github.com/feds01/Graphika/blob/main/src/core/data-manager.ts#L22) |
