@@ -29,7 +29,7 @@ const LEGEND_PADDING = 4;
 export class CanvasTooltipRenderer implements TooltipRenderer {
     constructor(
         private readonly graph: BasicGraph,
-        private readonly options: RequiredTooltipOptions,
+        private readonly options: RequiredTooltipOptions
     ) {}
 
     /**
@@ -86,19 +86,33 @@ export class CanvasTooltipRenderer implements TooltipRenderer {
     /**
      * Draw indicator dots on each line at the intersection point.
      */
-    #drawIndicators(_ctx: CanvasRenderingContext2D, lineValues: LineValue[]): void {
+    #drawIndicators(
+        _ctx: CanvasRenderingContext2D,
+        lineValues: LineValue[]
+    ): void {
         const { indicators } = this.options;
 
         for (const lv of lineValues) {
-            this.graph.drawer.pointIndicator(lv.canvasX, lv.canvasY, indicators.radius, lv.colour);
+            this.graph.drawer.pointIndicator(
+                lv.canvasX,
+                lv.canvasY,
+                indicators.radius,
+                lv.colour
+            );
         }
     }
 
     /**
      * Draw a legend-style item (colored box + label).
      */
-    #drawLegendItemAt(label: string, colour: string, x: number, y: number): void {
-        const labelFontSize = this.graph.options.labelFontSize ?? config.axisLabelFontSize;
+    #drawLegendItemAt(
+        label: string,
+        colour: string,
+        x: number,
+        y: number
+    ): void {
+        const labelFontSize =
+            this.graph.options.labelFontSize ?? config.axisLabelFontSize;
         const axisColour = this.graph.options.axisColour ?? config.axisColour;
         const labelFont = this.graph.options.labelFont ?? config.labelFont;
 
@@ -120,7 +134,8 @@ export class CanvasTooltipRenderer implements TooltipRenderer {
     #drawTooltipBox(ctx: CanvasRenderingContext2D, state: TooltipState): void {
         const { content, format } = this.options;
         const { lengths } = this.graph;
-        const labelFontSize = this.graph.options.labelFontSize ?? config.axisLabelFontSize;
+        const labelFontSize =
+            this.graph.options.labelFontSize ?? config.axisLabelFontSize;
 
         // Format the content lines
         const lines: { text: string; colour: string }[] = [];
@@ -145,7 +160,8 @@ export class CanvasTooltipRenderer implements TooltipRenderer {
         }
 
         const boxWidth = maxWidth + boxInnerPadding * 2;
-        const boxHeight = lines.length * lineHeight + boxInnerPadding * 2 - LEGEND_PADDING;
+        const boxHeight =
+            lines.length * lineHeight + boxInnerPadding * 2 - LEGEND_PADDING;
 
         // Calculate position (prefer right of cursor, but flip if needed)
         const cursorOffset = 12;
@@ -158,7 +174,10 @@ export class CanvasTooltipRenderer implements TooltipRenderer {
         }
 
         // Clamp vertical position to stay within graph
-        boxY = Math.max(lengths.yBegin, Math.min(boxY, lengths.yBegin + lengths.yLength - boxHeight));
+        boxY = Math.max(
+            lengths.yBegin,
+            Math.min(boxY, lengths.yBegin + lengths.yLength - boxHeight)
+        );
 
         // Draw box background with shadow
         ctx.shadowColor = "rgba(0, 0, 0, 0.15)";
@@ -167,7 +186,14 @@ export class CanvasTooltipRenderer implements TooltipRenderer {
         ctx.shadowOffsetY = 2;
 
         ctx.fillStyle = content.backgroundColor;
-        this.#roundRect(ctx, boxX, boxY, boxWidth, boxHeight, content.borderRadius);
+        this.#roundRect(
+            ctx,
+            boxX,
+            boxY,
+            boxWidth,
+            boxHeight,
+            content.borderRadius
+        );
         ctx.fill();
 
         // Reset shadow
@@ -183,13 +209,25 @@ export class CanvasTooltipRenderer implements TooltipRenderer {
         ctx.strokeStyle = borderColor;
         ctx.lineWidth = 1;
         ctx.setLineDash([]);
-        this.#roundRect(ctx, boxX, boxY, boxWidth, boxHeight, content.borderRadius);
+        this.#roundRect(
+            ctx,
+            boxX,
+            boxY,
+            boxWidth,
+            boxHeight,
+            content.borderRadius
+        );
         ctx.stroke();
 
         // Draw legend items (same style as LegendManager)
         let y = boxY + boxInnerPadding;
         for (const line of lines) {
-            this.#drawLegendItemAt(line.text, line.colour, boxX + boxInnerPadding, y);
+            this.#drawLegendItemAt(
+                line.text,
+                line.colour,
+                boxX + boxInnerPadding,
+                y
+            );
             y += lineHeight;
         }
     }
@@ -222,14 +260,19 @@ export class CanvasTooltipRenderer implements TooltipRenderer {
         y: number,
         width: number,
         height: number,
-        radius: number,
+        radius: number
     ): void {
         ctx.beginPath();
         ctx.moveTo(x + radius, y);
         ctx.lineTo(x + width - radius, y);
         ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
         ctx.lineTo(x + width, y + height - radius);
-        ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+        ctx.quadraticCurveTo(
+            x + width,
+            y + height,
+            x + width - radius,
+            y + height
+        );
         ctx.lineTo(x + radius, y + height);
         ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
         ctx.lineTo(x, y + radius);

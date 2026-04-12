@@ -53,7 +53,10 @@ class Scale {
         this.scaleStep = Scale.niceNum(diff / (this.tickCount - 1), true);
 
         if (this.options.minimumScaleStep) {
-            this.scaleStep = Math.max(this.options.minimumScaleStep, this.scaleStep);
+            this.scaleStep = Math.max(
+                this.options.minimumScaleStep,
+                this.scaleStep
+            );
         }
 
         // avoid too little ticks if the user didn't strictly specify so many ticks.
@@ -61,14 +64,20 @@ class Scale {
             this.options.tickCount += 1;
         }
 
-        this.roundedMinimum = Math.floor(this.options.min / this.scaleStep) * this.scaleStep;
+        this.roundedMinimum =
+            Math.floor(this.options.min / this.scaleStep) * this.scaleStep;
 
         if (this.options.max > 0 && this.options.min > 0) return;
 
         // Now we have check whether the max also fits...
-        while (this.scaleStep * this.options.tickCount - Math.abs(this.roundedMinimum) < this.options.max) {
+        while (
+            this.scaleStep * this.options.tickCount -
+                Math.abs(this.roundedMinimum) <
+            this.options.max
+        ) {
             this.options.tickCount += 1;
-            this.roundedMinimum = Math.floor(this.options.min / this.scaleStep) * this.scaleStep;
+            this.roundedMinimum =
+                Math.floor(this.options.min / this.scaleStep) * this.scaleStep;
         }
     }
 
@@ -110,7 +119,10 @@ class Scale {
     }
 
     set tickCount(val: number) {
-        assert(val > 0, "Cannot have negative ticks / non-numerical tick max for Scale");
+        assert(
+            val > 0,
+            "Cannot have negative ticks / non-numerical tick max for Scale"
+        );
 
         this.options.tickCount = val;
         this.calculate();

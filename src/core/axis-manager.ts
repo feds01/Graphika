@@ -54,7 +54,8 @@ class AxisManager {
     getColour(): string {
         const base = (() => {
             // Use inheritance or option override for axis colour.
-            if (this.graph.options.axisColour) return this.graph.options.axisColour;
+            if (this.graph.options.axisColour)
+                return this.graph.options.axisColour;
 
             return config.axisColour;
         })();
@@ -73,9 +74,11 @@ class AxisManager {
             this.graph.drawer.text(
                 "0",
                 this.graph.lengths.xBegin - this.graph.padding.base,
-                this.graph.lengths.yLength + this.graph.padding.top + this.graph.fontSize(),
+                this.graph.lengths.yLength +
+                    this.graph.padding.top +
+                    this.graph.fontSize(),
                 12,
-                this.getColour(),
+                this.getColour()
             );
         }
 

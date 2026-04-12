@@ -85,7 +85,10 @@ export function dataYToCanvasY(ctx: CoordinateContext, dataY: number): number {
  * @param canvasX - The canvas X coordinate to convert.
  * @returns The data X value.
  */
-export function canvasXToDataX(ctx: CoordinateContext, canvasX: number): number {
+export function canvasXToDataX(
+    ctx: CoordinateContext,
+    canvasX: number
+): number {
     const { lengths, gridRectSize, xAxis } = ctx;
 
     // Reverse of: canvasX = lengths.xBegin + xScalar * gridRectSize.x
@@ -104,7 +107,11 @@ export function canvasXToDataX(ctx: CoordinateContext, canvasX: number): number 
  * @param canvasY - The canvas Y coordinate to check.
  * @returns True if the coordinates are within the graph area.
  */
-export function isWithinGraphArea(ctx: CoordinateContext, canvasX: number, canvasY: number): boolean {
+export function isWithinGraphArea(
+    ctx: CoordinateContext,
+    canvasX: number,
+    canvasY: number
+): boolean {
     const { lengths } = ctx;
 
     return (

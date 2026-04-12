@@ -5,7 +5,9 @@ export default class Perlin {
     constructor() {
         // Quick and dirty permutation table
         this.perm = (() => {
-            const tmp = Array.from({ length: 256 }, () => Math.floor(Math.random() * 256));
+            const tmp = Array.from({ length: 256 }, () =>
+                Math.floor(Math.random() * 256)
+            );
             return tmp.concat(tmp);
         })();
     }

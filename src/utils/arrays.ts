@@ -150,7 +150,10 @@ export function getMinMax(arr: NumberArray): { min: number; max: number } {
  * @param value - The value to find the closest element to.
  * @returns The indices of the closest element to the given value.
  */
-export function findClosestIndex(arr: NumberArray, value: number): [number, number] {
+export function findClosestIndex(
+    arr: NumberArray,
+    value: number
+): [number, number] {
     if (arr.length === 0) {
         return [-1, -1];
     }

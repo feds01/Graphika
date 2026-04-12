@@ -44,7 +44,11 @@ export function merge<T extends object>(target: T, source: T): T {
         // @ts-expect-error - We know that the key exists
         const targetValue = result[key];
 
-        if (sourceValue instanceof Object && targetValue instanceof Object && !Array.isArray(sourceValue)) {
+        if (
+            sourceValue instanceof Object &&
+            targetValue instanceof Object &&
+            !Array.isArray(sourceValue)
+        ) {
             // @ts-expect-error - We know that the key exists
             result[key] = merge(targetValue, sourceValue);
         } else {
