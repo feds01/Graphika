@@ -35,7 +35,10 @@ export function clamp(num: number, min: number, max: number): number {
  * @param bound The specified boundary that the number should be rounded to.
  */
 export function round(num: number, bound: number): number {
-    assert(Number.isInteger(bound), "round function accepts only integer decimal places");
+    assert(
+        Number.isInteger(bound),
+        "round function accepts only integer decimal places"
+    );
     assert(bound > 0, "Round boundary must be non-zero positive.");
 
     return Math.round(num / bound + Number.EPSILON) * bound;

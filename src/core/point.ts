@@ -33,7 +33,11 @@
 
 import BasicGraph from "../basic.graph";
 import config from "./../config";
-import { createCoordinateContext, dataXToCanvasX, dataYToCanvasY } from "./../utils/coordinates";
+import {
+    createCoordinateContext,
+    dataXToCanvasX,
+    dataYToCanvasY,
+} from "./../utils/coordinates";
 
 class Point {
     /**
@@ -48,7 +52,7 @@ class Point {
 
     constructor(
         public readonly data: { x: number; y: number },
-        private readonly graph: BasicGraph,
+        private readonly graph: BasicGraph
     ) {
         const ctx = createCoordinateContext(graph);
         this.x = dataXToCanvasX(ctx, data.x);

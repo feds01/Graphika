@@ -49,14 +49,18 @@ export default {
                         {
                             label: "Visitors",
                             interpolation: "cubic",
-                            data: [25, 40, 35, 55, 45, 65, 50, 70, 60, 80, 75, 90],
+                            data: [
+                                25, 40, 35, 55, 45, 65, 50, 70, 60, 80, 75, 90,
+                            ],
                             colour: "#009FE5",
                             area: { fill: true },
                         },
                         {
                             label: "Unique Visitors",
                             interpolation: "cubic",
-                            data: [15, 28, 22, 38, 30, 45, 35, 50, 42, 58, 52, 65],
+                            data: [
+                                15, 28, 22, 38, 30, 45, 35, 50, 42, 58, 52, 65,
+                            ],
                             colour: "#FF6782",
                             area: { fill: true },
                         },

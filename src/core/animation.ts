@@ -62,7 +62,11 @@ export function easeOutBounce(t: number): number {
 export function easeOutElastic(t: number): number {
     const c4 = (2 * Math.PI) / 3;
 
-    return t === 0 ? 0 : t === 1 ? 1 : Math.pow(2, -10 * t) * Math.sin((t * 10 - 0.75) * c4) + 1;
+    return t === 0
+        ? 0
+        : t === 1
+          ? 1
+          : Math.pow(2, -10 * t) * Math.sin((t * 10 - 0.75) * c4) + 1;
 }
 
 export function easeInSine(t: number): number {
@@ -107,7 +111,12 @@ export function lerp(a: Vec2, b: Vec2, t: number): Vec2 {
  * Splits a quadratic bezier curve at parameter t and returns the first portion.
  * Uses de Casteljau's algorithm.
  */
-export function splitQuadraticAt(p0: Vec2, cp: Vec2, p1: Vec2, t: number): PartialQuadratic {
+export function splitQuadraticAt(
+    p0: Vec2,
+    cp: Vec2,
+    p1: Vec2,
+    t: number
+): PartialQuadratic {
     const q0 = lerp(p0, cp, t);
     const q1 = lerp(cp, p1, t);
     const endpoint = lerp(q0, q1, t);
@@ -123,7 +132,13 @@ export function splitQuadraticAt(p0: Vec2, cp: Vec2, p1: Vec2, t: number): Parti
  * Splits a cubic bezier curve at parameter t and returns the first portion.
  * Uses de Casteljau's algorithm.
  */
-export function splitCubicAt(p0: Vec2, cp1: Vec2, cp2: Vec2, p1: Vec2, t: number): PartialCubic {
+export function splitCubicAt(
+    p0: Vec2,
+    cp1: Vec2,
+    cp2: Vec2,
+    p1: Vec2,
+    t: number
+): PartialCubic {
     const q0 = lerp(p0, cp1, t);
     const q1 = lerp(cp1, cp2, t);
     const q2 = lerp(cp2, p1, t);
