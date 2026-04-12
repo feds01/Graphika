@@ -58,13 +58,14 @@ class LegendManager {
      */
     public constructor(
         private readonly graph: BasicGraph,
-        private readonly data: DataSource[],
+        private readonly data: DataSource[]
     ) {
         this.position = this.graph.options.legend?.position ?? "top";
         this.alignment = this.graph.options.legend?.alignment ?? "center";
 
         // the actual legend box size
-        const labelFontSize = this.graph.options.labelFontSize ?? config.axisLabelFontSize;
+        const labelFontSize =
+            this.graph.options.labelFontSize ?? config.axisLabelFontSize;
         this.boxSize = labelFontSize + 4; // 2px padding each side
 
         switch (this.position) {
@@ -84,7 +85,9 @@ class LegendManager {
                 // determine the relevant size that the padding needs to increase by based on the position
                 // of the legend. If the orientation of the legend is vertical, only the 'max width' matters,
                 // and if the orientation is horizontal, only the height of the legend matters.
-                const longestItem = arrays.longest(this.data.map((item) => item.label));
+                const longestItem = arrays.longest(
+                    this.data.map((item) => item.label)
+                );
                 this.requiredSpace = this.getRequiredSpaceFor(longestItem);
                 break;
             }
@@ -109,8 +112,15 @@ class LegendManager {
      * @param x - X coordinate of where to draw the label.
      * @param y - Y coordinate of where to draw the label.
      */
-    drawLegend(label: string, colour: string, style: BorderStyle, x: number, y: number) {
-        const labelFontSize = this.graph.options.labelFontSize ?? config.axisLabelFontSize;
+    drawLegend(
+        label: string,
+        colour: string,
+        style: BorderStyle,
+        x: number,
+        y: number
+    ) {
+        const labelFontSize =
+            this.graph.options.labelFontSize ?? config.axisLabelFontSize;
         const axisColour = this.graph.options.axisColour ?? config.axisColour;
         const labelFont = this.graph.options.labelFont ?? config.labelFont;
 
@@ -135,9 +145,13 @@ class LegendManager {
                 case "top": {
                     let yBegin = this.graph.padding.base;
 
-                    const isTopTitle = this.graph.options.title?.draw && this.graph.options.title.position === "top";
+                    const isTopTitle =
+                        this.graph.options.title?.draw &&
+                        this.graph.options.title.position === "top";
                     if (isTopTitle) {
-                        yBegin += (this.graph.options.title?.fontSize ?? 24) + this.graph.padding.textPadding;
+                        yBegin +=
+                            (this.graph.options.title?.fontSize ?? 24) +
+                            this.graph.padding.textPadding;
                     }
 
                     return {
@@ -151,7 +165,10 @@ class LegendManager {
                         orientation: "horizontal" as const,
                         // offset the requiredSpace by textPadding so we avoid not having any padding
                         // between the legend and the x-axis label.
-                        yBegin: this.graph.canvas.height - this.requiredSpace + this.graph.padding.textPadding,
+                        yBegin:
+                            this.graph.canvas.height -
+                            this.requiredSpace +
+                            this.graph.padding.textPadding,
                         xBegin: this.graph.lengths.xBegin,
                     };
                 }
@@ -164,7 +181,8 @@ class LegendManager {
                 case "right": {
                     return {
                         orientation: "vertical" as const,
-                        xBegin: this.graph.lengths.xEnd + LegendManager.PADDING * 2,
+                        xBegin:
+                            this.graph.lengths.xEnd + LegendManager.PADDING * 2,
                         yBegin: this.graph.lengths.yBegin,
                     };
                 }
@@ -177,11 +195,15 @@ class LegendManager {
 
             if (orientation === "horizontal") {
                 // add padding between each item if it's not the end item
-                const additional = index !== this.data.length - 1 ? initial * 2 : 0;
-                return initial + this.getRequiredSpaceFor(item.label) + additional;
+                const additional =
+                    index !== this.data.length - 1 ? initial * 2 : 0;
+                return (
+                    initial + this.getRequiredSpaceFor(item.label) + additional
+                );
             } else {
                 // add padding between each item if it's not the end item
-                const additional = index !== this.data.length - 1 ? initial : initial / 2;
+                const additional =
+                    index !== this.data.length - 1 ? initial : initial / 2;
                 return additional + this.boxSize;
             }
         });
@@ -192,10 +214,18 @@ class LegendManager {
                 case "start":
                     break; // we don't need to do anything here since we assume that it is the initial condition
                 case "center": {
-                    const offset = arrays.sum(requiredSpaces.slice(0, Math.round(requiredSpaces.length / 2)));
+                    const offset = arrays.sum(
+                        requiredSpaces.slice(
+                            0,
+                            Math.round(requiredSpaces.length / 2)
+                        )
+                    );
 
                     // we add one padding unit to account for the space between each legend
-                    xBegin = this.graph.lengths.xCenter - offset + LegendManager.PADDING;
+                    xBegin =
+                        this.graph.lengths.xCenter -
+                        offset +
+                        LegendManager.PADDING;
                     break;
                 }
                 case "end": {
@@ -215,7 +245,10 @@ class LegendManager {
                 }
                 case "end": {
                     const offset = arrays.sum(requiredSpaces);
-                    yBegin = this.graph.lengths.yBegin + this.graph.lengths.yLength - offset;
+                    yBegin =
+                        this.graph.lengths.yBegin +
+                        this.graph.lengths.yLength -
+                        offset;
                     break;
                 }
             }
@@ -230,9 +263,13 @@ class LegendManager {
             this.graph.ctx.strokeStyle = colours.PURPLE;
 
             const xLength =
-                orientation === "horizontal" ? arrays.sum(requiredSpaces) : this.requiredSpace - LegendManager.PADDING;
+                orientation === "horizontal"
+                    ? arrays.sum(requiredSpaces)
+                    : this.requiredSpace - LegendManager.PADDING;
             const yLength =
-                orientation === "vertical" ? arrays.sum(requiredSpaces) : this.requiredSpace - LegendManager.PADDING;
+                orientation === "vertical"
+                    ? arrays.sum(requiredSpaces)
+                    : this.requiredSpace - LegendManager.PADDING;
 
             this.graph.ctx.strokeRect(xBegin, yBegin, xLength, yLength);
 
@@ -245,7 +282,13 @@ class LegendManager {
         for (let idx = 0; idx < this.data.length; idx++) {
             const item = this.data[idx];
 
-            this.drawLegend(item.label, item.colour, item.style ?? "solid", xBegin, yBegin);
+            this.drawLegend(
+                item.label,
+                item.colour,
+                item.style ?? "solid",
+                xBegin,
+                yBegin
+            );
 
             // compute new offsets
             if (orientation === "horizontal") {

@@ -31,12 +31,18 @@ class Drawer {
     constructor(
         private readonly canvas: HTMLCanvasElement,
         private readonly context: CanvasRenderingContext2D,
-        private readonly options: DrawerOptions,
+        private readonly options: DrawerOptions
     ) {}
 
     _coordinateSafetyCheck(x: number, y: number) {
-        assert(x >= 0 && x <= this.canvas.clientWidth, "Drawer request failed since x-coordinate is out of bounds");
-        assert(y >= 0 && y <= this.canvas.clientHeight, "Drawer request failed since y-coordinate is out of bounds");
+        assert(
+            x >= 0 && x <= this.canvas.clientWidth,
+            "Drawer request failed since x-coordinate is out of bounds"
+        );
+        assert(
+            y >= 0 && y <= this.canvas.clientHeight,
+            "Drawer request failed since y-coordinate is out of bounds"
+        );
     }
 
     circle(x: number, y: number, rad: number) {
@@ -65,7 +71,7 @@ class Drawer {
         radius: number,
         fillColour: string,
         borderColour: string = "white",
-        borderWidth: number = 1.5,
+        borderWidth: number = 1.5
     ) {
         this._coordinateSafetyCheck(x, y);
 
@@ -87,7 +93,10 @@ class Drawer {
 
     horizontalLine(x: number, y: number, len: number) {
         this._coordinateSafetyCheck(x, y); // @Speed: remove this from production?
-        assert(x + len >= 0 && x + len <= this.canvas.width, "Line length is out of bounds.");
+        assert(
+            x + len >= 0 && x + len <= this.canvas.width,
+            "Line length is out of bounds."
+        );
 
         this.context.beginPath();
         this.context.moveTo(x, y);
@@ -98,7 +107,10 @@ class Drawer {
 
     verticalLine(x: number, y: number, len: number) {
         this._coordinateSafetyCheck(x, y); // @Speed: remove this from production?
-        assert(y + len >= 0 && y + len <= this.canvas.width, "Line length is out of bounds.");
+        assert(
+            y + len >= 0 && y + len <= this.canvas.width,
+            "Line length is out of bounds."
+        );
 
         this.context.beginPath();
         this.context.moveTo(x, y);
@@ -119,7 +131,11 @@ class Drawer {
      *
      * @returns nothing, just changes the drawing context
      * */
-    toTextMode(size: number, colour: string = config.axisColour, alignment: CanvasTextAlign = "center") {
+    toTextMode(
+        size: number,
+        colour: string = config.axisColour,
+        alignment: CanvasTextAlign = "center"
+    ) {
         this.context.strokeStyle = colour;
         this.context.fillStyle = colour;
 
@@ -144,7 +160,14 @@ class Drawer {
      *
      * @returns nothing, just changes the drawing context
      * */
-    text(text: string, x: number, y: number, size: number, colour: string, alignment: CanvasTextAlign = "center") {
+    text(
+        text: string,
+        x: number,
+        y: number,
+        size: number,
+        colour: string,
+        alignment: CanvasTextAlign = "center"
+    ) {
         this._coordinateSafetyCheck(x, y);
 
         const oldColour = this.context.strokeStyle;

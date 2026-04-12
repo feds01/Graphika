@@ -38,10 +38,22 @@ export type ControlPoint = {
  * @param {Object} graph - graph object
  */
 
-export function splineCurve(prev: Point, current: Point, next: Point, t: number, graph: BasicGraph): ControlPoint {
+export function splineCurve(
+    prev: Point,
+    current: Point,
+    next: Point,
+    t: number,
+    graph: BasicGraph
+): ControlPoint {
     //  Scaling factors: distances from this knot to the previous and following knots.
-    const d01 = Math.sqrt((current.data.x - prev.data.x) ** 2 + (current.data.y - prev.data.y) ** 2);
-    const d12 = Math.sqrt((next.data.x - current.data.x) ** 2 + (next.data.y - current.data.y) ** 2);
+    const d01 = Math.sqrt(
+        (current.data.x - prev.data.x) ** 2 +
+            (current.data.y - prev.data.y) ** 2
+    );
+    const d12 = Math.sqrt(
+        (next.data.x - current.data.x) ** 2 +
+            (next.data.y - current.data.y) ** 2
+    );
 
     const fa = (t * d01) / (d01 + d12);
     const fb = t - fa;
@@ -50,8 +62,16 @@ export function splineCurve(prev: Point, current: Point, next: Point, t: number,
     const yMin = graph.axisManager.yAxis.min;
     const yMax = graph.axisManager.yAxis.max;
 
-    const y1 = clamp(current.data.y + fa * (prev.data.y - next.data.y), yMin, yMax);
-    const y2 = clamp(current.data.y - fb * (prev.data.y - next.data.y), yMin, yMax);
+    const y1 = clamp(
+        current.data.y + fa * (prev.data.y - next.data.y),
+        yMin,
+        yMax
+    );
+    const y2 = clamp(
+        current.data.y - fb * (prev.data.y - next.data.y),
+        yMin,
+        yMax
+    );
 
     return {
         prev: new Point(
@@ -59,7 +79,7 @@ export function splineCurve(prev: Point, current: Point, next: Point, t: number,
                 x: current.data.x + fa * (prev.data.x - next.data.x),
                 y: y1,
             },
-            graph,
+            graph
         ),
 
         next: new Point(
@@ -67,7 +87,7 @@ export function splineCurve(prev: Point, current: Point, next: Point, t: number,
                 x: current.data.x - fb * (prev.data.x - next.data.x),
                 y: y2,
             },
-            graph,
+            graph
         ),
     };
 }

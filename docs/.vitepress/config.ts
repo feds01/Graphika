@@ -31,7 +31,10 @@ export default defineConfig({
                 {
                     text: "Getting Started",
                     items: [
-                        { text: "Installation", link: "/guide/getting-started" },
+                        {
+                            text: "Installation",
+                            link: "/guide/getting-started",
+                        },
                         { text: "Examples", link: "/guide/basic" },
                         { text: "Playground", link: "/guide/playground" },
                     ],
@@ -57,7 +60,10 @@ export default defineConfig({
                 {
                     text: "Getting Started",
                     items: [
-                        { text: "Installation", link: "/guide/getting-started" },
+                        {
+                            text: "Installation",
+                            link: "/guide/getting-started",
+                        },
                         { text: "Examples", link: "/guide/basic" },
                         { text: "Playground", link: "/guide/playground" },
                     ],
@@ -94,13 +100,21 @@ export default defineConfig({
                         { text: "Line", link: "/reference/core/line" },
                         { text: "Axis", link: "/reference/core/axis" },
                         { text: "Scale", link: "/reference/core/scale" },
-                        { text: "Animation", link: "/reference/core/animation" },
-                        { text: "Interpolation", link: "/reference/core/interpolation" },
+                        {
+                            text: "Animation",
+                            link: "/reference/core/animation",
+                        },
+                        {
+                            text: "Interpolation",
+                            link: "/reference/core/interpolation",
+                        },
                     ],
                 },
                 {
                     text: "Legend",
-                    items: [{ text: "Manager", link: "/reference/legend/manager" }],
+                    items: [
+                        { text: "Manager", link: "/reference/legend/manager" },
+                    ],
                 },
                 {
                     text: "Utilities",
@@ -112,7 +126,9 @@ export default defineConfig({
             ],
         },
 
-        socialLinks: [{ icon: "github", link: "https://github.com/feds01/Graphika" }],
+        socialLinks: [
+            { icon: "github", link: "https://github.com/feds01/Graphika" },
+        ],
 
         footer: {
             message: "Released under the ISC License.",

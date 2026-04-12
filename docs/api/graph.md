@@ -137,7 +137,20 @@ const graph = new Graph.Graph(
         scale: {
             x: {
                 ticks: 12,
-                tickLabels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+                tickLabels: [
+                    "Jan",
+                    "Feb",
+                    "Mar",
+                    "Apr",
+                    "May",
+                    "Jun",
+                    "Jul",
+                    "Aug",
+                    "Sep",
+                    "Oct",
+                    "Nov",
+                    "Dec",
+                ],
                 optimiseTicks: true,
             },
         },
@@ -161,7 +174,7 @@ const graph = new Graph.Graph(
             interpolation: "linear",
             style: "dashed",
         },
-    ],
+    ]
 );
 
 graph.draw();

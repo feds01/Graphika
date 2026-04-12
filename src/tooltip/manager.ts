@@ -13,7 +13,13 @@
 import BasicGraph from "../basic.graph";
 import config from "../config";
 import { CanvasTooltipRenderer } from "./canvas-renderer";
-import { LineValue, RequiredTooltipOptions, TooltipOptions, TooltipState, TooltipRenderer } from "./types";
+import {
+    LineValue,
+    RequiredTooltipOptions,
+    TooltipOptions,
+    TooltipState,
+    TooltipRenderer,
+} from "./types";
 import {
     canvasXToDataX,
     createCoordinateContext,
@@ -108,7 +114,7 @@ class TooltipManager {
 
     constructor(
         private readonly graph: BasicGraph,
-        options: TooltipOptions,
+        options: TooltipOptions
     ) {
         this.options = mergeOptions(options);
 
@@ -145,7 +151,10 @@ class TooltipManager {
      */
     #detachEventListeners(): void {
         this.graph.canvas.removeEventListener("mousemove", this.boundMouseMove);
-        this.graph.canvas.removeEventListener("mouseleave", this.boundMouseLeave);
+        this.graph.canvas.removeEventListener(
+            "mouseleave",
+            this.boundMouseLeave
+        );
     }
 
     /**
@@ -204,7 +213,10 @@ class TooltipManager {
         } else {
             // Interpolated mode: direct tracking, no animation needed
             const effectiveCanvasX = dataXToCanvasX(graphCtx, clampedDataX);
-            const lineValues = this.#computeLineValues(clampedDataX, effectiveCanvasX);
+            const lineValues = this.#computeLineValues(
+                clampedDataX,
+                effectiveCanvasX
+            );
 
             this.state = {
                 active: true,
@@ -243,7 +255,10 @@ class TooltipManager {
 
         // Compute canvas position and line values for displayed position
         const effectiveCanvasX = dataXToCanvasX(graphCtx, this.displayedDataX);
-        const lineValues = this.#computeLineValues(this.displayedDataX, effectiveCanvasX);
+        const lineValues = this.#computeLineValues(
+            this.displayedDataX,
+            effectiveCanvasX
+        );
 
         // Update state
         this.state = {
@@ -295,7 +310,10 @@ class TooltipManager {
             if (isNearest) {
                 // Nearest mode: use the actual data point value
                 const index = Math.round(dataX);
-                const clampedIndex = Math.max(0, Math.min(index, data.length - 1));
+                const clampedIndex = Math.max(
+                    0,
+                    Math.min(index, data.length - 1)
+                );
                 value = data[clampedIndex];
             } else {
                 // Interpolated mode: linear interpolation between points
