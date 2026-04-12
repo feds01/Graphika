@@ -30,7 +30,7 @@ const graph = new Graph.Graph(
             enabled: true,
         },
     },
-    lines,
+    lines
 );
 ```
 
@@ -172,11 +172,12 @@ const graph = new Graph.Graph(
         tooltip: {
             enabled: true,
             format: {
-                yValue: (value, label) => `${label}: $${value.toLocaleString()}`,
+                yValue: (value, label) =>
+                    `${label}: $${value.toLocaleString()}`,
             },
         },
     },
-    lines,
+    lines
 );
 ```
 

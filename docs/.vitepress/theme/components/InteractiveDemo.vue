@@ -118,16 +118,22 @@ const lines = computed(
                 annotatePoints: controls.line2AnnotatePoints,
                 ...(controls.line2AreaFill && { area: { fill: true } }),
             },
-        ] satisfies Graphika.DataSource[],
+        ] satisfies Graphika.DataSource[]
 );
 
 // Generate code string for display
 const codeString = computed(() => {
-    const line1ColorRef = colorNameMap[controls.line1Color] || `"${controls.line1Color}"`;
-    const line2ColorRef = colorNameMap[controls.line2Color] || `"${controls.line2Color}"`;
+    const line1ColorRef =
+        colorNameMap[controls.line1Color] || `"${controls.line1Color}"`;
+    const line2ColorRef =
+        colorNameMap[controls.line2Color] || `"${controls.line2Color}"`;
 
-    const line1Area = controls.line1AreaFill ? `\n        area: { fill: true },` : "";
-    const line2Area = controls.line2AreaFill ? `\n        area: { fill: true },` : "";
+    const line1Area = controls.line1AreaFill
+        ? `\n        area: { fill: true },`
+        : "";
+    const line2Area = controls.line2AreaFill
+        ? `\n        area: { fill: true },`
+        : "";
 
     return `import Graph from "@feds01/graphika";
 
@@ -213,7 +219,11 @@ async function copyCode() {
                     :lines="lines"
                     :animate="controls.animate"
                     :height="380"
-                    :widgets="{ copy: false, codeView: false, debugPanel: false }"
+                    :widgets="{
+                        copy: false,
+                        codeView: false,
+                        debugPanel: false,
+                    }"
                 />
             </div>
 
@@ -229,8 +239,17 @@ async function copyCode() {
                         stroke="currentColor"
                         stroke-width="2"
                     >
-                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
-                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+                        <rect
+                            x="9"
+                            y="9"
+                            width="13"
+                            height="13"
+                            rx="2"
+                            ry="2"
+                        />
+                        <path
+                            d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"
+                        />
                     </svg>
                     <svg
                         v-else
@@ -246,7 +265,14 @@ async function copyCode() {
                     {{ copied ? "Copied!" : "Copy" }}
                 </button>
                 <button @click="toggleCode">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <svg
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                    >
                         <polyline points="16 18 22 12 16 6" />
                         <polyline points="8 6 2 12 8 18" />
                     </svg>
@@ -255,7 +281,10 @@ async function copyCode() {
             </div>
 
             <!-- Collapsible Code Block -->
-            <div class="interactive-demo-code" :class="showCode ? 'expanded' : 'collapsed'">
+            <div
+                class="interactive-demo-code"
+                :class="showCode ? 'expanded' : 'collapsed'"
+            >
                 <div class="code-wrapper" v-html="highlightedCode"></div>
             </div>
 
@@ -268,7 +297,10 @@ async function copyCode() {
                         <div class="control-group">
                             <label>
                                 <span>Text</span>
-                                <input type="text" v-model="controls.titleContent" />
+                                <input
+                                    type="text"
+                                    v-model="controls.titleContent"
+                                />
                             </label>
                             <label>
                                 <span>Alignment</span>
@@ -286,12 +318,18 @@ async function copyCode() {
                         <h4>Grid</h4>
                         <div class="control-group">
                             <label class="checkbox">
-                                <input type="checkbox" v-model="controls.gridded" />
+                                <input
+                                    type="checkbox"
+                                    v-model="controls.gridded"
+                                />
                                 <span>Show Grid</span>
                             </label>
                             <label>
                                 <span>Line Style</span>
-                                <select v-model="controls.gridLineStyle" :disabled="!controls.gridded">
+                                <select
+                                    v-model="controls.gridLineStyle"
+                                    :disabled="!controls.gridded"
+                                >
                                     <option value="solid">Solid</option>
                                     <option value="dashed">Dashed</option>
                                 </select>
@@ -304,12 +342,18 @@ async function copyCode() {
                         <h4>Legend</h4>
                         <div class="control-group">
                             <label class="checkbox">
-                                <input type="checkbox" v-model="controls.showLegend" />
+                                <input
+                                    type="checkbox"
+                                    v-model="controls.showLegend"
+                                />
                                 <span>Show Legend</span>
                             </label>
                             <label>
                                 <span>Position</span>
-                                <select v-model="controls.legendPosition" :disabled="!controls.showLegend">
+                                <select
+                                    v-model="controls.legendPosition"
+                                    :disabled="!controls.showLegend"
+                                >
                                     <option value="top">Top</option>
                                     <option value="right">Right</option>
                                     <option value="bottom">Bottom</option>
@@ -324,14 +368,22 @@ async function copyCode() {
                         <h4>Tooltip</h4>
                         <div class="control-group">
                             <label class="checkbox">
-                                <input type="checkbox" v-model="controls.showTooltip" />
+                                <input
+                                    type="checkbox"
+                                    v-model="controls.showTooltip"
+                                />
                                 <span>Enable Tooltip</span>
                             </label>
                             <label>
                                 <span>Mode</span>
-                                <select v-model="controls.tooltipMode" :disabled="!controls.showTooltip">
+                                <select
+                                    v-model="controls.tooltipMode"
+                                    :disabled="!controls.showTooltip"
+                                >
                                     <option value="nearest">Nearest</option>
-                                    <option value="interpolated">Interpolated</option>
+                                    <option value="interpolated">
+                                        Interpolated
+                                    </option>
                                 </select>
                             </label>
                         </div>
@@ -342,7 +394,10 @@ async function copyCode() {
                         <h4>Animation</h4>
                         <div class="control-group">
                             <label class="checkbox">
-                                <input type="checkbox" v-model="controls.animate" />
+                                <input
+                                    type="checkbox"
+                                    v-model="controls.animate"
+                                />
                                 <span>Enable Animation</span>
                             </label>
                         </div>
@@ -369,17 +424,27 @@ async function copyCode() {
                             <label>
                                 <span>Color</span>
                                 <select v-model="controls.line1Color">
-                                    <option v-for="c in colorOptions" :key="c.value" :value="c.value">
+                                    <option
+                                        v-for="c in colorOptions"
+                                        :key="c.value"
+                                        :value="c.value"
+                                    >
                                         {{ c.name }}
                                     </option>
                                 </select>
                             </label>
                             <label class="checkbox">
-                                <input type="checkbox" v-model="controls.line1AnnotatePoints" />
+                                <input
+                                    type="checkbox"
+                                    v-model="controls.line1AnnotatePoints"
+                                />
                                 <span>Show Points</span>
                             </label>
                             <label class="checkbox">
-                                <input type="checkbox" v-model="controls.line1AreaFill" />
+                                <input
+                                    type="checkbox"
+                                    v-model="controls.line1AreaFill"
+                                />
                                 <span>Area Fill</span>
                             </label>
                         </div>
@@ -406,17 +471,27 @@ async function copyCode() {
                             <label>
                                 <span>Color</span>
                                 <select v-model="controls.line2Color">
-                                    <option v-for="c in colorOptions" :key="c.value" :value="c.value">
+                                    <option
+                                        v-for="c in colorOptions"
+                                        :key="c.value"
+                                        :value="c.value"
+                                    >
                                         {{ c.name }}
                                     </option>
                                 </select>
                             </label>
                             <label class="checkbox">
-                                <input type="checkbox" v-model="controls.line2AnnotatePoints" />
+                                <input
+                                    type="checkbox"
+                                    v-model="controls.line2AnnotatePoints"
+                                />
                                 <span>Show Points</span>
                             </label>
                             <label class="checkbox">
-                                <input type="checkbox" v-model="controls.line2AreaFill" />
+                                <input
+                                    type="checkbox"
+                                    v-model="controls.line2AreaFill"
+                                />
                                 <span>Area Fill</span>
                             </label>
                         </div>

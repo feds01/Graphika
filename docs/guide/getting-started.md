@@ -55,7 +55,7 @@ const graph = new Graph.Graph(
             colour: Graph.Colours.PURPLE,
             interpolation: "cubic",
         },
-    ],
+    ]
 );
 
 graph.draw();

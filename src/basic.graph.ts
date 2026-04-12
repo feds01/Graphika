@@ -297,7 +297,7 @@ class BasicGraph {
     constructor(
         private readonly id: string,
         options: BasicGraphOptions,
-        data: DataSource[],
+        data: DataSource[]
     ) {
         this.dataManager = new DataManager(data);
 
@@ -307,12 +307,16 @@ class BasicGraph {
 
         // Canvas setup.
         const canvas = utils.findCanvas(this.id);
-        assert(isDef(canvas), "Canvas element not found in the graph container.");
+        assert(
+            isDef(canvas),
+            "Canvas element not found in the graph container."
+        );
         this.canvas = canvas;
         this.ctx = utils.setupCanvas(canvas);
 
         const labelFont = this.options.labelFont ?? defaultConfig.labelFont!;
-        const labelFontSize = this.options.labelFontSize ?? defaultConfig.labelFontSize!;
+        const labelFontSize =
+            this.options.labelFontSize ?? defaultConfig.labelFontSize!;
         this.drawer = new Drawer(this.canvas, this.ctx, { labelFont });
         this.drawer.toTextMode(16, this.options.axisColour);
 
@@ -335,31 +339,47 @@ class BasicGraph {
         // We do this after we've set up the basic `padding` as the `LegendManager` may need to
         // perform initial calculations based on the padding.
         if (this.options.legend?.draw) {
-            this.legendManager = new LegendManager(this, this.dataManager.generateLegendInfo());
+            this.legendManager = new LegendManager(
+                this,
+                this.dataManager.generateLegendInfo()
+            );
         }
 
         // 3. Initialise the `TooltipManager` if tooltips are enabled.
         if (this.options.tooltip?.enabled) {
-            this.tooltipManager = new TooltipManager(this, this.options.tooltip);
+            this.tooltipManager = new TooltipManager(
+                this,
+                this.options.tooltip
+            );
         }
 
         // @@Cleanup: move all this stuff into `draw()`
         this.calculatePadding();
-        this.lengths.xLength = this.canvas.clientWidth - (this.padding.right + this.padding.left + labelFontSize);
-        this.lengths.yLength = this.canvas.clientHeight - (this.padding.top + this.padding.bottom);
+        this.lengths.xLength =
+            this.canvas.clientWidth -
+            (this.padding.right + this.padding.left + labelFontSize);
+        this.lengths.yLength =
+            this.canvas.clientHeight - (this.padding.top + this.padding.bottom);
 
         // Subtract a 1 from each length because we actually don't need to worry about the first
         // iteration. Having an extra pole will make the square size less than it should be, We're
         // actually only really concerned about how many 'gaps' there are between each item
         this.gridRectSize = {
-            x: this.lengths.xLength / (this.axisManager.xAxis.scaleLabels.length - 1),
-            y: this.lengths.yLength / (this.axisManager.yAxis.scaleLabels.length - 1),
+            x:
+                this.lengths.xLength /
+                (this.axisManager.xAxis.scaleLabels.length - 1),
+            y:
+                this.lengths.yLength /
+                (this.axisManager.yAxis.scaleLabels.length - 1),
         };
 
         // if 'strict' grid mode is enabled, we select the smallest grid size out of x and y
         // and set this to being the grid size lengths
         if (this.options.grid?.strict) {
-            const gridRectLength = Math.min(this.gridRectSize.x, this.gridRectSize.y);
+            const gridRectLength = Math.min(
+                this.gridRectSize.x,
+                this.gridRectSize.y
+            );
 
             this.gridRectSize.x = gridRectLength;
             this.gridRectSize.y = gridRectLength;
@@ -393,7 +413,10 @@ class BasicGraph {
         // re-draw the graph regardless if a line was found found or not
         this.draw();
 
-        assert(foundLine, "No line with label '" + label + "' found on this graph.");
+        assert(
+            foundLine,
+            "No line with label '" + label + "' found on this graph."
+        );
     }
 
     /**
@@ -407,7 +430,10 @@ class BasicGraph {
         });
     }
 
-    #determinePositionFromSetting(): { offset: number; alignment: CanvasTextAlign } {
+    #determinePositionFromSetting(): {
+        offset: number;
+        alignment: CanvasTextAlign;
+    } {
         const { alignment, position } = this.options.title ?? {
             alignment: defaultConfig.title!.alignment!,
             position: defaultConfig.title!.position!,
@@ -423,7 +449,10 @@ class BasicGraph {
         } else if (alignment === "end") {
             return { offset: this.lengths.xEnd, alignment: "right" };
         } else {
-            assert(false, "Positional setting did not match any of the presets");
+            assert(
+                false,
+                "Positional setting did not match any of the presets"
+            );
         }
     }
 
@@ -439,7 +468,8 @@ class BasicGraph {
 
         const legendOffset =
             this.legendManager && this.options.legend?.position === "top"
-                ? this.legendManager.requiredSpace + 2 * this.padding.textPadding
+                ? this.legendManager.requiredSpace +
+                  2 * this.padding.textPadding
                 : 0;
 
         // add the title
@@ -449,7 +479,7 @@ class BasicGraph {
             (this.padding.top - legendOffset) / 2, // so the text is vertically centred
             this.options.title.fontSize ?? DEFAULT_TITLE_FONT_SIZE,
             this.options.title.colour ?? this.options.axisColour!,
-            alignment,
+            alignment
         );
 
         this.ctx.restore();
@@ -459,17 +489,27 @@ class BasicGraph {
         let labelXOffset = 0;
         let labelYOffset = 0;
 
-        const hasXLabel = this.options.x_label && this.options.x_label.length > 0;
-        const hasYLabel = this.options.y_label && this.options.y_label.length > 0;
+        const hasXLabel =
+            this.options.x_label && this.options.x_label.length > 0;
+        const hasYLabel =
+            this.options.y_label && this.options.y_label.length > 0;
 
         // check if we need to offset the x-label
         if (this.legendManager) {
-            if (this.options.legend?.draw && hasXLabel && this.legendManager.position === "bottom") {
+            if (
+                this.options.legend?.draw &&
+                hasXLabel &&
+                this.legendManager.position === "bottom"
+            ) {
                 labelXOffset += this.legendManager.requiredSpace;
             }
 
             // check if we need to offset the y-label
-            if (this.options.legend?.draw && hasYLabel && this.legendManager.position === "left") {
+            if (
+                this.options.legend?.draw &&
+                hasYLabel &&
+                this.legendManager.position === "left"
+            ) {
                 labelYOffset += this.legendManager.requiredSpace;
             }
         }
@@ -480,15 +520,21 @@ class BasicGraph {
             this.drawer.text(
                 this.options.x_label!,
                 this.lengths.xCenter,
-                this.drawer.height - (this.fontSize() / 2 + this.padding.textPadding + labelXOffset),
+                this.drawer.height -
+                    (this.fontSize() / 2 +
+                        this.padding.textPadding +
+                        labelXOffset),
                 this.fontSize(),
-                axisColour,
+                axisColour
             );
         }
 
         if (hasYLabel) {
             this.ctx.save();
-            this.ctx.translate(this.fontSize() + labelYOffset, this.lengths.yCenter);
+            this.ctx.translate(
+                this.fontSize() + labelYOffset,
+                this.lengths.yCenter
+            );
             this.ctx.rotate(-Math.PI / 2);
             this.ctx.fillText(this.options.y_label!, 0, 0);
             this.ctx.restore();
@@ -501,14 +547,20 @@ class BasicGraph {
         this.ctx.lineWidth = config.gridLineWidth;
         this.ctx.strokeStyle = rgba(axisColour, 40);
 
-        this.ctx.setLineDash(this.options.grid?.gridLineStyle === "dashed" ? [5, 5] : []);
+        this.ctx.setLineDash(
+            this.options.grid?.gridLineStyle === "dashed" ? [5, 5] : []
+        );
 
         // get the number of ticks on the axis
         const xTicks = this.axisManager.xAxis.scaleLabels.length;
         const yTicks = this.axisManager.yAxis.scaleLabels.length;
 
-        const y_len = this.options.grid?.gridded ? config.tickLength + this.lengths.yLength : config.tickLength;
-        const x_len = this.options.grid?.gridded ? config.tickLength + this.lengths.xLength : config.tickLength;
+        const y_len = this.options.grid?.gridded
+            ? config.tickLength + this.lengths.yLength
+            : config.tickLength;
+        const x_len = this.options.grid?.gridded
+            ? config.tickLength + this.lengths.xLength
+            : config.tickLength;
 
         let offset = 0;
 
@@ -519,7 +571,7 @@ class BasicGraph {
                 this.drawer.verticalLine(
                     this.lengths.xBegin + x_offset,
                     this.lengths.yLength + this.padding.top,
-                    -y_len + config.tickLength,
+                    -y_len + config.tickLength
                 );
             }
 
@@ -530,7 +582,7 @@ class BasicGraph {
                 this.drawer.horizontalLine(
                     this.lengths.xBegin,
                     this.lengths.yBegin + y_offset,
-                    x_len - config.tickLength,
+                    x_len - config.tickLength
                 );
             }
             offset++;
@@ -544,10 +596,21 @@ class BasicGraph {
         const lines: Line[] = [];
 
         for (const lineData of this.dataManager.get()) {
-            const { style, area, colour, interpolation, label, annotatePoints, data } = lineData;
+            const {
+                style,
+                area,
+                colour,
+                interpolation,
+                label,
+                annotatePoints,
+                data,
+            } = lineData;
 
             // don't even init the line if no data is supplied
-            if (lineData.data.constructor === Float64Array && lineData.data.length > 0) {
+            if (
+                lineData.data.constructor === Float64Array &&
+                lineData.data.length > 0
+            ) {
                 lines.push(
                     new Line(data, this, {
                         style: style ?? "solid",
@@ -556,7 +619,7 @@ class BasicGraph {
                         interpolation,
                         label,
                         annotatePoints: annotatePoints ?? false,
-                    }),
+                    })
                 );
             }
         }
@@ -565,9 +628,14 @@ class BasicGraph {
     }
 
     calculateLengths() {
-        const labelFontSize = this.options.labelFontSize ?? defaultConfig.labelFontSize!;
-        const xLength = this.canvas.clientWidth - (this.padding.right + this.padding.left + labelFontSize);
-        const yLength = this.canvas.clientHeight - (this.padding.top + this.padding.bottom + labelFontSize);
+        const labelFontSize =
+            this.options.labelFontSize ?? defaultConfig.labelFontSize!;
+        const xLength =
+            this.canvas.clientWidth -
+            (this.padding.right + this.padding.left + labelFontSize);
+        const yLength =
+            this.canvas.clientHeight -
+            (this.padding.top + this.padding.bottom + labelFontSize);
 
         this.lengths = {
             xBegin: this.padding.left + labelFontSize,
@@ -599,7 +667,8 @@ class BasicGraph {
         }
 
         // 2. Calculate the `bottom` padding adjustments.
-        const labelFontSize = this.options.labelFontSize ?? defaultConfig.labelFontSize!;
+        const labelFontSize =
+            this.options.labelFontSize ?? defaultConfig.labelFontSize!;
         const labelSpacing = labelFontSize + this.padding.textPadding;
 
         // Automatically add spacing for the tick and the labels on the axis.
@@ -608,7 +677,8 @@ class BasicGraph {
         this.padding.bottom += labelSpacing + config.tickLength;
 
         // Add spacing for the label if we have one.
-        const hasXLabel = this.options.x_label && this.options.x_label.length > 0;
+        const hasXLabel =
+            this.options.x_label && this.options.x_label.length > 0;
         if (hasXLabel) {
             this.padding.bottom += labelFontSize + this.padding.textPadding;
         }
@@ -619,7 +689,8 @@ class BasicGraph {
         const { yAxis, xAxis } = this.axisManager;
         const longestItem = arrays.longest(yAxis.scaleLabels);
 
-        const axisLabelFontSize = this.options.labelFontSize ?? config.scaleLabelFontSize;
+        const axisLabelFontSize =
+            this.options.labelFontSize ?? config.scaleLabelFontSize;
         const axisColour = this.options.axisColour ?? config.axisColour;
 
         // Set the config font size of axis labels, and then we can effectively 'measure' the width of the text
@@ -627,23 +698,28 @@ class BasicGraph {
         this.padding.left += Math.ceil(this.ctx.measureText(longestItem).width);
 
         // Add space for the y-label if we have one.
-        const hasYLabel = this.options.y_label && this.options.y_label.length > 0;
+        const hasYLabel =
+            this.options.y_label && this.options.y_label.length > 0;
         if (hasYLabel) {
             this.padding.left += labelFontSize + this.padding.base;
         }
 
         // 4. Calculate the `right` padding adjustments.
         const lastItemOnXAxis = xAxis.scaleLabels.at(-1)!;
-        const lastWidthCenter = Math.ceil(this.ctx.measureText(lastItemOnXAxis).width / 2);
+        const lastWidthCenter = Math.ceil(
+            this.ctx.measureText(lastItemOnXAxis).width / 2
+        );
         this.padding.right += lastWidthCenter;
 
         // 5. Apply legend padding if legends are enabled.
         if (legend?.draw && isDef(this.legendManager)) {
-            this.padding[this.legendManager.position] += this.legendManager.requiredSpace;
+            this.padding[this.legendManager.position] +=
+                this.legendManager.requiredSpace;
 
             // If the legend is in the same place as the title, we need to add extra padding to account for both.
             if (title?.draw && title.position === legend.position) {
-                this.padding[this.legendManager.position] += this.padding.textPadding;
+                this.padding[this.legendManager.position] +=
+                    this.padding.textPadding;
             }
         }
     }
@@ -653,10 +729,15 @@ class BasicGraph {
      */
     #setupDraw() {
         // optimise x-square-size if float
-        if (this.options.grid?.optimiseSquareSize && this.gridRectSize.x % 1 !== 0) {
+        if (
+            this.options.grid?.optimiseSquareSize &&
+            this.gridRectSize.x % 1 !== 0
+        ) {
             let preferredSquareSize = Math.round(this.gridRectSize.x);
-            const numberOfSquares = this.axisManager.xAxis.scaleLabels.length - 1;
-            const labelFontSize = this.options.labelFontSize ?? defaultConfig.labelFontSize!;
+            const numberOfSquares =
+                this.axisManager.xAxis.scaleLabels.length - 1;
+            const labelFontSize =
+                this.options.labelFontSize ?? defaultConfig.labelFontSize!;
 
             // If the square size was some round up, rather than down, we need to check if
             // we can actually apply the 'scale' up with the padding space available to the right
@@ -664,7 +745,10 @@ class BasicGraph {
             // guaranteed to have enough space.
             if (
                 preferredSquareSize > this.gridRectSize.x &&
-                this.padding.right - (preferredSquareSize - this.gridRectSize.x) * numberOfSquares < 0
+                this.padding.right -
+                    (preferredSquareSize - this.gridRectSize.x) *
+                        numberOfSquares <
+                    0
             ) {
                 preferredSquareSize--;
             }
@@ -679,15 +763,20 @@ class BasicGraph {
             // we need to re-calculate right padding before we can call calculateLengths() as it is dependant on the
             // right padding value, which has now changed.
             this.padding.right =
-                this.canvas.clientWidth - (this.gridRectSize.x * numberOfSquares + this.lengths.xBegin);
+                this.canvas.clientWidth -
+                (this.gridRectSize.x * numberOfSquares + this.lengths.xBegin);
 
-            this.lengths.xLength = this.canvas.clientWidth - (this.padding.right + this.padding.left + labelFontSize);
+            this.lengths.xLength =
+                this.canvas.clientWidth -
+                (this.padding.right + this.padding.left + labelFontSize);
         }
 
         this.calculateLengths();
 
         // TODO: this should be used as a general form for the Y-Axis length of the graph.
-        this.lengths.yLength = (this.axisManager.yAxis.scaleLabels.length - 1) * this.gridRectSize.y;
+        this.lengths.yLength =
+            (this.axisManager.yAxis.scaleLabels.length - 1) *
+            this.gridRectSize.y;
     }
 
     /**
@@ -718,7 +807,11 @@ class BasicGraph {
         this.lines = this.#createLines();
 
         // If animation is enabled, hasn't completed yet, and isn't already running, start it
-        if (this.options.animation?.enabled && !this.animationCompleted && !this.isAnimating) {
+        if (
+            this.options.animation?.enabled &&
+            !this.animationCompleted &&
+            !this.isAnimating
+        ) {
             this.#runAnimation();
         } else if (!this.isAnimating) {
             // Otherwise draw lines immediately (animation disabled or already completed)
@@ -814,13 +907,23 @@ class BasicGraph {
 
         // draw canvas boundary in red
         this.ctx.strokeStyle = "red";
-        this.ctx.strokeRect(0, 0, this.canvas.clientWidth, this.canvas.clientHeight);
+        this.ctx.strokeRect(
+            0,
+            0,
+            this.canvas.clientWidth,
+            this.canvas.clientHeight
+        );
 
         this.ctx.strokeStyle = colours.DEBUG;
         this.ctx.fillStyle = colours.DEBUG;
 
         // draw box around graph boundary
-        this.ctx.strokeRect(this.lengths.xBegin, this.lengths.yBegin, this.lengths.xLength, this.lengths.yLength);
+        this.ctx.strokeRect(
+            this.lengths.xBegin,
+            this.lengths.yBegin,
+            this.lengths.xLength,
+            this.lengths.yLength
+        );
 
         // draw line at center of the graph
         this.ctx.beginPath();

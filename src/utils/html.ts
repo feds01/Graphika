@@ -29,13 +29,17 @@ export function findCanvas(id: string): HTMLCanvasElement | undefined {
     if (isDef(canvas)) {
         element.style.width = canvas.width.toString() + "px";
     } else {
-        throw Error(`Graph Container with id: '${id}' doesn't contain <canvas/> element.`);
+        throw Error(
+            `Graph Container with id: '${id}' doesn't contain <canvas/> element.`
+        );
     }
 
     return canvas;
 }
 
-export function setupCanvas(canvas: HTMLCanvasElement): CanvasRenderingContext2D {
+export function setupCanvas(
+    canvas: HTMLCanvasElement
+): CanvasRenderingContext2D {
     const ctx = canvas.getContext("2d");
     assert(isDef(ctx), "Canvas 2D context is null or undefined.");
 

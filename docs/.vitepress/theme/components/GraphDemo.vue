@@ -1,5 +1,13 @@
 <script setup lang="ts">
-import { ref, shallowRef, onMounted, watch, watchEffect, computed, nextTick } from "vue";
+import {
+    ref,
+    shallowRef,
+    onMounted,
+    watch,
+    watchEffect,
+    computed,
+    nextTick,
+} from "vue";
 import type { PropType } from "vue";
 import { useData } from "vitepress";
 
@@ -70,7 +78,9 @@ const debugMetrics = ref({
 // Computed options with animation merged in
 const computedOptions = computed(() => {
     // Deep clone to avoid shared references between component instances
-    const baseOptions: Graphika.Graph.BasicGraphOptions = JSON.parse(JSON.stringify(props.options));
+    const baseOptions: Graphika.Graph.BasicGraphOptions = JSON.parse(
+        JSON.stringify(props.options)
+    );
     if (props.animate) {
         baseOptions.animation = { enabled: true, duration: 800 };
     }
@@ -95,12 +105,17 @@ const computedOptions = computed(() => {
                 ...baseOptions.tooltip,
                 trackingLine: {
                     ...baseOptions.tooltip?.trackingLine,
-                    colour: baseOptions.tooltip?.trackingLine?.colour ?? "rgba(255, 255, 255, 0.5)",
+                    colour:
+                        baseOptions.tooltip?.trackingLine?.colour ??
+                        "rgba(255, 255, 255, 0.5)",
                 },
                 content: {
                     ...baseOptions.tooltip?.content,
-                    backgroundColor: baseOptions.tooltip?.content?.backgroundColor ?? "rgba(30, 30, 30, 0.95)",
-                    textColour: baseOptions.tooltip?.content?.textColour ?? "#dfdfd6",
+                    backgroundColor:
+                        baseOptions.tooltip?.content?.backgroundColor ??
+                        "rgba(30, 30, 30, 0.95)",
+                    textColour:
+                        baseOptions.tooltip?.content?.textColour ?? "#dfdfd6",
                 },
             };
         }
@@ -118,7 +133,7 @@ const codeString = computed(() => {
             colour: line.colour || "Graph.Colours.ELECTRIC_BLUE",
         })),
         null,
-        4,
+        4
     )
         // Replace colour string values with actual references
         .replace(/"Graph\.Colours\.(\w+)"/g, "Graph.Colours.$1");
@@ -156,14 +171,21 @@ function renderGraph() {
     }
 
     // Calculate total data points
-    const totalDataPoints = props.lines.reduce((sum, line) => sum + line.data.length, 0);
+    const totalDataPoints = props.lines.reduce(
+        (sum, line) => sum + line.data.length,
+        0
+    );
 
     // Capture render time
     const startTime = performance.now();
 
     // Create new graph instance with computed options (includes animation)
     // Cast to any since the library merges partial options with defaults
-    graphInstance.value = new Graph(containerId.value, computedOptions.value, props.lines);
+    graphInstance.value = new Graph(
+        containerId.value,
+        computedOptions.value,
+        props.lines
+    );
     graphInstance.value.draw();
 
     const endTime = performance.now();
@@ -211,7 +233,7 @@ watch(
     () => {
         renderGraph();
     },
-    { deep: true },
+    { deep: true }
 );
 </script>
 
@@ -219,13 +241,20 @@ watch(
     <div class="graph-demo">
         <!-- Live Preview -->
         <div v-if="isClientReady" class="graph-demo-preview">
-            <div :id="containerId" class="graph-container" :style="{ height: `${height}px`, width: `${width}px` }">
+            <div
+                :id="containerId"
+                class="graph-container"
+                :style="{ height: `${height}px`, width: `${width}px` }"
+            >
                 <canvas :width="width" :height="height" />
             </div>
         </div>
 
         <!-- Actions Bar -->
-        <div v-if="widgets.copy || widgets.codeView || widgets.debugPanel" class="graph-demo-actions">
+        <div
+            v-if="widgets.copy || widgets.codeView || widgets.debugPanel"
+            class="graph-demo-actions"
+        >
             <button v-if="widgets.copy" :class="{ copied }" @click="copyCode">
                 <svg
                     v-if="!copied"
@@ -237,7 +266,9 @@ watch(
                     stroke-width="2"
                 >
                     <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
-                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+                    <path
+                        d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"
+                    />
                 </svg>
                 <svg
                     v-else
@@ -253,14 +284,28 @@ watch(
                 {{ copied ? "Copied!" : "Copy" }}
             </button>
             <button v-if="widgets.codeView" @click="toggleCode">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                >
                     <polyline points="16 18 22 12 16 6" />
                     <polyline points="8 6 2 12 8 18" />
                 </svg>
                 {{ showCode ? "Hide Code" : "View Code" }}
             </button>
             <button v-if="widgets.debugPanel" @click="toggleDebug">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                >
                     <circle cx="12" cy="12" r="10" />
                     <line x1="12" y1="16" x2="12" y2="12" />
                     <line x1="12" y1="8" x2="12.01" y2="8" />
@@ -270,31 +315,44 @@ watch(
         </div>
 
         <!-- Collapsible Code Block -->
-        <div class="graph-demo-code" :class="showCode ? 'expanded' : 'collapsed'">
+        <div
+            class="graph-demo-code"
+            :class="showCode ? 'expanded' : 'collapsed'"
+        >
             <div class="code-wrapper" v-html="highlightedCode"></div>
         </div>
 
         <!-- Collapsible Debug Panel -->
-        <div class="graph-demo-debug" :class="showDebug ? 'expanded' : 'collapsed'">
+        <div
+            class="graph-demo-debug"
+            :class="showDebug ? 'expanded' : 'collapsed'"
+        >
             <div class="debug-wrapper">
                 <div class="debug-grid">
                     <div class="debug-item">
                         <span class="debug-label">Render Time</span>
-                        <span class="debug-value">{{ debugMetrics.renderTime }} ms</span>
+                        <span class="debug-value"
+                            >{{ debugMetrics.renderTime }} ms</span
+                        >
                     </div>
                     <div class="debug-item">
                         <span class="debug-label">Canvas Size</span>
                         <span class="debug-value"
-                            >{{ debugMetrics.canvasWidth }} × {{ debugMetrics.canvasHeight }}</span
+                            >{{ debugMetrics.canvasWidth }} ×
+                            {{ debugMetrics.canvasHeight }}</span
                         >
                     </div>
                     <div class="debug-item">
                         <span class="debug-label">Data Points</span>
-                        <span class="debug-value">{{ debugMetrics.dataPoints }}</span>
+                        <span class="debug-value">{{
+                            debugMetrics.dataPoints
+                        }}</span>
                     </div>
                     <div class="debug-item">
                         <span class="debug-label">Series Count</span>
-                        <span class="debug-value">{{ debugMetrics.seriesCount }}</span>
+                        <span class="debug-value">{{
+                            debugMetrics.seriesCount
+                        }}</span>
                     </div>
                 </div>
             </div>

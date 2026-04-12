@@ -37,7 +37,10 @@ export type LegendItemOptions = {
  * @param ctx - The canvas rendering context.
  * @param options - Configuration for the legend item.
  */
-export function drawLegendItem(ctx: CanvasRenderingContext2D, options: LegendItemOptions): void {
+export function drawLegendItem(
+    ctx: CanvasRenderingContext2D,
+    options: LegendItemOptions
+): void {
     const { label, colour, style, x, y, fontSize, textColour, font } = options;
 
     // Setup colour and style
