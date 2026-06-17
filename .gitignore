@@ -64,7 +64,6 @@ dist/
 
 # webstorm IDE working files
 .idea/*
-.vscode
 
 /index.html
 
@@ -73,3 +72,7 @@ docs/.vitepress/dist
 
 # LLMs
 .claude/
+branch_structure.json
+temp_auto_push.bat
+temp_interactive_push.bat
+.gitignore
