@@ -42,7 +42,7 @@
         "typedoc-plugin-markdown": "^4.13.0",
         "typescript": "^6.0.3",
         "vitepress": "^1.6.4",
-        "vitest": "^5.0.0"
+        "vitest": "^5.0.1"
     },
     "overrides": {
         "vitepress": {
