@@ -39,7 +39,7 @@
         "rolldown": "^1.2.8",
         "tslib": "^2.8.1",
         "typedoc": "^0.28.20",
-        "typedoc-plugin-markdown": "^4.13.0",
+        "typedoc-plugin-markdown": "^4.13.1",
         "typescript": "^6.0.3",
         "vitepress": "^1.6.4",
         "vitest": "^5.0.1"
