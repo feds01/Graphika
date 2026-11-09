@@ -34,7 +34,7 @@
     },
     "devDependencies": {
         "globals": "^17.14.0",
-        "oxfmt": "^0.75.0",
+        "oxfmt": "^0.76.0",
         "oxlint": "^1.90.0",
         "rolldown": "^1.2.16",
         "tslib": "^2.9.1",
